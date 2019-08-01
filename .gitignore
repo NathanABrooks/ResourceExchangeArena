@@ -1,0 +1,9 @@
+# IDE Files #
+.idea/
+*.iml
+
+# Compiled Source #
+out/
+
+# Output data #
+outputData/
