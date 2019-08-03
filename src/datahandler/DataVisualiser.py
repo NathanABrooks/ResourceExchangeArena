@@ -1,7 +1,6 @@
 import ast
 import csv
 import inflect
-import numpy as np
 import os
 import plotly as py
 import sys
@@ -9,14 +8,14 @@ import sys
 # Get the current release from command line arguments.
 releaseVersion = sys.argv[1]
 
-# Unique identifier pairing raw data with visualised data.
+# Unique identifier to identify which run the produced graphs are associated with.
 uniqueTag = sys.argv[2]
 
-# Get the location of the data from command line arguments.
-averageAgentSatisfactionLevels = sys.argv[3]
-individualAgentSatisfactionLevels = sys.argv[4]
+# Get the location of the raw data that requires visualising from command line arguments.
+endOfDaySatisfactionLevels = sys.argv[3]
+duringDaySatisfactionLevels = sys.argv[4]
 
-# Get the specific days to analyse exchanges during the day from command line arguments.
+# Get the specific days to have average satisfaction visualised throughout the day.
 daysToAnalyse = ast.literal_eval(sys.argv[5])
 
 # Used to get ordinal word versions of integers for graph titles.
@@ -29,49 +28,45 @@ OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
 
-# Generate suitable filenames for the graphs that will be produced, either data file can be used here for the structure.
-baseFileName = averageAgentSatisfactionLevels.split('\\')[-1]
+# Generate suitable filenames for the graphs that will be produced.
+baseFileName = endOfDaySatisfactionLevels.split('\\')[-1]
 convertedBaseFileName = baseFileName.split('.')[0] + '.pdf'
 
-# Store the scope of the data which will be the same for each graph
+# Store the scope of the data which will be the same for each graph.
 days = []
 rounds = []
 fieldNames = []
 
-# Options for graph data visuals
+# Options for graph data visuals.
 colours = ['rgb(205,0,0)', 'rgb(0,0,205)', 'rgb(0,205,0)', 'rgb(205,0,205)', 'rgb(205,205,0)']
 lineTypes = ['dot', 'dash', 'longdash', 'dashdot', 'longdashdot', 'solid']
 
+# Update user on progress.
 print('Analysing end of day averages...', flush=True)
 
-# Start by calculating the scope of the data.
-with open(averageAgentSatisfactionLevels) as averagesRawData:
+with open(endOfDaySatisfactionLevels) as endOfDayRawData:
     # Store calculated graph data
     data = []
 
-    setupReader = csv.DictReader(averagesRawData)
-    fieldNames.extend(setupReader.fieldnames[2:])
+    setupReader = csv.DictReader(endOfDayRawData)
+    fieldNames.extend(setupReader.fieldnames[1:])
     for row in setupReader:
         if row['Day'] in days:
             break
         else:
             days.append(row['Day'])
-    averagesRawData.seek(0)
+    endOfDayRawData.seek(0)
 
     # For each agent type, calculate the average satisfaction for the end of each day.
-    reader = csv.reader(averagesRawData)
+    reader = csv.reader(endOfDayRawData)
     for i in range(len(fieldNames)):
         endOfDayAverages = []
+        endOfDayRawData.seek(0)
         for j in range(len(days)):
-            dailyAverages = []
             for row in reader:
-                if row[1] == days[j]:
-                    dailyAverages.append((row[i + 2]))
-            if dailyAverages:
-                npDailyAverages = np.array(dailyAverages).astype(np.float)
-                dailyAverageOverSimulationRuns = np.mean(npDailyAverages)
-                endOfDayAverages.append(dailyAverageOverSimulationRuns)
-            averagesRawData.seek(0)
+                if row[0] == days[j]:
+                    endOfDayAverages.append((row[i + 1]))
+                    break
         print(str(i + 1) + '/' + str(len(fieldNames)) + ' agent types analysed', flush=True)
         # Get new line styling combination.
         colour = i
@@ -101,22 +96,23 @@ with open(averageAgentSatisfactionLevels) as averagesRawData:
 
     # Create the file
     fig = dict(data=data, layout=layout)
-    fullPath = os.path.join(OUTPUT_DIR, convertedBaseFileName)
+    fileName = convertedBaseFileName.replace('prePreparedEndOfDayAverages', 'endOfDayAverages')
+    fullPath = os.path.join(OUTPUT_DIR, fileName)
     py.io.write_image(fig, fullPath)
     print('End of day averages graphed', flush=True)
 
 print('Analysing during day averages...', flush=True)
 
-with open(individualAgentSatisfactionLevels) as individualsRawData:
-    setupReader = csv.DictReader(individualsRawData)
+with open(duringDaySatisfactionLevels) as duringDayRawData:
+    setupReader = csv.DictReader(duringDayRawData)
     for row in setupReader:
         if row['Day'] != days[0]:
             break
         elif not row['Round'] in rounds:
             rounds.append(row['Round'])
-    individualsRawData.seek(0)
+    duringDayRawData.seek(0)
 
-    reader = csv.reader(individualsRawData)
+    reader = csv.reader(duringDayRawData)
     for i in range(len(daysToAnalyse)):
         # Store calculated graph data
         data = []
@@ -125,7 +121,7 @@ with open(individualAgentSatisfactionLevels) as individualsRawData:
             endOfRoundAverages = []
             for k in range(len(rounds)):
                 agentSatisfactionLevels = []
-                individualsRawData.seek(0)
+                duringDayRawData.seek(0)
                 next(reader)
                 for row in reader:
                     if int(row[0]) == int(daysToAnalyse[i]) \
@@ -164,7 +160,8 @@ with open(individualAgentSatisfactionLevels) as individualsRawData:
 
         # Create the file
         fig = dict(data=data, layout=layout)
-        fileName = convertedBaseFileName.replace('endOfDayAverages', 'duringDayAveragesDay' + str(daysToAnalyse[i]))
+        fileName = convertedBaseFileName.replace(
+            'prePreparedEndOfDayAverages', 'duringDayAveragesDay' + str(daysToAnalyse[i]))
         fullPath = os.path.join(OUTPUT_DIR, fileName)
         py.io.write_image(fig, fullPath)
         print('During day ' + str(daysToAnalyse[i]) + ' averages graphed', flush=True)

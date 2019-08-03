@@ -70,6 +70,9 @@ public class ExchangeArena {
         // Calculates the number of agents of each type for the simulation.
         int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
 
+        // 2D array list holding the average end of day satisfactions for each agent type.
+        ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
+
         // 2D array list holding the average end of round satisfactions for each agent type.
         ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
 
@@ -82,6 +85,12 @@ public class ExchangeArena {
         Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
         Files.createDirectories(rawDataOutputPath);
 
+        // Create a further directory to store the pre-prepared data for the python visualiser.
+        String prePreparedDataOutputFolder =
+                "outputData/" + releaseVersion + "/" + uniqueTag + "/prePreparedData";
+        Path prePreparedDataOutputPath = Paths.get(prePreparedDataOutputFolder);
+        Files.createDirectories(prePreparedDataOutputPath);
+
         // Create an identifying filename containing the seed and types of agents in the simulation.
         StringBuilder fileName = new StringBuilder();
         for (Integer type : uniqueAgentTypes) {
@@ -89,46 +98,6 @@ public class ExchangeArena {
         }
         fileName.append("_");
         fileName.append(uniqueTag);
-
-        // Create a new csv file to store the individual agents satisfaction throughout the trading process.
-        File individualFile = new File(
-                rawDataOutputFolder,
-                "duringDayAverages_" + fileName + ".csv");
-
-        FileWriter individualCSVWriter = new FileWriter(individualFile);
-
-        // Store the column headers for the individualCSVWriter file.
-        individualCSVWriter.append("Simulation Run");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Day");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Round");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Agent ID");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Agent Type");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Satisfaction");
-        individualCSVWriter.append("\n");
-
-        // Create a new csv file to store the individual agents satisfaction throughout the trading process,
-        // averaged over multiple runs and storing only information on days that will later be analysed.
-        // This greatly speeds up the python data visualisation.
-        File filteredIndividualFile = new File(
-                rawDataOutputFolder,
-                "filteredDuringDayAverages_" + fileName + ".csv");
-
-        FileWriter filteredIndividualCSVWriter = new FileWriter(filteredIndividualFile);
-
-        // Store the column headers for the individualCSVWriter file.
-        filteredIndividualCSVWriter.append("Day");
-        filteredIndividualCSVWriter.append(",");
-        filteredIndividualCSVWriter.append("Round");
-        filteredIndividualCSVWriter.append(",");
-        filteredIndividualCSVWriter.append("Agent Type");
-        filteredIndividualCSVWriter.append(",");
-        filteredIndividualCSVWriter.append("Satisfaction");
-        filteredIndividualCSVWriter.append("\n");
 
         // Create a new csv file to store the average agent satisfaction at the end of each day.
         File averageFile = new File(
@@ -151,6 +120,64 @@ public class ExchangeArena {
             averageCSVWriter.append(getHumanReadableAgentType(type));
         }
         averageCSVWriter.append("\n");
+
+        // Create a new csv file to store the pre prepared average agent satisfaction at the end of each day.
+        File prePreparedAverageFile = new File(
+                prePreparedDataOutputFolder ,
+                "prePreparedEndOfDayAverages_" + fileName + ".csv");
+
+        FileWriter prePreparedAverageCSVWriter = new FileWriter(prePreparedAverageFile);
+
+        // Store the column headers for the prePreparedAverageCSVWriter file.
+        prePreparedAverageCSVWriter.append("Day");
+        prePreparedAverageCSVWriter.append(",");
+        prePreparedAverageCSVWriter.append("Random (No exchange)");
+        prePreparedAverageCSVWriter.append(",");
+        prePreparedAverageCSVWriter.append("Optimum (No exchange)");
+        // Add columns for each unique agent type that exists in the simulation.
+        for (Integer type : uniqueAgentTypes) {
+            prePreparedAverageCSVWriter.append(",");
+            prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type));
+        }
+        prePreparedAverageCSVWriter.append("\n");
+
+        // Create a new csv file to store the individual agents satisfaction throughout the trading process.
+        File individualFile = new File(
+                rawDataOutputFolder,
+                "duringDayAverages_" + fileName + ".csv");
+
+        FileWriter individualCSVWriter = new FileWriter(individualFile);
+
+        // Store the column headers for the individualCSVWriter file.
+        individualCSVWriter.append("Simulation Run");
+        individualCSVWriter.append(",");
+        individualCSVWriter.append("Day");
+        individualCSVWriter.append(",");
+        individualCSVWriter.append("Round");
+        individualCSVWriter.append(",");
+        individualCSVWriter.append("Agent ID");
+        individualCSVWriter.append(",");
+        individualCSVWriter.append("Agent Type");
+        individualCSVWriter.append(",");
+        individualCSVWriter.append("Satisfaction");
+        individualCSVWriter.append("\n");
+
+        // Create a new csv file to store the pre- prepared individual agents satisfaction data.
+        File prePreparedIndividualFile = new File(
+                prePreparedDataOutputFolder,
+                "prePreparedDuringDayAverages_" + fileName + ".csv");
+
+        FileWriter prePreparedIndividualCSVWriter = new FileWriter(prePreparedIndividualFile);
+
+        // Store the column headers for the individualCSVWriter file.
+        prePreparedIndividualCSVWriter.append("Day");
+        prePreparedIndividualCSVWriter.append(",");
+        prePreparedIndividualCSVWriter.append("Round");
+        prePreparedIndividualCSVWriter.append(",");
+        prePreparedIndividualCSVWriter.append("Agent Type");
+        prePreparedIndividualCSVWriter.append(",");
+        prePreparedIndividualCSVWriter.append("Satisfaction");
+        prePreparedIndividualCSVWriter.append("\n");
 
         // Run the simulation for as many runs as requested.
         for (int i = 1; i <= SIMULATION_RUNS; i++) {
@@ -181,6 +208,7 @@ public class ExchangeArena {
             for (Agent a: agents) {
                 a.initializeFavoursStore();
             }
+
             for (int j = 1; j <= DAYS; j++) {
 
                 // Fill the available time slots with all the slots that exist each day.
@@ -203,14 +231,17 @@ public class ExchangeArena {
                     a.receiveAllocatedTimeSlots(allocatedTimeSlots);
                 }
 
+                double averageSatisfaction = averageAverageSatisfaction();
+                double optimalSatisfaction = optimumAllocationSatisfaction();
+
                 // Store the data for pre-exchange random and optimum average agent satisfactions.
                 averageCSVWriter.append(String.valueOf(seed));
                 averageCSVWriter.append(",");
                 averageCSVWriter.append(String.valueOf(j));
                 averageCSVWriter.append(",");
-                averageCSVWriter.append(String.valueOf(averageAverageSatisfaction()));
+                averageCSVWriter.append(String.valueOf(averageSatisfaction));
                 averageCSVWriter.append(",");
-                averageCSVWriter.append(String.valueOf(optimumAllocationSatisfaction()));
+                averageCSVWriter.append(String.valueOf(optimalSatisfaction));
 
                 for (int k = 1; k <= EXCHANGES; k++) {
                     // 2D array list holding time slots each Agent may be willing to trade.
@@ -314,25 +345,33 @@ public class ExchangeArena {
                     int currentDay = j;
                     if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
                         for (int uniqueAgentType : uniqueAgentTypes) {
-                            double averageSatisfaction = averageAverageSatisfaction(uniqueAgentType);
+                            double averageSatisfactionForType = averageAverageSatisfaction(uniqueAgentType);
                             ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
                             endOfRoundAverageSatisfaction.add((double) j);
                             endOfRoundAverageSatisfaction.add((double) k);
                             endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
-                            endOfRoundAverageSatisfaction.add(averageSatisfaction);
+                            endOfRoundAverageSatisfaction.add(averageSatisfactionForType);
 
                             endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
                         }
                     }
                 }
 
+                ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
+                endOfDayAverageSatisfaction.add((double) j);
+                endOfDayAverageSatisfaction.add(averageSatisfaction);
+                endOfDayAverageSatisfaction.add(optimalSatisfaction);
+
                 // Store the data for post-exchange average agent satisfactions for each agent type.
                 for (int uniqueAgentType : uniqueAgentTypes) {
                     // Get the integer representing the unique agent type.
+                    double typeAverageSatisfaction = averageAverageSatisfaction(uniqueAgentType);
                     averageCSVWriter.append(",");
-                    averageCSVWriter.append(String.valueOf(averageAverageSatisfaction(uniqueAgentType)));
+                    averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
+                    endOfDayAverageSatisfaction.add(typeAverageSatisfaction);
                 }
                 averageCSVWriter.append("\n");
+                endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
                 // Print to console after each 10th day so the progress can be monitored.
                 if (j % 10 == 0) {
@@ -344,6 +383,23 @@ public class ExchangeArena {
             if (!agents.isEmpty()) {
                 agents.clear();
             }
+        }
+
+        int types = uniqueAgentTypes.size() + 2;
+        for (int i = 1; i <= DAYS; i++) {
+            prePreparedAverageCSVWriter.append(String.valueOf(i));
+            for (int j = 1; j <= types; j++) {
+                ArrayList<Double> allSatisfactions = new ArrayList<>();
+                for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
+                    if (endOfDayAverageSatisfaction.get(0) == (double) i) {
+                        allSatisfactions.add(endOfDayAverageSatisfaction.get(j));
+                    }
+                }
+                double averageOverSims = allSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
+                prePreparedAverageCSVWriter.append(",");
+                prePreparedAverageCSVWriter.append(String.valueOf(averageOverSims));
+            }
+            prePreparedAverageCSVWriter.append("\n");
         }
 
         for (int day: daysOfInterest) {
@@ -359,14 +415,14 @@ public class ExchangeArena {
                     }
                     double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream().mapToDouble(val -> val).average().orElse(0.0);
 
-                    filteredIndividualCSVWriter.append(String.valueOf(day));
-                    filteredIndividualCSVWriter.append(",");
-                    filteredIndividualCSVWriter.append(String.valueOf(i));
-                    filteredIndividualCSVWriter.append(",");
-                    filteredIndividualCSVWriter.append(String.valueOf(agentType));
-                    filteredIndividualCSVWriter.append(",");
-                    filteredIndividualCSVWriter.append(String.valueOf(averageOverSims));
-                    filteredIndividualCSVWriter.append("\n");
+                    prePreparedIndividualCSVWriter.append(String.valueOf(day));
+                    prePreparedIndividualCSVWriter.append(",");
+                    prePreparedIndividualCSVWriter.append(String.valueOf(i));
+                    prePreparedIndividualCSVWriter.append(",");
+                    prePreparedIndividualCSVWriter.append(String.valueOf(agentType));
+                    prePreparedIndividualCSVWriter.append(",");
+                    prePreparedIndividualCSVWriter.append(String.valueOf(averageOverSims));
+                    prePreparedIndividualCSVWriter.append("\n");
                 }
             }
         }
@@ -374,7 +430,8 @@ public class ExchangeArena {
         // Close the csv file writers once the simulation is complete.
         individualCSVWriter.close();
         averageCSVWriter.close();
-        filteredIndividualCSVWriter.close();
+        prePreparedAverageCSVWriter.close();
+        prePreparedIndividualCSVWriter.close();
 
         String pythonPath = "I:/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
         String daysToAnalyse = Arrays.toString(daysOfInterest);
@@ -385,8 +442,8 @@ public class ExchangeArena {
         pythonArgs.add(pythonPath);
         pythonArgs.add(releaseVersion);
         pythonArgs.add(Long.toString(uniqueTag));
-        pythonArgs.add(averageFile.getAbsolutePath());
-        pythonArgs.add(filteredIndividualFile.getAbsolutePath());
+        pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
+        pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
         pythonArgs.add(daysToAnalyse);
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);
