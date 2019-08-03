@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.IntStream;
 
 // The arena is the core of the simulation, this is where all the resource exchanges take place.
 public class ExchangeArena {
@@ -17,16 +18,16 @@ public class ExchangeArena {
     static Random random = new Random();
 
     // Number of times the simulation will be run with the same parameters in order to take average results.
-    private static final int SIMULATION_RUNS = 2;
+    private static final int SIMULATION_RUNS = 50;
 
     // Number of days to be simulated.
-    private static final int DAYS = 2;
+    private static final int DAYS = 50;
 
     // Maximum number of Agents who can be assigned to each time slot, assuming equal power draw per Agent.
     private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
 
     // Number of rounds of exchanges per day.
-    private static final int EXCHANGES = 5;
+    private static final int EXCHANGES = 200;
 
     // Number of time slots per day.
     static final int TOTAL_TIME_SLOTS = 24;
@@ -69,30 +70,30 @@ public class ExchangeArena {
         // Calculates the number of agents of each type for the simulation.
         int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
 
+        // 2D array list holding the average end of round satisfactions for each agent type.
+        ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
+
         // Create a unique name that will pair files from the same run of the simulation.
         long uniqueTag = System.currentTimeMillis();
 
-        // Create directories to organise the files produced by the simulation.
-        String individualAgentSatisfactionLevelsOutputFolder =
+        // Create a directory to store the raw data output by the simulation.
+        String rawDataOutputFolder =
                 "outputData/" + releaseVersion + "/" + uniqueTag + "/rawData";
-        Path individualAgentSatisfactionLevelsOutputPath = Paths.get(individualAgentSatisfactionLevelsOutputFolder);
-        Files.createDirectories(individualAgentSatisfactionLevelsOutputPath);
-
-        String averageAgentSatisfactionLevelsOutputFolder =
-                "outputData/" + releaseVersion + "/" + uniqueTag + "/rawData";
-        Path averageAgentSatisfactionLevelsOutputPath = Paths.get(averageAgentSatisfactionLevelsOutputFolder);
-        Files.createDirectories(averageAgentSatisfactionLevelsOutputPath);
+        Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
+        Files.createDirectories(rawDataOutputPath);
 
         // Create an identifying filename containing the seed and types of agents in the simulation.
         StringBuilder fileName = new StringBuilder();
         for (Integer type : uniqueAgentTypes) {
             fileName.append(getHumanReadableAgentType(type));
         }
+        fileName.append("_");
+        fileName.append(uniqueTag);
 
         // Create a new csv file to store the individual agents satisfaction throughout the trading process.
         File individualFile = new File(
-                individualAgentSatisfactionLevelsOutputFolder,
-                "individual_" + fileName + "_" + uniqueTag +".csv");
+                rawDataOutputFolder,
+                "duringDayAverages_" + fileName + ".csv");
 
         FileWriter individualCSVWriter = new FileWriter(individualFile);
 
@@ -110,10 +111,29 @@ public class ExchangeArena {
         individualCSVWriter.append("Satisfaction");
         individualCSVWriter.append("\n");
 
+        // Create a new csv file to store the individual agents satisfaction throughout the trading process,
+        // averaged over multiple runs and storing only information on days that will later be analysed.
+        // This greatly speeds up the python data visualisation.
+        File filteredIndividualFile = new File(
+                rawDataOutputFolder,
+                "filteredDuringDayAverages_" + fileName + ".csv");
+
+        FileWriter filteredIndividualCSVWriter = new FileWriter(filteredIndividualFile);
+
+        // Store the column headers for the individualCSVWriter file.
+        filteredIndividualCSVWriter.append("Day");
+        filteredIndividualCSVWriter.append(",");
+        filteredIndividualCSVWriter.append("Round");
+        filteredIndividualCSVWriter.append(",");
+        filteredIndividualCSVWriter.append("Agent Type");
+        filteredIndividualCSVWriter.append(",");
+        filteredIndividualCSVWriter.append("Satisfaction");
+        filteredIndividualCSVWriter.append("\n");
+
         // Create a new csv file to store the average agent satisfaction at the end of each day.
         File averageFile = new File(
-                averageAgentSatisfactionLevelsOutputFolder ,
-                "averages_" + fileName + "_" + uniqueTag +".csv");
+                rawDataOutputFolder ,
+                "endOfDayAverages_" + fileName + ".csv");
 
         FileWriter averageCSVWriter = new FileWriter(averageFile);
 
@@ -289,6 +309,21 @@ public class ExchangeArena {
                         individualCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
                         individualCSVWriter.append("\n");
                     }
+
+                    // Store filtered data for post-exchange individual agent satisfaction scores.
+                    int currentDay = j;
+                    if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
+                        for (int uniqueAgentType : uniqueAgentTypes) {
+                            double averageSatisfaction = averageAverageSatisfaction(uniqueAgentType);
+                            ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
+                            endOfRoundAverageSatisfaction.add((double) j);
+                            endOfRoundAverageSatisfaction.add((double) k);
+                            endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
+                            endOfRoundAverageSatisfaction.add(averageSatisfaction);
+
+                            endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
+                        }
+                    }
                 }
 
                 // Store the data for post-exchange average agent satisfactions for each agent type.
@@ -299,8 +334,10 @@ public class ExchangeArena {
                 }
                 averageCSVWriter.append("\n");
 
-                // Print to console after each day so the progress can be monitored.
-                System.out.println("RUN: " + i + "  DAY: " + j);
+                // Print to console after each 10th day so the progress can be monitored.
+                if (j % 10 == 0) {
+                    System.out.println("RUN: " + i + "  DAY: " + j);
+                }
             }
 
             // Clear the list of agents before the next simulation begins.
@@ -309,9 +346,35 @@ public class ExchangeArena {
             }
         }
 
+        for (int day: daysOfInterest) {
+            for (int i = 1; i <= EXCHANGES; i++) {
+                for (int agentType : uniqueAgentTypes) {
+                    ArrayList<Double> allSimsEndOfRoundAverageSatisfaction = new ArrayList<>();
+                    for (ArrayList<Double> endOfRoundAverageSatisfaction : endOfRoundAverageSatisfactions) {
+                        if ((endOfRoundAverageSatisfaction.get(0) == (double) day) &&
+                                (endOfRoundAverageSatisfaction.get(1) == (double) i) &&
+                                (endOfRoundAverageSatisfaction.get(2) == (double) agentType)) {
+                            allSimsEndOfRoundAverageSatisfaction.add(endOfRoundAverageSatisfaction.get(3));
+                        }
+                    }
+                    double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream().mapToDouble(val -> val).average().orElse(0.0);
+
+                    filteredIndividualCSVWriter.append(String.valueOf(day));
+                    filteredIndividualCSVWriter.append(",");
+                    filteredIndividualCSVWriter.append(String.valueOf(i));
+                    filteredIndividualCSVWriter.append(",");
+                    filteredIndividualCSVWriter.append(String.valueOf(agentType));
+                    filteredIndividualCSVWriter.append(",");
+                    filteredIndividualCSVWriter.append(String.valueOf(averageOverSims));
+                    filteredIndividualCSVWriter.append("\n");
+                }
+            }
+        }
+
         // Close the csv file writers once the simulation is complete.
         individualCSVWriter.close();
         averageCSVWriter.close();
+        filteredIndividualCSVWriter.close();
 
         String pythonPath = "I:/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
         String daysToAnalyse = Arrays.toString(daysOfInterest);
@@ -323,7 +386,7 @@ public class ExchangeArena {
         pythonArgs.add(releaseVersion);
         pythonArgs.add(Long.toString(uniqueTag));
         pythonArgs.add(averageFile.getAbsolutePath());
-        pythonArgs.add(individualFile.getAbsolutePath());
+        pythonArgs.add(filteredIndividualFile.getAbsolutePath());
         pythonArgs.add(daysToAnalyse);
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);

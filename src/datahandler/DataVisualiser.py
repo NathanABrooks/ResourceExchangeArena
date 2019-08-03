@@ -40,7 +40,7 @@ fieldNames = []
 
 # Options for graph data visuals
 colours = ['rgb(205,0,0)', 'rgb(0,0,205)', 'rgb(0,205,0)', 'rgb(205,0,205)', 'rgb(205,205,0)']
-lineTypes = ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot']
+lineTypes = ['dot', 'dash', 'longdash', 'dashdot', 'longdashdot', 'solid']
 
 print('Analysing end of day averages...', flush=True)
 
@@ -72,7 +72,7 @@ with open(averageAgentSatisfactionLevels) as averagesRawData:
                 dailyAverageOverSimulationRuns = np.mean(npDailyAverages)
                 endOfDayAverages.append(dailyAverageOverSimulationRuns)
             averagesRawData.seek(0)
-
+        print(str(i + 1) + '/' + str(len(fieldNames)) + ' agent types analysed', flush=True)
         # Get new line styling combination.
         colour = i
         while colour > len(colours) - 1:
@@ -101,9 +101,9 @@ with open(averageAgentSatisfactionLevels) as averagesRawData:
 
     # Create the file
     fig = dict(data=data, layout=layout)
-    fileName = convertedBaseFileName.replace('averages', 'endOfDayAverages')
-    fullPath = os.path.join(OUTPUT_DIR, fileName)
+    fullPath = os.path.join(OUTPUT_DIR, convertedBaseFileName)
     py.io.write_image(fig, fullPath)
+    print('End of day averages graphed', flush=True)
 
 print('Analysing during day averages...', flush=True)
 
@@ -117,7 +117,6 @@ with open(individualAgentSatisfactionLevels) as individualsRawData:
     individualsRawData.seek(0)
 
     reader = csv.reader(individualsRawData)
-    next(reader)
     for i in range(len(daysToAnalyse)):
         # Store calculated graph data
         data = []
@@ -126,19 +125,14 @@ with open(individualAgentSatisfactionLevels) as individualsRawData:
             endOfRoundAverages = []
             for k in range(len(rounds)):
                 agentSatisfactionLevels = []
-                for row in reader:
-                    if int(row[1]) == int(daysToAnalyse[i]) \
-                            and int(row[2]) == int(rounds[k]) \
-                            and int(row[4]) == int(j + 1):
-                        agentSatisfactionLevels.append(row[5])
-                if agentSatisfactionLevels:
-                    npAgentSatisfactionLevels = np.array(agentSatisfactionLevels).astype(np.float)
-                    duringDayAverageOverSimulationRuns = np.mean(npAgentSatisfactionLevels)
-                    endOfRoundAverages.append(duringDayAverageOverSimulationRuns)
                 individualsRawData.seek(0)
                 next(reader)
-                print("AGENT TYPE: " + fieldNames[j + 2] + "  DAY: " + str(daysToAnalyse[i]) + "  ROUND: " +
-                      str(rounds[k]), flush=True)
+                for row in reader:
+                    if int(row[0]) == int(daysToAnalyse[i]) \
+                            and int(row[1]) == int(rounds[k]) \
+                            and int(row[2]) == int(j + 1):
+                        endOfRoundAverages.append(row[3])
+                        break
 
             # Get new line styling combination.
             colour = j
@@ -170,6 +164,7 @@ with open(individualAgentSatisfactionLevels) as individualsRawData:
 
         # Create the file
         fig = dict(data=data, layout=layout)
-        fileName = convertedBaseFileName.replace('averages', 'duringDayAveragesDay' + str(daysToAnalyse[i]))
+        fileName = convertedBaseFileName.replace('endOfDayAverages', 'duringDayAveragesDay' + str(daysToAnalyse[i]))
         fullPath = os.path.join(OUTPUT_DIR, fileName)
         py.io.write_image(fig, fullPath)
+        print('During day ' + str(daysToAnalyse[i]) + ' averages graphed', flush=True)
