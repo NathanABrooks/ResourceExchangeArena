@@ -1,3 +1,41 @@
+"""Takes pre-prepared data from the ExchangeArena.java main method and produces a series of graphs visualising the data.
+The three types of graphs are as follows:
+ - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
+    satisfaction of all agents if time slots were allocated randomly or optimally.
+ - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
+    generated for each of a series of days passed as a parameter.
+ - Box and whisker plots showing the distribution of agents satisfaction for each agent type at the end of the same
+    series of days for which line graphs are generated.
+All graphs use data that has been averaged over a series of simulations by the ExchangeArena.java code.
+
+This is part of the wider ResourceExchangeArena project developed as part of the author, Nathan Brooks', MSc. in
+Advanced Computer Science from Keele University. The project models agents in a common pool resource allocation
+scenario, where they are allocated time slots to use a shared renewable energy resource. They can then trade allocations
+between one another, with each agent aiming to maximise its individual satisfaction by acquiring its desired time slots.
+More information and the rest of the projects full code base can be found at the following GitHub repository:
+https://github.com/NathanABrooks/ResourceExchangeArena
+
+Parameters
+---------
+releaseVersion : str
+    The version of the ResourceExchangeArena program that the data is coming from.
+uniqueTag : str
+    A unique tag so that generated graphs can easily be associated with their corresponding data sets.
+endOfDaySatisfactionLevels: str
+    The absolute path of the data set required for generating the line graph showing the average satisfaction of each
+    agent type at the end of each day.
+duringDaySatisfactionLevels: str
+    The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
+    agent type at the end of each round of trading.
+endOfDaySatisfactionDistributions: str
+    The absolute path of the data set required for generating the box and whisker plots showing the distribution of
+    agents satisfaction for each agent type at the end of the same series of days for which line graphs are generated.
+daysToVisualise: str
+    The specific days that will have a line graph of the agent satisfactions at the end of each round throughout the day
+    and a box and whisker plot of the agent satisfactions at the end of the day generated.
+    Note that this is immediately converted to type List[int].
+"""
+
 import ast
 import csv
 import inflect
@@ -21,7 +59,7 @@ duringDaySatisfactionLevels: str = sys.argv[4]
 endOfDaySatisfactionDistributions: str = sys.argv[5]
 
 # Get the specific days to have average satisfaction visualised throughout the day.
-daysToAnalyse: List[int] = ast.literal_eval(sys.argv[6])
+daysToVisualise: List[int] = ast.literal_eval(sys.argv[6])
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -195,7 +233,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
     reader = csv.reader(duringDayRawData)
 
     # Each pre-selected is visualised in its own graph.
-    for i in range(len(daysToAnalyse)):
+    for i in range(len(daysToVisualise)):
         # Store calculated graph data
         data: Any = []
 
@@ -212,7 +250,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
                 next(reader)
                 for row in reader:
                     # The field type column + 1 used as agent types start at 1 as opposed to 0.
-                    if int(row[0]) == int(daysToAnalyse[i]) \
+                    if int(row[0]) == int(daysToVisualise[i]) \
                             and int(row[1]) == int(rounds[k]) \
                             and int(row[2]) == int(j + 1):
                         endOfRoundAverages.append(row[3])
@@ -241,7 +279,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
             )
 
         # The day value is converted into the ordinal word form for styling.
-        day: str = inflect.number_to_words(inflect.ordinal(daysToAnalyse[i]))
+        day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
         title: str = 'Average consumer satisfaction during the ' + day + ' day'
 
         # Style the graph layout
@@ -284,11 +322,11 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            'prePreparedEndOfDayAverages', 'duringDayAveragesDay' + str(daysToAnalyse[i]))
+            'prePreparedEndOfDayAverages', 'duringDayAveragesDay' + str(daysToVisualise[i]))
         fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-        print('    During day ' + str(daysToAnalyse[i]) + ' averages graphed.', flush=True)
+        print('    During day ' + str(daysToVisualise[i]) + ' averages graphed.', flush=True)
     print('During day averages visualised.', flush=True)
 print('Visualising end of day distributions...', flush=True)
 
@@ -298,7 +336,7 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
     reader = csv.reader(boxPlotData)
 
     # Each pre-selected is visualised in its own graph.
-    for i in range(len(daysToAnalyse)):
+    for i in range(len(daysToVisualise)):
         # Store calculated graph data
         data: Any = []
 
@@ -310,7 +348,7 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
             # The first line contains only headers and so can be skipped.
             next(reader)
             for row in reader:
-                if int(row[0]) == int(daysToAnalyse[i]) \
+                if int(row[0]) == int(daysToVisualise[i]) \
                         and int(row[1]) == int(j + 1):
                     plots.append(row[2])
 
@@ -334,7 +372,7 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
             )
 
         # The day value is converted into the ordinal word form for styling.
-        day: str = inflect.number_to_words(inflect.ordinal(daysToAnalyse[i]))
+        day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
         title: str = 'Consumer satisfaction distribution at the end of the ' + day + ' day'
 
         # Style the graph layout
@@ -367,10 +405,10 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            'prePreparedEndOfDayAverages', 'endOfDaySatisfactionDistributionsDay' + str(daysToAnalyse[i]))
+            'prePreparedEndOfDayAverages', 'endOfDaySatisfactionDistributionsDay' + str(daysToVisualise[i]))
         fullPath: str = os.path.join(distributionsOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-        print('    Box plots day ' + str(daysToAnalyse[i]) + ' graphed.', flush=True)
+        print('    Box plots day ' + str(daysToVisualise[i]) + ' graphed.', flush=True)
     print('End of day distributions visualised.', flush=True)
 print('Data visualisation complete.', flush=True)
