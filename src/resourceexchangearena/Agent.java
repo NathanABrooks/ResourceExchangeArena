@@ -298,6 +298,10 @@ class Agent {
         acceptableRequests.clear();
     }
 
+    double calculateSatisfaction() {
+        return (calculateSatisfaction(this.allocatedTimeSlots));
+    }
+
     // Calculates the Agents satisfaction by comparing its requested and allocated time slots.
     double calculateSatisfaction(ArrayList<Integer> allocatedTimeSlots) {
         if (allocatedTimeSlots == null) {

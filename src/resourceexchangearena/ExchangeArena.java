@@ -76,6 +76,9 @@ public class ExchangeArena {
         // 2D array list holding the average end of round satisfactions for each agent type.
         ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
 
+        // 2D array list holding the individual end of round satisfactions for each agent.
+        ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
+
         // Create a unique name that will pair files from the same run of the simulation.
         long uniqueTag = System.currentTimeMillis();
 
@@ -178,6 +181,21 @@ public class ExchangeArena {
         prePreparedIndividualCSVWriter.append(",");
         prePreparedIndividualCSVWriter.append("Satisfaction");
         prePreparedIndividualCSVWriter.append("\n");
+
+        // Create a new csv file to store the pre- prepared individual agents satisfaction data.
+        File prePreparedBoxPlotFile = new File(
+                prePreparedDataOutputFolder,
+                "prePreparedBoxPlotData_" + fileName + ".csv");
+
+        FileWriter prePreparedBoxPlotCSVWriter = new FileWriter(prePreparedBoxPlotFile);
+
+        // Store the column headers for the individualCSVWriter file.
+        prePreparedBoxPlotCSVWriter.append("Day");
+        prePreparedBoxPlotCSVWriter.append(",");
+        prePreparedBoxPlotCSVWriter.append("Agent Type");
+        prePreparedBoxPlotCSVWriter.append(",");
+        prePreparedBoxPlotCSVWriter.append("Satisfaction");
+        prePreparedBoxPlotCSVWriter.append("\n");
 
         // Run the simulation for as many runs as requested.
         for (int i = 1; i <= SIMULATION_RUNS; i++) {
@@ -362,6 +380,19 @@ public class ExchangeArena {
                 endOfDayAverageSatisfaction.add(averageSatisfaction);
                 endOfDayAverageSatisfaction.add(optimalSatisfaction);
 
+                int currentDay = j;
+                if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
+                    for (Agent a: agents) {
+                        ArrayList<Double> individualSatisfaction = new ArrayList<>();
+                        individualSatisfaction.add((double) i);
+                        individualSatisfaction.add((double) j);
+                        individualSatisfaction.add((double) a.getAgentType());
+                        individualSatisfaction.add(a.calculateSatisfaction());
+
+                        endOfDayIndividualSatisfactions.add(individualSatisfaction);
+                    }
+                }
+
                 // Store the data for post-exchange average agent satisfactions for each agent type.
                 for (int uniqueAgentType : uniqueAgentTypes) {
                     // Get the integer representing the unique agent type.
@@ -427,11 +458,54 @@ public class ExchangeArena {
             }
         }
 
+        for (int day: daysOfInterest) {
+            for (int agentType : uniqueAgentTypes) {
+                ArrayList<ArrayList<Double>> thisType = new ArrayList<>();
+                for (ArrayList<Double> endOfDayIndividualSatisfaction : endOfDayIndividualSatisfactions) {
+                    if ((endOfDayIndividualSatisfaction.get(1) == (double) day) &&
+                            (endOfDayIndividualSatisfaction.get(2) == (double) agentType)) {
+                        ArrayList<Double> thisAgent = new ArrayList<>();
+                        thisAgent.add(endOfDayIndividualSatisfaction.get(0));
+                        thisAgent.add(endOfDayIndividualSatisfaction.get(3));
+                        thisType.add(thisAgent);
+                    }
+                }
+                ArrayList<ArrayList<Double>> allSatisfactionLevels = new ArrayList<>();
+                int size = 0;
+                for (int i = 1; i <= SIMULATION_RUNS; i++) {
+                    ArrayList<Double> satisfactionLevels = new ArrayList<>();
+                    for (ArrayList<Double> thisAgent : thisType) {
+                        if (thisAgent.get(0) == i) {
+                            satisfactionLevels.add(thisAgent.get(1));
+                        }
+                    }
+                    Collections.sort(satisfactionLevels);
+                    size = satisfactionLevels.size();
+                    allSatisfactionLevels.add(satisfactionLevels);
+                }
+                for (int i = 0; i < size; i++) {
+                    ArrayList<Double> averageForPosition = new ArrayList<>();
+                    for (ArrayList<Double> satisfactionLevel : allSatisfactionLevels) {
+                        averageForPosition.add(satisfactionLevel.get(i));
+                    }
+                    double averageOverSims = averageForPosition.stream().mapToDouble(val -> val).average().orElse(0.0);
+
+                    prePreparedBoxPlotCSVWriter.append(String.valueOf(day));
+                    prePreparedBoxPlotCSVWriter.append(",");
+                    prePreparedBoxPlotCSVWriter.append(String.valueOf(agentType));
+                    prePreparedBoxPlotCSVWriter.append(",");
+                    prePreparedBoxPlotCSVWriter.append(String.valueOf(averageOverSims));
+                    prePreparedBoxPlotCSVWriter.append("\n");
+                }
+            }
+        }
+
         // Close the csv file writers once the simulation is complete.
         individualCSVWriter.close();
         averageCSVWriter.close();
         prePreparedAverageCSVWriter.close();
         prePreparedIndividualCSVWriter.close();
+        prePreparedBoxPlotCSVWriter.close();
 
         String pythonPath = "I:/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
         String daysToAnalyse = Arrays.toString(daysOfInterest);
@@ -444,6 +518,7 @@ public class ExchangeArena {
         pythonArgs.add(Long.toString(uniqueTag));
         pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
         pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
+        pythonArgs.add(prePreparedBoxPlotFile.getAbsolutePath());
         pythonArgs.add(daysToAnalyse);
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);
