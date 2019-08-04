@@ -70,7 +70,7 @@ colours: List[str] = [
 ]
 lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
 
-print('Analysing end of day averages...', flush=True)
+print('Visualising end of day averages...', flush=True)
 
 # Average consumer satisfactions for each agent type for each day are visualised as a line graph.
 # Hypothetical random and optimal allocations are also visualised.
@@ -107,7 +107,7 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
                     # Append the column + 1, to account for the 'Day' column.
                     endOfDayAverages.append((row[i + 1]))
                     break
-        print(str(i + 1) + '/' + str(len(fieldNames)) + ' agent types analysed.', flush=True)
+        print('    ' + str(i + 1) + '/' + str(len(fieldNames)) + ' agent types processed.', flush=True)
 
         # Get new line styling combination, calculated to match with graphs not including random or optimal allocations.
         colour = i + (len(colours) - 2)
@@ -126,8 +126,8 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
                 name=fieldNames[i],
                 line=dict(
                     color=colours[colour],
-                    width=1,
                     dash=lineTypes[lineType],
+                    width=1,
                 ),
             )
         )
@@ -138,26 +138,26 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
         xaxis=dict(
             title='Day',
             showline=True,
-            tickmode='linear',
-            tick0=0,
-            dtick=5,
             linecolor='black',
             linewidth=2,
             gridcolor='rgb(255, 255, 255)',
             gridwidth=2,
             range=[days[0], days[-1]],
+            tickmode='linear',
+            tick0=0,
+            dtick=5,
         ),
         yaxis=dict(
             title='Average consumer satisfaction',
             showline=True,
-            tickmode='linear',
-            tick0=0,
-            dtick=0.1,
             linecolor='black',
             linewidth=2,
             gridcolor='rgb(255, 255, 255)',
             gridwidth=2,
             range=[0, 1],
+            tickmode='linear',
+            tick0=0,
+            dtick=0.1,
         ),
         margin=dict(
             l=40,
@@ -175,9 +175,8 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
     fullPath: str = os.path.join(baseOutputDirectory, fileName)
     py.io.write_image(fig, fullPath)
 
-    print('End of day averages graphed.', flush=True)
-
-print('Analysing during day averages...', flush=True)
+    print('End of day averages visualised.', flush=True)
+print('Visualising during day averages...', flush=True)
 
 # Average consumer satisfactions for each agent type at the end of each round day are visualised as a line graph.
 # Only pre-selected days are visualised to minimise compute time.
@@ -235,8 +234,8 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
                     name=fieldNames[j + 2],
                     line=dict(
                         color=colours[colour],
-                        width=1,
                         dash=lineTypes[lineType],
+                        width=1,
                     ),
                 )
             )
@@ -251,26 +250,26 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
             xaxis=dict(
                 title='Rounds',
                 showline=True,
-                tickmode='linear',
-                tick0=0,
-                dtick=25,
                 linecolor='black',
                 linewidth=2,
                 gridcolor='rgb(255, 255, 255)',
                 gridwidth=2,
                 range=[rounds[0], rounds[-1]],
+                tickmode='linear',
+                tick0=0,
+                dtick=25,
             ),
             yaxis=dict(
                 title='Average consumer satisfaction',
                 showline=True,
-                tickmode='linear',
-                tick0=0,
-                dtick=0.1,
                 linecolor='black',
                 linewidth=2,
                 gridcolor='rgb(255, 255, 255)',
                 gridwidth=2,
                 range=[0, 1],
+                tickmode='linear',
+                tick0=0,
+                dtick=0.1,
             ),
             margin=dict(
                 l=40,
@@ -289,7 +288,9 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
         fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-        print('During day ' + str(daysToAnalyse[i]) + ' averages graphed.', flush=True)
+        print('    During day ' + str(daysToAnalyse[i]) + ' averages graphed.', flush=True)
+    print('During day averages visualised.', flush=True)
+print('Visualising end of day distributions...', flush=True)
 
 # Consumer satisfactions for each agent at the end of each round are visualised as a box and whisker plot.
 # Only pre-selected days are visualised to minimise compute time.
@@ -327,8 +328,8 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
                     jitter=0.5,
                     whiskerwidth=0.2,
                     fillcolor=colours[colour],
-                    marker_size=2,
                     line_width=1,
+                    marker_size=2,
                 )
             )
 
@@ -341,16 +342,16 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
             title=title,
             xaxis=dict(
                 title='Consumer satisfaction',
-                range=[0, 1],
                 showgrid=True,
+                gridcolor='rgb(255, 255, 255)',
+                gridwidth=2,
                 zeroline=True,
+                zerolinecolor='rgb(255, 255, 255)',
+                zerolinewidth=2,
+                range=[0, 1],
                 tickmode='linear',
                 tick0=0,
                 dtick=0.1,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
-                zerolinecolor='rgb(255, 255, 255)',
-                zerolinewidth=2,
             ),
             margin=dict(
                 l=60,
@@ -370,6 +371,6 @@ with open(endOfDaySatisfactionDistributions) as boxPlotData:
         fullPath: str = os.path.join(distributionsOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-        print('Box plots day ' + str(daysToAnalyse[i]) + ' graphed.', flush=True)
-
+        print('    Box plots day ' + str(daysToAnalyse[i]) + ' graphed.', flush=True)
+    print('End of day distributions visualised.', flush=True)
 print('Data visualisation complete.', flush=True)
