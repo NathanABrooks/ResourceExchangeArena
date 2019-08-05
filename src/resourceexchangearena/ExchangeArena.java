@@ -9,13 +9,12 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.IntStream;
 
-// The arena is the core of the simulation, this is where all the resource exchanges take place.
+/**
+ * The arena is the core of the simulation, this is where all the resource exchanges take place.
+ */
 public class ExchangeArena {
     // The current version of the simulation, used to organise output data.
-    private static final String releaseVersion = "v1.0";
-
-    // Create a single Random object for generating random numerical data for the simulation.
-    static Random random = new Random();
+    private static final String RELEASE_VERSION = "v1.0";
 
     // Number of times the simulation will be run with the same parameters in order to take average results.
     private static final int SIMULATION_RUNS = 50;
@@ -38,6 +37,9 @@ public class ExchangeArena {
     // Integer values representing the available agent types for the simulation.
     static final int SELFISH = 1;
     static final int SOCIAL = 2;
+
+    // Create a single Random object for generating random numerical data for the simulation.
+    static Random random = new Random();
 
     // List of all the Agents that are part of the exchange arena.
     static List<Agent> agents = new ArrayList<>();
@@ -84,13 +86,13 @@ public class ExchangeArena {
 
         // Create a directory to store the raw data output by the simulation.
         String rawDataOutputFolder =
-                "outputData/" + releaseVersion + "/" + uniqueTag + "/rawData";
+                "outputData/" + RELEASE_VERSION + "/" + uniqueTag + "/rawData";
         Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
         Files.createDirectories(rawDataOutputPath);
 
         // Create a further directory to store the pre-prepared data for the python visualiser.
         String prePreparedDataOutputFolder =
-                "outputData/" + releaseVersion + "/" + uniqueTag + "/prePreparedData";
+                "outputData/" + RELEASE_VERSION + "/" + uniqueTag + "/prePreparedData";
         Path prePreparedDataOutputPath = Paths.get(prePreparedDataOutputFolder);
         Files.createDirectories(prePreparedDataOutputPath);
 
@@ -514,7 +516,7 @@ public class ExchangeArena {
 
         pythonArgs.add(pythonExe);
         pythonArgs.add(pythonPath);
-        pythonArgs.add(releaseVersion);
+        pythonArgs.add(RELEASE_VERSION);
         pythonArgs.add(Long.toString(uniqueTag));
         pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
         pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());

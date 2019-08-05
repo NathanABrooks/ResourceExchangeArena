@@ -1,5 +1,16 @@
-"""Takes pre-prepared data from the ExchangeArena.java main method and produces a series of graphs visualising the data.
-The three types of graphs are as follows:
+#!/usr/bin/env python
+
+import ast
+import csv
+import inflect
+import os
+import plotly as py
+import sys
+
+from typing import Any, Dict, List
+
+""" Takes pre-prepared data from the ExchangeArena.java main method and produces a series of graphs 
+visualising the data. The three types of graphs are as follows:
  - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
     satisfaction of all agents if time slots were allocated randomly or optimally.
  - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
@@ -7,13 +18,6 @@ The three types of graphs are as follows:
  - Box and whisker plots showing the distribution of agents satisfaction for each agent type at the end of the same
     series of days for which line graphs are generated.
 All graphs use data that has been averaged over a series of simulations by the ExchangeArena.java code.
-
-This is part of the wider ResourceExchangeArena project developed as part of the author, Nathan Brooks', MSc. in
-Advanced Computer Science from Keele University. The project models agents in a common pool resource allocation
-scenario, where they are allocated time slots to use a shared renewable energy resource. They can then trade allocations
-between one another, with each agent aiming to maximise its individual satisfaction by acquiring its desired time slots.
-More information and the rest of the projects full code base can be found at the following GitHub repository:
-https://github.com/NathanABrooks/ResourceExchangeArena
 
 Parameters
 ---------
@@ -35,15 +39,6 @@ daysToVisualise: str
     and a box and whisker plot of the agent satisfactions at the end of the day generated.
     Note that this is immediately converted to type List[int].
 """
-
-import ast
-import csv
-import inflect
-import os
-import plotly as py
-import sys
-
-from typing import Any, Dict, List
 
 print('Starting Data visualisation.', flush=True)
 

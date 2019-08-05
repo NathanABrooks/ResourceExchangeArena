@@ -3,7 +3,9 @@ package resourceexchangearena;
 import java.util.ArrayList;
 import java.util.Random;
 
-// Agents represent the individual resource consumers in the simulation.
+/**
+ * Agents represent the individual resource consumers in the simulation.
+ */
 class Agent {
     // Unique numerical identifier for the Agent.
     int ID;
