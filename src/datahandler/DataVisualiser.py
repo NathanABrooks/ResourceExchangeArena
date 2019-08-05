@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import ast
 import csv
 import inflect

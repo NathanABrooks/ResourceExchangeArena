@@ -319,7 +319,7 @@ public class ExchangeArena {
                     Collections.shuffle(shuffledAgents, random);
 
                     for (Agent a: shuffledAgents) {
-                        ArrayList<ArrayList<Integer>> offersToAccept = a.getAcceptableRequests();
+                        ArrayList<ArrayList<Integer>> offersToAccept = a.getExchangeRequestsApproved();
                         for (ArrayList<Integer> offer : offersToAccept) {
                             if (a.finalCheck(offer.get(1))) {
                                 for (Agent b : agents) {

@@ -43,22 +43,21 @@ class Agent {
         for (Agent a: ExchangeArena.agents) {
             if (a.agentID != agentID) {
                 // Array list that pairs an agentID with the favours owed.
-                ArrayList<Integer> favoursOwed = new ArrayList<>();
+                ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
 
                 // Array list that pairs an agentID with the favours given.
-                ArrayList<Integer> favoursGiven = new ArrayList<>();
+                ArrayList<Integer> favoursGivenRelation = new ArrayList<>();
 
                 // Initially, no favours are owed or have been given to any other Agent.
-                favoursOwed.add(a.agentID);
-                favoursOwed.add(0);
+                favoursOwedRelation.add(a.agentID);
+                favoursOwedRelation.add(0);
 
-                favoursGiven.add(a.agentID);
-                favoursGiven.add(0);
+                favoursGivenRelation.add(a.agentID);
+                favoursGivenRelation.add(0);
 
                 // Store the agentID and value combinations in the corresponding all favours lists.
-                favoursOwed.add(favoursOwed);
-                favoursGiven.add(favoursGiven);
-
+                favoursOwed.add(favoursOwedRelation);
+                favoursGiven.add(favoursGivenRelation);
             }
         }
     }
@@ -187,14 +186,14 @@ class Agent {
 
     // Receives a request of a time slot exchange and adds it to the list of requests.
     void receiveExchangeRequest(ArrayList<Integer> request) {
-        exchangeRequestsRecieved.add(request);
+        exchangeRequestsReceived.add(request);
     }
 
     // Determine if offered requests will be accepted, and then order them by priority.
     void considerRequests() {
         // Get the Agents current satisfaction level to compare to.
         double currentSatisfaction = calculateSatisfaction(null);
-        for (ArrayList<Integer> request : exchangeRequestsRecieved) {
+        for (ArrayList<Integer> request : exchangeRequestsReceived) {
             ArrayList<Integer> potentialAllocatedTimeSlots = new ArrayList<>(allocatedTimeSlots);
             // Check this Agent still has the time slot requested.
             if (potentialAllocatedTimeSlots.contains(request.get(1))) {
@@ -209,21 +208,21 @@ class Agent {
                     if (newSatisfaction > currentSatisfaction) {
                         exchangeRequestsApproved.add(request);
                     } else {
-                        int favoursOwed = 0;
-                        int favoursGiven = 0;
+                        int favoursOwedToRequester = 0;
+                        int favoursGivenToRequester = 0;
                         for (ArrayList<Integer> favours : favoursOwed) {
                             if (favours.get(0).equals(request.get(0))) {
-                                favoursOwed = favours.get(1);
+                                favoursOwedToRequester = favours.get(1);
                                 break;
                             }
                         }
                         for (ArrayList<Integer> favours : favoursGiven) {
                             if (favours.get(0).equals(request.get(0))) {
-                                favoursGiven = favours.get(1);
+                                favoursGivenToRequester = favours.get(1);
                                 break;
                             }
                         }
-                        if (favoursOwed > favoursGiven) {
+                        if (favoursOwedToRequester > favoursGivenToRequester) {
                             exchangeRequestsApproved.add(request);
                         }
                     }
@@ -237,11 +236,11 @@ class Agent {
             }
         }
         // Once all requests have been considered, clear the array list for the next exchange round.
-        exchangeRequestsRecieved.clear();
+        exchangeRequestsReceived.clear();
     }
 
 
-    ArrayList<ArrayList<Integer>> getexchangeRequestsApproved() {
+    ArrayList<ArrayList<Integer>> getExchangeRequestsApproved() {
         return exchangeRequestsApproved;
     }
 
