@@ -16,46 +16,40 @@ public class ExchangeArena {
     // The current version of the simulation, used to organise output data.
     private static final String RELEASE_VERSION = "v1.0";
 
-    // Number of times the simulation will be run with the same parameters in order to take average results.
+    // Constants defining the scope of the simulation.
     private static final int SIMULATION_RUNS = 50;
-
-    // Number of days to be simulated.
     private static final int DAYS = 50;
-
-    // Maximum number of Agents who can be assigned to each time slot, assuming equal power draw per Agent.
-    private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
-
-    // Number of rounds of exchanges per day.
     private static final int EXCHANGES = 200;
-
-    // Number of time slots per day.
-    static final int TOTAL_TIME_SLOTS = 24;
-
-    // The number of agents in the simulation.
     private static final int POPULATION_SIZE = 96;
+    private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
+    static final int UNIQUE_TIME_SLOTS = 24;
 
-    // Integer values representing the available agent types for the simulation.
+    // Constants representing the available agent types for the simulation.
     static final int SELFISH = 1;
     static final int SOCIAL = 2;
 
     // Create a single Random object for generating random numerical data for the simulation.
     static Random random = new Random();
 
-    // List of all the Agents that are part of the exchange arena.
+    // List of all the Agents that are part of the current simulation.
     static List<Agent> agents = new ArrayList<>();
 
-    // List of all the time slots that are currently Allocated in the exchange arena.
+    // List of all the possible allocations that exist in the current simulation.
     private static List<Integer> availableTimeSlots = new ArrayList<>();
 
+    /**
+     * Main method.
+     */
     public static void main(String[] args) throws IOException {
 
-        // Python compiler.
+        // Absolute path to the python compiler used by the data visualiser.
         String pythonExe = "I:/code/REA_CondaEnvironment/python.exe";
 
-        // Agent types requested for the simulation.
+        // Agent types that will be simulated.
         int[] agentTypes = {SELFISH, SOCIAL};
 
-        // Days that will have the agents satisfaction over the course of the day visualised.
+        // Days that will have the Agents average satisfaction over the course of the day,
+        // and satisfaction distribution at the end of the day visualised.
         int[] daysOfInterest = {1,25,50};
 
         // Array of the unique agent types used in the simulation.
@@ -232,7 +226,7 @@ public class ExchangeArena {
             for (int j = 1; j <= DAYS; j++) {
 
                 // Fill the available time slots with all the slots that exist each day.
-                for (int k = 1; k <= TOTAL_TIME_SLOTS; k++) {
+                for (int k = 1; k <= UNIQUE_TIME_SLOTS; k++) {
                     for (int l = 1; l <= MAXIMUM_PEAK_CONSUMPTION; l++) {
                         // Each time slot can be allocated as many times as the maximum peak consumption allows.
                         availableTimeSlots.add(k);
@@ -264,7 +258,7 @@ public class ExchangeArena {
                 averageCSVWriter.append(String.valueOf(optimalSatisfaction));
 
                 for (int k = 1; k <= EXCHANGES; k++) {
-                    // 2D array list holding time slots each Agent may be willing to trade.
+                    // 2D array list holding time slots each Agent may be willing to exchange.
                     ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
                     // Create a copy of the Agents list and shuffle it, so they perform the exchanges in a random order.
@@ -273,11 +267,11 @@ public class ExchangeArena {
 
                     // Fill the advertising board.
                     for (Agent a : shuffledAgents) {
-                        // The time slots that an Agent will trade and it's unique ID.
+                        // The time slots that an Agent will exchange and it's unique agentID.
                         ArrayList<Integer> tradingData = new ArrayList<>();
 
-                        // The agents identifying ID is always in position 0.
-                        tradingData.add(a.ID);
+                        // The agents identifying agentID is always in position 0.
+                        tradingData.add(a.agentID);
                         tradingData.addAll(a.publishUnlockedTimeSlots());
 
                         // Add the data to the advertising board.
@@ -287,14 +281,14 @@ public class ExchangeArena {
                     // Reshuffle the Agents.
                     Collections.shuffle(shuffledAgents, random);
 
-                    // Agents make requests for trades.
+                    // Agents make requests for exchanges.
                     for (Agent a : shuffledAgents) {
                         ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
                         // Only attempt to send the request if one has been made.
                         if (chosenAdvert != null) {
                             ArrayList<Integer> request = new ArrayList<>();
-                            // An exchange request first contains the offering agents ID.
-                            request.add(a.ID);
+                            // An exchange request first contains the offering agents agentID.
+                            request.add(a.agentID);
 
                             // Next it adds the time slot that has been requested.
                             request.add(chosenAdvert.get(1));
@@ -306,7 +300,7 @@ public class ExchangeArena {
                             request.add(unwantedTimeSlot);
 
                             for (Agent b : agents) {
-                                if (b.ID == chosenAdvert.get(0)) {
+                                if (b.agentID == chosenAdvert.get(0)) {
                                     b.receiveExchangeRequest(request);
                                     break;
                                 }
@@ -329,9 +323,9 @@ public class ExchangeArena {
                         for (ArrayList<Integer> offer : offersToAccept) {
                             if (a.finalCheck(offer.get(1))) {
                                 for (Agent b : agents) {
-                                    if (b.ID == offer.get(0)) {
+                                    if (b.agentID == offer.get(0)) {
                                         if (b.finalCheck(offer.get(2))) {
-                                            b.completeRequestedExchange(offer, a.ID);
+                                            b.completeRequestedExchange(offer, a.agentID);
                                             a.completeReceivedExchange(offer);
                                         }
                                         break;
@@ -353,7 +347,7 @@ public class ExchangeArena {
                         individualCSVWriter.append(",");
                         individualCSVWriter.append(String.valueOf(k));
                         individualCSVWriter.append(",");
-                        individualCSVWriter.append(String.valueOf(a.ID));
+                        individualCSVWriter.append(String.valueOf(a.agentID));
                         individualCSVWriter.append(",");
                         individualCSVWriter.append(String.valueOf(a.getAgentType()));
                         individualCSVWriter.append(",");
