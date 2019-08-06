@@ -41,7 +41,6 @@ public class ExchangeArena {
      * This is the main method which runs the entire ResourceExchangeArena simulation.
      *
      * @param args Unused.
-     * @return Nothing.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -120,7 +119,7 @@ public class ExchangeArena {
 
         // Stores the average satisfaction of each Agent type at the end of each day, as well
         // as the optimum average satisfaction and the satisfaction if allocations remained random.
-        // Values are averaged over multiple simulation runs rather than stored seperately.
+        // Values are averaged over multiple simulation runs rather than stored separately.
         File prePreparedAverageFile = new File(
                 prePreparedDataOutputFolder ,
                 "prePreparedEndOfDayAverages_" + fileName + ".csv");
@@ -175,9 +174,9 @@ public class ExchangeArena {
         prePreparedIndividualCSVWriter.append("Satisfaction");
         prePreparedIndividualCSVWriter.append("\n");
 
-        // Stores the satisfaction of each individul Agent at the end of each of the days in the daysOfInterest array.
-        // Satisfactions are averaged over multiple simulation runs and can be seperated by the Agents Type in order
-        // to produce box and whisker plots of the satisfaciton distributions.
+        // Stores the satisfaction of each individual Agent at the end of each of the days in the daysOfInterest array.
+        // Satisfactions are averaged over multiple simulation runs and can be separated by the Agents Type in order
+        // to produce box and whisker plots of the satisfaction distributions.
         File prePreparedBoxPlotFile = new File(
                 prePreparedDataOutputFolder,
                 "prePreparedBoxPlotData_" + fileName + ".csv");
@@ -226,7 +225,7 @@ public class ExchangeArena {
                         availableTimeSlots.add(k);
                     }
                 }
-                // Agents start the day by requesting and recieving an allocation of time slots.
+                // Agents start the day by requesting and receiving an allocation of time slots.
                 Collections.shuffle(shuffledAgents, random);
                 for (Agent a : shuffledAgents) {
                     ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots();
@@ -255,7 +254,7 @@ public class ExchangeArena {
                         ArrayList<Integer> advert = new ArrayList<>();
                         advert.add(a.agentID);
                         advert.addAll(a.publishUnlockedTimeSlots());
-                        advertisingBoard.add(tradingData);
+                        advertisingBoard.add(advert);
                     }
 
                     // Each Agent has the opportunity to make exchange requests for advertised time slots.
@@ -273,7 +272,7 @@ public class ExchangeArena {
                             request.add(chosenAdvert.get(1));
                             request.add(unwantedTimeSlot);
 
-                            // The agent who offered the requested time slot recieves the exchange request.
+                            // The agent who offered the requested time slot receives the exchange request.
                             for (Agent b : agents) {
                                 if (b.agentID == chosenAdvert.get(0)) {
                                     b.receiveExchangeRequest(request);
@@ -508,7 +507,7 @@ public class ExchangeArena {
      * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and
      * the time slots that are currently available.
      * 
-     * @param requesedTimeSlots The time slots that the Agent has requested.
+     * @param requestedTimeSlots The time slots that the Agent has requested.
      * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
      */
     private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {                   // TODO: CAN ASSIGN SAME SLOT TWICE TO AN AGENT, NEED TO USE PSEUDO RANDOM APPROACH WITH HASH MAPS, ASSIGNING MOST COMMONLY AVAILABLE SLOTS FIRST TO SOLVE THIS.
@@ -534,7 +533,7 @@ public class ExchangeArena {
      * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents
      * in the simulation.
      * 
-     * @return Double Returns the average satisfacton between 0 and 1 of all agents in the simulation.
+     * @return Double Returns the average satisfaction between 0 and 1 of all agents in the simulation.
      */
     private static double averageAverageSatisfaction() {
         // Stores the individual Agents satisfaction values.
@@ -553,7 +552,7 @@ public class ExchangeArena {
      * of the Agents of that type.
      * 
      * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.
-     * @return Double Returns the average satisfacton between 0 and 1 of all agents of the given type.
+     * @return Double Returns the average satisfaction between 0 and 1 of all agents of the given type.
      */
     private static double averageAverageSatisfaction(int agentType) {
         // Stores the individual Agents satisfaction values.
@@ -573,7 +572,7 @@ public class ExchangeArena {
      * Returns the optimum average satisfaction possible for all agents given the current requests and allocations 
      * in the simulation.
      * 
-     * @return Double Returns the highest possible average satisfacton between 0 and 1 of all agents in the simulation.
+     * @return Double Returns the highest possible average satisfaction between 0 and 1 of all agents in the simulation.
      */
     private static double optimumAllocationSatisfaction() {
         // Stores all the slots that the agents have requested.

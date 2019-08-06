@@ -25,7 +25,6 @@ class Agent {
      * @param agentID This is an integer value that is unique to the individual agent and
      *  used to identify it to others in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
-     * @return Nothing.
      */
     Agent(int agentID, int agentType){
         this.agentID = agentID;
@@ -39,9 +38,7 @@ class Agent {
 
     /**
      * Identifies all other Agents in the ExchangeArena and initialises counts of favours given to
-     * and reveived from each other Agent.
-     * 
-     * @return Nothing.
+     * and received from each other Agent.
      */
     void initializeFavoursStore() {
         if (!favoursGiven.isEmpty()) {
@@ -79,7 +76,7 @@ class Agent {
     }
 
     /**
-     * Checks the time slots that exist in the simulations and makes a new request for a number of unique timeslots
+     * Checks the time slots that exist in the simulations and makes a new request for a number of unique time slots
      * according to how many slots the Agent wants.
      * 
      * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
@@ -179,8 +176,7 @@ class Agent {
         // referenced list.
         ArrayList<Integer> localTimeSlotsToAvoid = new ArrayList<>(timeSlotsToAvoid);
         ArrayList<Integer> timeSlots = new ArrayList<>();
-        for(int i = 0; i < potentialTimeSlots.size(); i++){
-            int timeSlot = potentialTimeSlots.get(i);
+        for (int timeSlot : potentialTimeSlots) {
             if (!localTimeSlotsToAvoid.contains(timeSlot)) {
                 timeSlots.add(timeSlot);
             } else {
@@ -212,7 +208,7 @@ class Agent {
                 for (int j = 1; j < advert.size(); j++) {
                     if (targetTimeSlots.contains(advert.get(j))) {
                         // Only take the part of the advert that is relevant, and split adverts with multiple
-                        // exchangable time slots into multiple adverts.
+                        // exchangeable time slots into multiple adverts.
                         ArrayList<Integer> potentialExchange = new ArrayList<>();
                         potentialExchange.add(advert.get(0));
                         potentialExchange.add(advert.get(j));
@@ -236,7 +232,7 @@ class Agent {
     }
 
     /**
-     * Stores a request for an exchange recieved from another Agent.
+     * Stores a request for an exchange received from another Agent.
      * 
      * @param request An Agent's agentID, the time slot that it wants and the time slot that it
      *  is willing to exchange.
@@ -246,16 +242,13 @@ class Agent {
     }
 
     /**
-     * For each of the exchange requests currently recieved by the Agent, determine which exchanges
+     * For each of the exchange requests currently received by the Agent, determine which exchanges
      * the Agent will be willing to accept and adds them to a new list of approved request.
-     * 
-     * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
-     * @return Nothing.
      */
     void considerRequests() {
         double currentSatisfaction = calculateSatisfaction(null);
         for (ArrayList<Integer> request : exchangeRequestsReceived) {
-            // Create a new local list of time slots in order to test how the Agents satisfaciton would 
+            // Create a new local list of time slots in order to test how the Agents satisfaction would
             // change after the potential exchange.
             ArrayList<Integer> potentialAllocatedTimeSlots = new ArrayList<>(allocatedTimeSlots);
             // Check this Agent still has the time slot requested.
@@ -304,7 +297,7 @@ class Agent {
     }
 
     /**
-     * Getter method for retrieving the exchanges recieved that the Agent has approved to go ahead.
+     * Getter method for retrieving the exchanges received that the Agent has approved to go ahead.
      * 
      * @return ArrayList<ArrayList<Integer>> Returns the approved exchange requests.
      */
@@ -328,7 +321,6 @@ class Agent {
      * 
      * @param offer The exchange that is to be completed.
      * @param agentID The agentID of the agent that has fulfilled the exchange request.
-     * @return Nothing.
      */
     void completeRequestedExchange(ArrayList<Integer> offer, int agentID) {
         // Update the Agents allocated time slots.
@@ -352,7 +344,6 @@ class Agent {
      * this Agents relationship with the other Agent involved.
      * 
      * @param offer The exchange that is to be completed.
-     * @return Nothing.
      */
     void completeReceivedExchange(ArrayList<Integer> offer) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
@@ -377,8 +368,6 @@ class Agent {
 
     /**
      * Resets this agents list of exchanges that it has approved to go ahead.
-     *
-     * @return Nothing.
      */
     void clearAcceptedRequests() {
         exchangeRequestsApproved.clear();
@@ -390,7 +379,7 @@ class Agent {
      * time slots to the calculateSatisfaction method that takes a list of time slots as a parameter.
      *
      * @return Double The Agents satisfaction with the time slots it has currently been allocated.
-     * @see calculateSatisfaction(ArrayList<Integer> allocatedTimeSlots)
+     * @see Agent#calculateSatisfaction(ArrayList allocatedTimeSlots)
      */
     double calculateSatisfaction() {
         return (calculateSatisfaction(this.allocatedTimeSlots));
