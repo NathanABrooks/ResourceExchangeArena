@@ -45,10 +45,6 @@ public class ExchangeArena {
      * @see IOException
      */
     public static void main(String[] args) throws IOException {
-
-        // Absolute path to the python compiler used by the data visualiser.
-        String pythonExe = "I:/code/REA_CondaEnvironment/python.exe";
-
         // Agent types that will be simulated.
         int[] agentTypes = {SELFISH, SOCIAL};
 
@@ -69,6 +65,7 @@ public class ExchangeArena {
 
         int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
 
+        // Array lists used to temporarily store data before averaging and adding it to csv files.
         ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
         ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
         ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
@@ -233,9 +230,9 @@ public class ExchangeArena {
                     a.receiveAllocatedTimeSlots(allocatedTimeSlots);
                 }
 
-                // The random and optimal average satisfaction scores are calculated before exchanges take place.
-                double averageSatisfaction = averageAverageSatisfaction();
-                double optimalSatisfaction = optimumAllocationSatisfaction();
+                // The random and optimum average satisfaction scores are calculated before exchanges take place.
+                double averageSatisfaction = averageAgentSatisfaction();
+                double optimumSatisfaction = optimumAgentSatisfaction();
 
                 averageCSVWriter.append(String.valueOf(seed));
                 averageCSVWriter.append(",");
@@ -243,7 +240,7 @@ public class ExchangeArena {
                 averageCSVWriter.append(",");
                 averageCSVWriter.append(String.valueOf(averageSatisfaction));
                 averageCSVWriter.append(",");
-                averageCSVWriter.append(String.valueOf(optimalSatisfaction));
+                averageCSVWriter.append(String.valueOf(optimumSatisfaction));
 
                 for (int k = 1; k <= EXCHANGES; k++) {
                     ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
@@ -327,12 +324,13 @@ public class ExchangeArena {
                         individualCSVWriter.append("\n");
                     }
 
-                    // The end of round average satisfaction is stored for each Agent type to later be averaged
-                    // and added to the prePreparedIndividualFile. ??
+                    // The average end of round satisfaction is stored for each Agent type if the current day exists in
+                    // the daysOfInterest array. This data can later be averaged over simulation runs and added to
+                    // the prePreparedIndividualFile.
                     int currentDay = j;
                     if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
                         for (int uniqueAgentType : uniqueAgentTypes) {
-                            double averageSatisfactionForType = averageAverageSatisfaction(uniqueAgentType);
+                            double averageSatisfactionForType = averageAgentSatisfaction(uniqueAgentType);
                             ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
                             endOfRoundAverageSatisfaction.add((double) j);
                             endOfRoundAverageSatisfaction.add((double) k);
@@ -344,13 +342,16 @@ public class ExchangeArena {
                     }
                 }
 
-                // The end of day average satisfaction is stored for each Agent type to later be averaged
+                // The average end of day satisfaction is stored for each Agent type to later be averaged
                 // and added to the prePreparedAverageFile.
                 ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
                 endOfDayAverageSatisfaction.add((double) j);
                 endOfDayAverageSatisfaction.add(averageSatisfaction);
-                endOfDayAverageSatisfaction.add(optimalSatisfaction);
+                endOfDayAverageSatisfaction.add(optimumSatisfaction);
 
+                // The end of day satisfaction is stored for each Agent if the current day exists in
+                // the daysOfInterest array. This data can later be averaged over simulation runs and added to
+                // the prePreparedBoxPlotFile.
                 int currentDay = j;
                 if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
                     for (Agent a: agents) {
@@ -364,10 +365,9 @@ public class ExchangeArena {
                     }
                 }
 
-                // Store the data for post-exchange average agent satisfactions for each agent type.
+                // Store the end of day average satisfaction for each agent type.
                 for (int uniqueAgentType : uniqueAgentTypes) {
-                    // Get the integer representing the unique agent type.
-                    double typeAverageSatisfaction = averageAverageSatisfaction(uniqueAgentType);
+                    double typeAverageSatisfaction = averageAgentSatisfaction(uniqueAgentType);
                     averageCSVWriter.append(",");
                     averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
                     endOfDayAverageSatisfaction.add(typeAverageSatisfaction);
@@ -375,6 +375,7 @@ public class ExchangeArena {
                 averageCSVWriter.append("\n");
                 endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
+                // Only update the user on the simulations status every 10 days to reduce output spam.
                 if (j % 10 == 0) {
                     System.out.println("RUN: " + i + "  DAY: " + j);
                 }
@@ -386,6 +387,8 @@ public class ExchangeArena {
             }
         }
 
+        // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
+        // are averaged over simulation runs and appended to the prePreparedAverageFile.
         int types = uniqueAgentTypes.size() + 2;
         for (int i = 1; i <= DAYS; i++) {
             prePreparedAverageCSVWriter.append(String.valueOf(i));
@@ -403,6 +406,9 @@ public class ExchangeArena {
             prePreparedAverageCSVWriter.append("\n");
         }
 
+        // The average end of round satisfaction is stored for each Agent type for all rounds during the days in the
+        // daysOfInterest array. These end of round averages are themselves averaged over all simulation runs before
+        // being added to the prePreparedIndividualFile.
         for (int day: daysOfInterest) {
             for (int i = 1; i <= EXCHANGES; i++) {
                 for (int agentType : uniqueAgentTypes) {
@@ -428,6 +434,9 @@ public class ExchangeArena {
             }
         }
 
+        // The end of day satisfaction is stored for each Agents for all days in the daysOfInterest array. Each Agent's
+        // satisfaction is averaged over all simulation runs, such that the least satisfied Agent one day is averaged
+        // with the least satisfied Agent of each other day, the second least with the second least etc.
         for (int day: daysOfInterest) {
             for (int agentType : uniqueAgentTypes) {
                 ArrayList<ArrayList<Double>> thisType = new ArrayList<>();
@@ -477,6 +486,8 @@ public class ExchangeArena {
         prePreparedIndividualCSVWriter.close();
         prePreparedBoxPlotCSVWriter.close();
 
+        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+        String pythonExe = "I:/code/REA_CondaEnvironment/python.exe";
         String pythonPath = "I:/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
         String daysToAnalyse = Arrays.toString(daysOfInterest);
 
@@ -492,6 +503,8 @@ public class ExchangeArena {
         pythonArgs.add(daysToAnalyse);
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);
+
+        // IO from the Python is shared with the same terminal as the Java code.
         builder.inheritIO();
         builder.redirectErrorStream(true);
 
@@ -510,8 +523,7 @@ public class ExchangeArena {
      * @param requestedTimeSlots The time slots that the Agent has requested.
      * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
      */
-    private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {                   // TODO: CAN ASSIGN SAME SLOT TWICE TO AN AGENT, NEED TO USE PSEUDO RANDOM APPROACH WITH HASH MAPS, ASSIGNING MOST COMMONLY AVAILABLE SLOTS FIRST TO SOLVE THIS.
-        // The time slots that will be allocated to the Agent.
+    private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {                // TODO: CAN ASSIGN SAME SLOT TWICE TO AN AGENT, NEED TO USE PSEUDO RANDOM APPROACH WITH HASH MAPS, ASSIGNING MOST COMMONLY AVAILABLE SLOTS FIRST TO SOLVE THIS.
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
         for (int i = 1; i <= requestedTimeSlots.size(); i++) {
@@ -521,11 +533,9 @@ public class ExchangeArena {
                 int timeSlot = availableTimeSlots.get(selector);
 
                 timeSlots.add(timeSlot);
-
                 availableTimeSlots.remove(selector);
             }
         }
-        //System.out.println(availableTimeSlots);
         return timeSlots;
     }
 
@@ -535,15 +545,11 @@ public class ExchangeArena {
      * 
      * @return Double Returns the average satisfaction between 0 and 1 of all agents in the simulation.
      */
-    private static double averageAverageSatisfaction() {
-        // Stores the individual Agents satisfaction values.
+    private static double averageAgentSatisfaction() {
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
-
-        // Each agent calculates its individual satisfaction level.
         for (Agent a : agents) {
             agentSatisfactions.add(a.calculateSatisfaction(null));
         }
-        // The average satisfaction of all agents is calculated and returned.
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
     }
 
@@ -554,17 +560,13 @@ public class ExchangeArena {
      * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.
      * @return Double Returns the average satisfaction between 0 and 1 of all agents of the given type.
      */
-    private static double averageAverageSatisfaction(int agentType) {
-        // Stores the individual Agents satisfaction values.
+    private static double averageAgentSatisfaction(int agentType) {
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
-
-        // Each agent calculates its individual satisfaction level.
         for (Agent a : agents) {
             if (a.getAgentType() == agentType) {
                 agentSatisfactions.add(a.calculateSatisfaction(null));
             }
         }
-        // The average satisfaction of all agents is calculated and returned.
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
     }
 
@@ -574,14 +576,10 @@ public class ExchangeArena {
      * 
      * @return Double Returns the highest possible average satisfaction between 0 and 1 of all agents in the simulation.
      */
-    private static double optimumAllocationSatisfaction() {
-        // Stores all the slots that the agents have requested.
+    private static double optimumAgentSatisfaction() {
         ArrayList<Integer> allRequestedSlots = new ArrayList<>();
-
-        // Stores all the slots that the agents have been allocated.
         ArrayList<Integer> allAllocatedSlots = new ArrayList<>();
 
-        // Each agent shares its requested and allocated slots.
         for (Agent a : agents) {
             allRequestedSlots.addAll(a.publishRequestedTimeSlots());
             allAllocatedSlots.addAll(a.publishAllocatedTimeSlots());
@@ -602,7 +600,6 @@ public class ExchangeArena {
                 allAllocatedSlots.remove(slot);
             }
         }
-        // Return the average satisfaction if all slots were fulfilled optimally, between 1 and 0.
         return ((double)satisfiedSlots) / totalSlots;
     }
 
@@ -614,7 +611,7 @@ public class ExchangeArena {
      */
     private static String getHumanReadableAgentType(int agentType) {
         String name;
-        // Names match types specified by static Integers for the ExchangeArena.
+        // Names match types specified by constant integers for the ExchangeArena.
         switch(agentType) {
             case SOCIAL:
                 name = "Social";

@@ -104,7 +104,7 @@ lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
 print('Visualising end of day averages...', flush=True)
 
 # Average consumer satisfactions for each agent type for each day are visualised as a line graph.
-# Hypothetical random and optimal allocations are also visualised.
+# Hypothetical random and optimum allocations are also visualised.
 with open(endOfDaySatisfactionLevels) as endOfDayRawData:
     # Store calculated graph data
     data: Any = []
@@ -128,7 +128,7 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
 
     reader = csv.reader(endOfDayRawData)
 
-    # Each agent type, including random and optimal allocation, is plotted separately.
+    # Each agent type, including random and optimum allocation, is plotted separately.
     for i in range(len(fieldNames)):
         endOfDayAverages: List[int] = []
         endOfDayRawData.seek(0)
@@ -140,7 +140,7 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
                     break
         print('    ' + str(i + 1) + '/' + str(len(fieldNames)) + ' agent types processed.', flush=True)
 
-        # Get new line styling combination, calculated to match with graphs not including random or optimal allocations.
+        # Get new line styling combination, calculated to match with graphs not including random or optimum allocations.
         colour = i + (len(colours) - 2)
         while colour >= len(colours):
             colour -= len(colours)
