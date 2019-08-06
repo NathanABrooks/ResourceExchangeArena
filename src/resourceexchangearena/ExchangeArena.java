@@ -38,7 +38,12 @@ public class ExchangeArena {
     private static List<Integer> availableTimeSlots = new ArrayList<>();
 
     /**
-     * Main method.
+     * This is the main method which runs the entire ResourceExchangeArena simulation.
+     *
+     * @param args Unused.
+     * @return Nothing.
+     * @exception IOException On input error.
+     * @see IOException
      */
     public static void main(String[] args) throws IOException {
 
@@ -63,34 +68,28 @@ public class ExchangeArena {
         // Sort the agent types so that they are ordered correctly in the output csv files.
         Collections.sort(uniqueAgentTypes);
 
-        // Calculates the number of agents of each type for the simulation.
         int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
 
-        // 2D array list holding the average end of day satisfactions for each agent type.
         ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
-
-        // 2D array list holding the average end of round satisfactions for each agent type.
         ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
-
-        // 2D array list holding the individual end of round satisfactions for each agent.
         ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
 
         // Create a unique name that will pair files from the same run of the simulation.
         long uniqueTag = System.currentTimeMillis();
 
-        // Create a directory to store the raw data output by the simulation.
+        // Create directories to store the data output by the simulation.
         String rawDataOutputFolder =
                 "outputData/" + RELEASE_VERSION + "/" + uniqueTag + "/rawData";
         Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
         Files.createDirectories(rawDataOutputPath);
 
-        // Create a further directory to store the pre-prepared data for the python visualiser.
         String prePreparedDataOutputFolder =
                 "outputData/" + RELEASE_VERSION + "/" + uniqueTag + "/prePreparedData";
         Path prePreparedDataOutputPath = Paths.get(prePreparedDataOutputFolder);
         Files.createDirectories(prePreparedDataOutputPath);
 
-        // Create an identifying filename containing the seed and types of agents in the simulation.
+        // Create an identifying filename containing the seed and types of agents in the simulation to form
+        // the basis of the filenames for all data output by the simulation.
         StringBuilder fileName = new StringBuilder();
         for (Integer type : uniqueAgentTypes) {
             fileName.append(getHumanReadableAgentType(type));
@@ -98,14 +97,14 @@ public class ExchangeArena {
         fileName.append("_");
         fileName.append(uniqueTag);
 
-        // Create a new csv file to store the average agent satisfaction at the end of each day.
+        // Stores the average satisfaction of each Agent type at the end of each day, as well
+        // as the optimum average satisfaction and the satisfaction if allocations remained random.
         File averageFile = new File(
                 rawDataOutputFolder ,
                 "endOfDayAverages_" + fileName + ".csv");
 
         FileWriter averageCSVWriter = new FileWriter(averageFile);
 
-        // Store the column headers for the averageCSVWriter file.
         averageCSVWriter.append("Simulation Run");
         averageCSVWriter.append(",");
         averageCSVWriter.append("Day");
@@ -113,41 +112,39 @@ public class ExchangeArena {
         averageCSVWriter.append("Random (No exchange)");
         averageCSVWriter.append(",");
         averageCSVWriter.append("Optimum (No exchange)");
-        // Add columns for each unique agent type that exists in the simulation.
         for (Integer type : uniqueAgentTypes) {
             averageCSVWriter.append(",");
             averageCSVWriter.append(getHumanReadableAgentType(type));
         }
         averageCSVWriter.append("\n");
 
-        // Create a new csv file to store the pre prepared average agent satisfaction at the end of each day.
+        // Stores the average satisfaction of each Agent type at the end of each day, as well
+        // as the optimum average satisfaction and the satisfaction if allocations remained random.
+        // Values are averaged over multiple simulation runs rather than stored seperately.
         File prePreparedAverageFile = new File(
                 prePreparedDataOutputFolder ,
                 "prePreparedEndOfDayAverages_" + fileName + ".csv");
 
         FileWriter prePreparedAverageCSVWriter = new FileWriter(prePreparedAverageFile);
 
-        // Store the column headers for the prePreparedAverageCSVWriter file.
         prePreparedAverageCSVWriter.append("Day");
         prePreparedAverageCSVWriter.append(",");
         prePreparedAverageCSVWriter.append("Random (No exchange)");
         prePreparedAverageCSVWriter.append(",");
         prePreparedAverageCSVWriter.append("Optimum (No exchange)");
-        // Add columns for each unique agent type that exists in the simulation.
         for (Integer type : uniqueAgentTypes) {
             prePreparedAverageCSVWriter.append(",");
             prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type));
         }
         prePreparedAverageCSVWriter.append("\n");
 
-        // Create a new csv file to store the individual agents satisfaction throughout the trading process.
+        // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
         File individualFile = new File(
                 rawDataOutputFolder,
                 "duringDayAverages_" + fileName + ".csv");
 
         FileWriter individualCSVWriter = new FileWriter(individualFile);
 
-        // Store the column headers for the individualCSVWriter file.
         individualCSVWriter.append("Simulation Run");
         individualCSVWriter.append(",");
         individualCSVWriter.append("Day");
@@ -161,14 +158,14 @@ public class ExchangeArena {
         individualCSVWriter.append("Satisfaction");
         individualCSVWriter.append("\n");
 
-        // Create a new csv file to store the pre- prepared individual agents satisfaction data.
+        // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
+        // Only stores data for days in the daysOfInterest array and averages data over multiple simulation runs.
         File prePreparedIndividualFile = new File(
                 prePreparedDataOutputFolder,
                 "prePreparedDuringDayAverages_" + fileName + ".csv");
 
         FileWriter prePreparedIndividualCSVWriter = new FileWriter(prePreparedIndividualFile);
 
-        // Store the column headers for the individualCSVWriter file.
         prePreparedIndividualCSVWriter.append("Day");
         prePreparedIndividualCSVWriter.append(",");
         prePreparedIndividualCSVWriter.append("Round");
@@ -178,14 +175,16 @@ public class ExchangeArena {
         prePreparedIndividualCSVWriter.append("Satisfaction");
         prePreparedIndividualCSVWriter.append("\n");
 
-        // Create a new csv file to store the pre- prepared individual agents satisfaction data.
+        // Stores the satisfaction of each individul Agent at the end of each of the days in the daysOfInterest array.
+        // Satisfactions are averaged over multiple simulation runs and can be seperated by the Agents Type in order
+        // to produce box and whisker plots of the satisfaciton distributions.
         File prePreparedBoxPlotFile = new File(
                 prePreparedDataOutputFolder,
                 "prePreparedBoxPlotData_" + fileName + ".csv");
 
+
         FileWriter prePreparedBoxPlotCSVWriter = new FileWriter(prePreparedBoxPlotFile);
 
-        // Store the column headers for the individualCSVWriter file.
         prePreparedBoxPlotCSVWriter.append("Day");
         prePreparedBoxPlotCSVWriter.append(",");
         prePreparedBoxPlotCSVWriter.append("Agent Type");
@@ -193,19 +192,13 @@ public class ExchangeArena {
         prePreparedBoxPlotCSVWriter.append("Satisfaction");
         prePreparedBoxPlotCSVWriter.append("\n");
 
-        // Run the simulation for as many runs as requested.
         for (int i = 1; i <= SIMULATION_RUNS; i++) {
 
             // The current system time is used to generate a replicable seed.
             long seed = System.currentTimeMillis();
-
-            // The seed is used to set the simulations Random object.
             random.setSeed(seed);
 
-            // The array position in 'agentTypes[]' of the agent type assigned to the agent.
             int agentType = 0;
-
-            // The number of agents with the current agent type.
             int agentsOfThisType = 0;
 
             // Create the Agents for the simulation.
@@ -223,32 +216,28 @@ public class ExchangeArena {
                 a.initializeFavoursStore();
             }
 
-            for (int j = 1; j <= DAYS; j++) {
+            // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
+            List<Agent> shuffledAgents = new ArrayList<>(agents);
 
+            for (int j = 1; j <= DAYS; j++) {
                 // Fill the available time slots with all the slots that exist each day.
                 for (int k = 1; k <= UNIQUE_TIME_SLOTS; k++) {
                     for (int l = 1; l <= MAXIMUM_PEAK_CONSUMPTION; l++) {
-                        // Each time slot can be allocated as many times as the maximum peak consumption allows.
                         availableTimeSlots.add(k);
                     }
                 }
-
-                // Start the day by having each agent make its requests and receive its initial random allocation.
-                for (Agent a : agents) {
-                    // Each agent makes its initial request for time slots.
+                // Agents start the day by requesting and recieving an allocation of time slots.
+                Collections.shuffle(shuffledAgents, random);
+                for (Agent a : shuffledAgents) {
                     ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots();
-
-                    // A random allocation of time slots is generated from what is available.
                     ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
-
-                    // The allocated time slots are given to the Agent.
                     a.receiveAllocatedTimeSlots(allocatedTimeSlots);
                 }
 
+                // The random and optimal average satisfaction scores are calculated before exchanges take place.
                 double averageSatisfaction = averageAverageSatisfaction();
                 double optimalSatisfaction = optimumAllocationSatisfaction();
 
-                // Store the data for pre-exchange random and optimum average agent satisfactions.
                 averageCSVWriter.append(String.valueOf(seed));
                 averageCSVWriter.append(",");
                 averageCSVWriter.append(String.valueOf(j));
@@ -258,47 +247,33 @@ public class ExchangeArena {
                 averageCSVWriter.append(String.valueOf(optimalSatisfaction));
 
                 for (int k = 1; k <= EXCHANGES; k++) {
-                    // 2D array list holding time slots each Agent may be willing to exchange.
                     ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
-                    // Create a copy of the Agents list and shuffle it, so they perform the exchanges in a random order.
-                    List<Agent> shuffledAgents = new ArrayList<>(agents);
+                    // Exchanges start by Agents advertising time slots they may be willing to exchange.
                     Collections.shuffle(shuffledAgents, random);
-
-                    // Fill the advertising board.
                     for (Agent a : shuffledAgents) {
-                        // The time slots that an Agent will exchange and it's unique agentID.
-                        ArrayList<Integer> tradingData = new ArrayList<>();
-
-                        // The agents identifying agentID is always in position 0.
-                        tradingData.add(a.agentID);
-                        tradingData.addAll(a.publishUnlockedTimeSlots());
-
-                        // Add the data to the advertising board.
+                        ArrayList<Integer> advert = new ArrayList<>();
+                        advert.add(a.agentID);
+                        advert.addAll(a.publishUnlockedTimeSlots());
                         advertisingBoard.add(tradingData);
                     }
 
-                    // Reshuffle the Agents.
+                    // Each Agent has the opportunity to make exchange requests for advertised time slots.
                     Collections.shuffle(shuffledAgents, random);
-
-                    // Agents make requests for exchanges.
                     for (Agent a : shuffledAgents) {
                         ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
-                        // Only attempt to send the request if one has been made.
                         if (chosenAdvert != null) {
-                            ArrayList<Integer> request = new ArrayList<>();
-                            // An exchange request first contains the offering agents agentID.
-                            request.add(a.agentID);
-
-                            // Next it adds the time slot that has been requested.
-                            request.add(chosenAdvert.get(1));
-
-                            // Finally it adds a random unwanted time slot to exchange.
+                            // Select an unwanted time slot to offer in the exchange.
                             ArrayList<Integer> unwantedTimeSlots = a.publishUnwantedTimeSlots();
                             int selector = random.nextInt(unwantedTimeSlots.size());
                             int unwantedTimeSlot = unwantedTimeSlots.get(selector);
+
+                            ArrayList<Integer> request = new ArrayList<>();
+                            request.add(a.agentID);
+                            request.add(chosenAdvert.get(1));
                             request.add(unwantedTimeSlot);
 
+                            // The agent who offered the requested time slot recieves the exchange request.
                             for (Agent b : agents) {
                                 if (b.agentID == chosenAdvert.get(0)) {
                                     b.receiveExchangeRequest(request);
@@ -308,16 +283,15 @@ public class ExchangeArena {
                         }
                     }
 
-                    // Reshuffle the Agents.
+                    // Agents consider the requests they have received.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a : shuffledAgents) {
-                        // Agents consider and prioritise the requests they have received.
                         a.considerRequests();
                     }
 
-                    // Reshuffle the Agents.
+                    // Agents confirm and complete approved requests if they are able to do so, and update
+                    // their relations with other Agents accordingly.
                     Collections.shuffle(shuffledAgents, random);
-
                     for (Agent a: shuffledAgents) {
                         ArrayList<ArrayList<Integer>> offersToAccept = a.getExchangeRequestsApproved();
                         for (ArrayList<Integer> offer : offersToAccept) {
@@ -339,7 +313,6 @@ public class ExchangeArena {
                         }
                     }
 
-                    // Store the data for post-exchange individual agent satisfaction for each Agent.
                     for (Agent a : agents) {
                         individualCSVWriter.append(String.valueOf(seed));
                         individualCSVWriter.append(",");
@@ -355,7 +328,8 @@ public class ExchangeArena {
                         individualCSVWriter.append("\n");
                     }
 
-                    // Store filtered data for post-exchange individual agent satisfaction scores.
+                    // The end of round average satisfaction is stored for each Agent type to later be averaged
+                    // and added to the prePreparedIndividualFile. ??
                     int currentDay = j;
                     if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
                         for (int uniqueAgentType : uniqueAgentTypes) {
@@ -371,6 +345,8 @@ public class ExchangeArena {
                     }
                 }
 
+                // The end of day average satisfaction is stored for each Agent type to later be averaged
+                // and added to the prePreparedAverageFile.
                 ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
                 endOfDayAverageSatisfaction.add((double) j);
                 endOfDayAverageSatisfaction.add(averageSatisfaction);
@@ -400,7 +376,6 @@ public class ExchangeArena {
                 averageCSVWriter.append("\n");
                 endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
-                // Print to console after each 10th day so the progress can be monitored.
                 if (j % 10 == 0) {
                     System.out.println("RUN: " + i + "  DAY: " + j);
                 }
@@ -529,8 +504,14 @@ public class ExchangeArena {
         }
     }
 
-    // Give a random initial time slot allocation to an Agent based on the number of time slots it requests.
-    private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {                   // CAN ASSIGN SAME SLOT TWICE TO AN AGENT, NEED TO USE PSEUDO RANDOM APPROACH WITH HASH MAPS, ASSIGNING MOST COMMONLY AVAILABLE SLOTS FIRST TO SOLVE THIS.
+    /**
+     * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and
+     * the time slots that are currently available.
+     * 
+     * @param requesedTimeSlots The time slots that the Agent has requested.
+     * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
+     */
+    private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {                   // TODO: CAN ASSIGN SAME SLOT TWICE TO AN AGENT, NEED TO USE PSEUDO RANDOM APPROACH WITH HASH MAPS, ASSIGNING MOST COMMONLY AVAILABLE SLOTS FIRST TO SOLVE THIS.
         // The time slots that will be allocated to the Agent.
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
@@ -549,7 +530,12 @@ public class ExchangeArena {
         return timeSlots;
     }
 
-    // Returns the average satisfaction of all agents.
+    /**
+     * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents
+     * in the simulation.
+     * 
+     * @return Double Returns the average satisfacton between 0 and 1 of all agents in the simulation.
+     */
     private static double averageAverageSatisfaction() {
         // Stores the individual Agents satisfaction values.
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
@@ -562,7 +548,13 @@ public class ExchangeArena {
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
     }
 
-    // Returns the average satisfaction of all agents of a given type.
+    /**
+     * Takes all Agents of a given types individual satisfactions and calculates the average satisfaction 
+     * of the Agents of that type.
+     * 
+     * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.
+     * @return Double Returns the average satisfacton between 0 and 1 of all agents of the given type.
+     */
     private static double averageAverageSatisfaction(int agentType) {
         // Stores the individual Agents satisfaction values.
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
@@ -577,7 +569,12 @@ public class ExchangeArena {
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
     }
 
-    // Returns the optimum average satisfaction possible with the current requests and allocations in the simulation.
+    /**
+     * Returns the optimum average satisfaction possible for all agents given the current requests and allocations 
+     * in the simulation.
+     * 
+     * @return Double Returns the highest possible average satisfacton between 0 and 1 of all agents in the simulation.
+     */
     private static double optimumAllocationSatisfaction() {
         // Stores all the slots that the agents have requested.
         ArrayList<Integer> allRequestedSlots = new ArrayList<>();
@@ -610,7 +607,12 @@ public class ExchangeArena {
         return ((double)satisfiedSlots) / totalSlots;
     }
 
-    // Returns the agent type in a human readable form for file names.
+    /**
+     * Takes an agentType and converts it from it's integer format to a descriptive string name to organise the data
+     * output by the simulation.
+     * 
+     * @return String Returns the given agentType as a descriptive string.
+     */
     private static String getHumanReadableAgentType(int agentType) {
         String name;
         // Names match types specified by static Integers for the ExchangeArena.
