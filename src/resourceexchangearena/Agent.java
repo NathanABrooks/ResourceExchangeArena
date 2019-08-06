@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Agents represent the individual resource consumers in the simulation.
+ * Agents represent the individual consumers in the simulation.
  */
 class Agent {
     // Unique identifier for the agent.
     int agentID;
 
-    // Instance variables for the agents state, relations and exchanges to consider.
+    // Instance variables to store the agents state, relations and ongoing exchanges.
     private int agentType;
-    private int numberOfTimeSlotsRequested;
+    private int numberOfTimeSlotsWanted;
     private ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
@@ -20,19 +20,31 @@ class Agent {
     private ArrayList<ArrayList<Integer>> exchangeRequestsReceived = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> exchangeRequestsApproved = new ArrayList<>();
 
-    // Agent constructor
+    /**
+     * This is the constructor for Agent objects.
+     * 
+     * @param agentID This is an integer value that is unique to the individual agent and
+     *  used to identify it to others in the ExchangeArena.
+     * @param agentType Integer value denoting the agent type, and thus how it will behave.
+     * @return Nothing.
+     */
     Agent(int agentID, int agentType){
         this.agentID = agentID;
         this.agentType = agentType;
 
         // Set the number of time slots that the Agent will request.
-        numberOfTimeSlotsRequested = 4;
+        numberOfTimeSlotsWanted = 4;
 
         // Add the Agent to the arenas list of participating Agents.
         ExchangeArena.agents.add(this);
     }
 
-    // Receives an allocation of time slots and updates the Agents stored allocation.
+    /**
+     * Identifies all other Agents in the ExchangeArena and initialises counts of favours given to
+     * and reveived from each other Agent.
+     * 
+     * @return Nothing.
+     */
     void initializeFavoursStore() {
         if (!favoursGiven.isEmpty()) {
             favoursGiven.clear();
@@ -62,18 +74,27 @@ class Agent {
         }
     }
 
-    // Returns the time slots currently allocated to the Agent.
+    /**
+     * Getter method for retrieving the Agents type.
+     * 
+     * @return int Return the Agents type.
+     */
     int getAgentType() {
         return agentType;
     }
 
-    // Request a number of time slots.
+    /**
+     * Checks the time slots that exist in the simulations and makes a new request for a number of unique timeslots
+     * according to how many slots the Agent wants.
+     * 
+     * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
+     */
     ArrayList<Integer> requestTimeSlots() {
         if (!requestedTimeSlots.isEmpty()){
             requestedTimeSlots.clear();
         }
 
-        for (int i = 1; i <= numberOfTimeSlotsRequested; i++) {
+        for (int i = 1; i <= numberOfTimeSlotsWanted; i++) {
             // Get the simulations seeded Random object.
             Random random = ExchangeArena.random;
 
@@ -90,22 +111,39 @@ class Agent {
         return requestedTimeSlots;
     }
 
-    // Returns the time slots currently requested by the Agent.
+    /**
+     * Getter method for retrieving the time slots that the Agent has currently requested.
+     * 
+     * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
+     */
     ArrayList<Integer> publishRequestedTimeSlots() {
         return requestedTimeSlots;
     }
 
-    // Receives an allocation of time slots and updates the Agents stored allocation.
+    /**
+     * Setter method for storing the time slots the Agent has been allocated.
+     * 
+     * @param allocatedTimeSlots An allocation of time slots given by the ExchangeArena.
+     */
     void receiveAllocatedTimeSlots(ArrayList<Integer> allocatedTimeSlots) {
         this.allocatedTimeSlots = allocatedTimeSlots;
     }
 
-    // Returns the time slots currently allocated to the Agent.
+    /**
+     * Getter method for retrieving the time slots that the Agent is currently allocated.
+     * 
+     * @return ArrayList<Integer> Returns the time slots that the Agent is allocated.
+     */
     ArrayList<Integer> publishAllocatedTimeSlots() {
         return allocatedTimeSlots;
     }
 
-    // Returns the time slots the Agent may be willing to exchange.
+    /**
+     * Shares the time slots that are currently allocated to the Agent that it may potentially be willing to
+     * exchange under certain circumstances.
+     * 
+     * @return ArrayList<Integer> Returns the time slots that the Agent is allocated but may potentially exchange.
+     */
     ArrayList<Integer> publishUnlockedTimeSlots() {
         ArrayList<Integer> unlockedTimeSlots;
         // Different agent types may offer different requirements for whether or not a time slot may be exchanged.
@@ -121,11 +159,24 @@ class Agent {
         return unlockedTimeSlots;
     }
 
+    /**
+     * Shares the time slots that are currently allocated to the Agent that it hasn't requested.
+     * 
+     * @return ArrayList<Integer> Returns the time slots that are allocated to the Agent but it doesn't want.
+     */
     ArrayList<Integer> publishUnwantedTimeSlots() {
         return nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots);
     }
 
-    // Returns all time slots in the first array list parameter that dont exist in the second array list parameter.
+    /**
+     * Takes two arrays of time slots, and returns the time slots from the first array that are not present in the
+     * second array.
+     * 
+     * @param potentialTimeSlots the time slots that may be returned if not present in the second array.
+     * @param timeSlotsToAvoid the time slots that shouldn't be returned..
+     * @return ArrayList<Integer> Returns the time slots from the potentialTimeSlots array that are not present in the
+     *  timeSlotsToAvoid array.
+     */
     private ArrayList<Integer> nonExistingTimeSlots(
             ArrayList<Integer> potentialTimeSlots,
             ArrayList<Integer> timeSlotsToAvoid) {
@@ -144,6 +195,14 @@ class Agent {
         return timeSlots;
     }
 
+    /**
+     * Make an exchange request for a time slot that another Agent has published as a possible exchange,
+     * that this Agent wants but has not currently been allocated.
+     * 
+     * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
+     * @return ArrayList<Integer>|null A time slot owned by the other agent that this Agent is requesting
+     *  an exchange for.
+     */
     ArrayList<Integer> requestExchange(ArrayList<ArrayList<Integer>> advertisingBoard) {
         ArrayList<Integer> targetTimeSlots = nonExistingTimeSlots(requestedTimeSlots, allocatedTimeSlots);
         // If no new time slots are wanted, this Agent has no need to make new requests.
@@ -184,12 +243,23 @@ class Agent {
         return null;
     }
 
-    // Receives a request of a time slot exchange and adds it to the list of requests.
+    /**
+     * Stores a request for an exchange recieved from another Agent.
+     * 
+     * @param request An Agent's agentID, the time slot that it wants and the time slot that it
+     *  is willing to exchange.
+     */
     void receiveExchangeRequest(ArrayList<Integer> request) {
         exchangeRequestsReceived.add(request);
     }
 
-    // Determine if offered requests will be accepted, and then order them by priority.
+    /**
+     * For each of the exchange requests currently recieved by the Agent, determine which exchanges
+     * the Agent will be willing to accept and adds them to a new list of approved request.
+     * 
+     * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
+     * @return Nothing.
+     */
     void considerRequests() {
         // Get the Agents current satisfaction level to compare to.
         double currentSatisfaction = calculateSatisfaction(null);
@@ -239,11 +309,21 @@ class Agent {
         exchangeRequestsReceived.clear();
     }
 
-
+    /**
+     * Getter method for retrieving the exchanges recieved that the Agent has approved to go ahead.
+     * 
+     * @return ArrayList<ArrayList<Integer>> Returns the approved exchange requests.
+     */
     ArrayList<ArrayList<Integer>> getExchangeRequestsApproved() {
         return exchangeRequestsApproved;
     }
 
+    /**
+     * Checks whether the Agent still has a requested time slot before exchanging it.
+     * 
+     * @param timeSlot The time slot to check the agents allocated time slots for.
+     * @return boolean Whether or not the time slot belongs to the Agent and so can be exchanged.
+     */
     boolean finalCheck(int timeSlot) {
         return allocatedTimeSlots.contains(timeSlot);
     }
@@ -301,6 +381,6 @@ class Agent {
             }
         }
         // Return the average satisfaction of the allocated time slots, between 1 and 0.
-        return ((double)satisfiedSlots) / numberOfTimeSlotsRequested;
+        return ((double)satisfiedSlots) / numberOfTimeSlotsWanted;
     }
 }
