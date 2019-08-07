@@ -7,7 +7,7 @@ A simulation aiming to identify responsible social policies to determine institu
 
 **Contact Email:** w4r30@students.keele.ac.uk <sub>*Feel free to contact this email with any questions*</sub>
 <br/><br/>
-**Supervised By:** Nathan Brooks
+**Supervised By:** Dr James Borg
 
 **Contact Email:** j.borg@keele.ac.uk
 
