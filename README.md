@@ -2,11 +2,19 @@
 A simulation aiming to identify responsible social policies to determine institutional rules for self-organising smart grids. [![Version: 0.9](https://img.shields.io/badge/Version-0.9-Green.svg)](#versions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE.md)
 
 ### Table of Contents
+
+***Links Coming Soon***
+
 Project Details
+
 Project Description
+
 Research Questions
+
 Simulation Versions
+
 Pseudocode
+
 References
 
 ## Project Details
@@ -46,7 +54,7 @@ The project will finally go on to introduce real world data for energy demand an
 
 ### v1.0 *work in progress*
 
-*Information Coming Soon*
+***Information Coming Soon***
 
 ### v2.0 *planned*
 
@@ -59,7 +67,7 @@ https://github.com/NathanABrooks/ResourceExchangeArena*
 ## Pseudocode
 This is the pseudocode for the current simulation version:
 
-*Information Coming Soon*
+***Information Coming Soon***
 
 ## References
 [1] Lewis, P. and Ekárt, A. (2017). Social and Asocial Learning in Collective Action Problems: The Rise and Fall of Socially-Beneficial Behaviour. 2017IEEE 2nd International Workshops on Foundations and Applications of Self* Systems, (FAS*W).
