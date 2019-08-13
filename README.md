@@ -70,22 +70,22 @@ This is the pseudocode for the current simulation version:
 ***Information Coming Soon***
 
 ## References
-[1] Lewis, P. and Ekárt, A. (2017). Social and Asocial Learning in Collective Action Problems: The Rise and Fall of Socially-Beneficial Behaviour. 2017IEEE 2nd International Workshops on Foundations and Applications of Self* Systems, (FAS*W).
+[1] `Lewis, P. and Ekárt, A. (2017). Social and Asocial Learning in Collective Action Problems: The Rise and Fall of Socially-Beneficial Behaviour. 2017IEEE 2nd International Workshops on Foundations and Applications of Self* Systems, (FAS*W).`
 
-[2] Marriott, C., Borg, J., Andras, P. and Smaldino, P. (2018). Social Learning and Cultural Evolution in Artificial Life. Artificial Life, 24(1), pp.5-9.
+[2] `Marriott, C., Borg, J., Andras, P. and Smaldino, P. (2018). Social Learning and Cultural Evolution in Artificial Life. Artificial Life, 24(1), pp.5-9.`
 
-[3] Pitt, J. (2017). Interactional Justice and Self-Governance of Open Self-Organising Systems. 2017IEEE 11th International Conference on Self-Adaptive and Self-Organizing Systems, (SASO).
+[3] `Pitt, J. (2017). Interactional Justice and Self-Governance of Open Self-Organising Systems. 2017IEEE 11th International Conference on Self-Adaptive and Self-Organizing Systems, (SASO).`
 
-[4] Powers, S. (2018). The Institutional Approach for Modelling the Evolution of Human Societies. Artificial Life, 24(1), pp.10-28.
+[4] `Powers, S. (2018). The Institutional Approach for Modelling the Evolution of Human Societies. Artificial Life, 24(1), pp.10-28.`
 
-[5] Powers, S., Ekárt, A. and Lewis, P. (2018). Modelling enduring institutions: The complementarity of evolutionary and agent-based approaches. Cognitive Systems Research, 52, pp.67-81.
+[5] `Powers, S., Ekárt, A. and Lewis, P. (2018). Modelling enduring institutions: The complementarity of evolutionary and agent-based approaches. Cognitive Systems Research, 52, pp.67-81.`
 
-[6] Celik, B., Roche, R., Bouquain, D. and Miraoui, A. (2018). Decentralized Neighbourhood Energy Management With Coordinated Smart Home Energy Sharing. IEEE Transactions on Smart Grid, 9(6),pp.6387-6397.
+[6] `Celik, B., Roche, R., Bouquain, D. and Miraoui, A. (2018). Decentralized Neighbourhood Energy Management With Coordinated Smart Home Energy Sharing. IEEE Transactions on Smart Grid, 9(6),pp.6387-6397.`
 
-[7] Nair, A., Hossen, T., Campion, M., Selvaraj, D., Goveas, N., Kaabouch, N. and Ranganathan, P.(2018). MultiAgentSystems for Resource Allocation and Scheduling in a Smart Grid. Technology andEconomicsof Smart Grids and Sustainable Energy, 3(1).
+[7] `Nair, A., Hossen, T., Campion, M., Selvaraj, D., Goveas, N., Kaabouch, N. and Ranganathan, P.(2018). MultiAgentSystems for Resource Allocation and Scheduling in a Smart Grid. Technology andEconomicsof Smart Grids and Sustainable Energy, 3(1).`
 
-[8] Petruzzi P. E., Busquets D., Pitt J. (2014). Experiments with Social Capital in Multi-agent Systems, 17th International Conference on Principles and Practice of Multi-Agent Systems (PRIMA), Publisher: SPRINGERVERLAG BERLIN, Pages: 18-33, ISSN: 0302-9743.
+[8] `Petruzzi P. E., Busquets D., Pitt J. (2014). Experiments with Social Capital in Multi-agent Systems, 17th International Conference on Principles and Practice of Multi-Agent Systems (PRIMA), Publisher: SPRINGERVERLAG BERLIN, Pages: 18-33, ISSN: 0302-9743.`
 
-[9] Andras, P., Esterle, L., Guckert, M., Han, T., Lewis, P., Milanovic, K., Payne, T., Perret, C., Pitt, J., Powers, S., Urquhart, N. and Wells, S. (2018). Trusting Intelligent Machines: Deepening Trust Within Socio-Technical Systems. IEEE Technology and Society Magazine, 37(4), pp.76-83.
+[9] `Andras, P., Esterle, L., Guckert, M., Han, T., Lewis, P., Milanovic, K., Payne, T., Perret, C., Pitt, J., Powers, S., Urquhart, N. and Wells, S. (2018). Trusting Intelligent Machines: Deepening Trust Within Socio-Technical Systems. IEEE Technology and Society Magazine, 37(4), pp.76-83.`
 
-[10] Rauwolf, P. and Bryson, J. (2017). Expectations of Fairness and Trust Co-Evolve in Environments of Partial Information. Dynamic Games and Applications, 8(4), pp.891-917.
+[10] `Rauwolf, P. and Bryson, J. (2017). Expectations of Fairness and Trust Co-Evolve in Environments of Partial Information. Dynamic Games and Applications, 8(4), pp.891-917.`
