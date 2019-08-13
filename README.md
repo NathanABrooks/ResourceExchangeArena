@@ -3,19 +3,17 @@ A simulation aiming to identify responsible social policies to determine institu
 
 ### Table of Contents
 
-***Links Coming Soon***
+[Project Details](#project-details)
 
-Project Details
+[Project Description](#project-description)
 
-Project Description
+[Research Questions](#research-questions)
 
-Research Questions
+[Simulation Versions](#simulation-versions)
 
-Simulation Versions
+[Pseudocode](#pseudocode)
 
-Pseudocode
-
-References
+[References](#references)
 
 ## Project Details
 This project is being developed as part of the authors individual research project component for the degree of Master of Science in Advanced Computer Science from [Keele University](https://www.keele.ac.uk). The project is titled *'Evolving responsible social policies to determine institutional rules for self-organising smart grids'*. Feel free to contact the author with any questions.
@@ -40,7 +38,7 @@ The model will then go on to incorporate social goals such as trust and fairness
 The project will finally go on to introduce real world data for energy demand and availability over time. Using this data to tune the model, suggestions will be developed for how individuals in real smart grids could alter their energy usage in order to maximise the use of renewable resources while minimising the impact on individual satisfaction.
 
 ## Research Questions
-•How does the evolved trading strategy vary based on the distribution of resources?
+• How does the evolved trading strategy vary based on the distribution of resources?
 
 • Which social learning strategies most efficiently converge on the optimum trading strategy(s)?
 
@@ -54,12 +52,15 @@ The project will finally go on to introduce real world data for energy demand an
 
 ### v1.0 *work in progress*
 
-***Information Coming Soon***
+The initial model aims to reproduce the results previously shown in the *Electricity Exchange Arena* from Petruzzi’s paper titled *Experiments with Social Capital in Multiagent Systems* [8]. The core objective of the new model is to reproduce the existing results [8] with a model that doesn't rely on frameworks and is kept as minimal and accessible as possible. The new model is also highly adaptable allowing a broad range of quantities of agents and resources to be tested.
 
 ### v2.0 *planned*
 
+The second iteration of the model introduces social learning into the model, which is crucial in answering the research questions listed. This is implemented with evolution occurring at the end of each day, using a roulette-wheel approach. Payoff-biased transmission and conformity-biased transmission will be added so that the effects can be compared.
 
 ### v3.0 *planned*
+
+The third iteration of the model goes beyond simple social learning and adds social goals [9,10] for the agents. Modelling social goals such as trust and fairness is of great benefit when maximising the realism of the model. This is the version of the model to which real world data will be added, so that predictions can be made about how real consumers would act in a similar sociotechnical system.
 
 *If you are viewing this project offline, all versions can be found at the following git repository:
 https://github.com/NathanABrooks/ResourceExchangeArena*
@@ -67,7 +68,7 @@ https://github.com/NathanABrooks/ResourceExchangeArena*
 ## Pseudocode
 This is the pseudocode for the current simulation version:
 
-***Information Coming Soon***
+![ExchangeArena Class](https://github.com/NathanABrooks/ResourceExchangeArena/blob/master/pseudocode/v1.0/ExchangeArena.png "ExchangeArena Class")
 
 ## References
 [1] `Lewis, P. and Ekárt, A. (2017). Social and Asocial Learning in Collective Action Problems: The Rise and Fall of Socially-Beneficial Behaviour. 2017IEEE 2nd International Workshops on Foundations and Applications of Self* Systems, (FAS*W).`
