@@ -68,7 +68,7 @@ class Agent {
 
     /**
      * Getter method for retrieving the Agents type.
-     * 
+     *
      * @return int Return the Agents type.
      */
     int getAgentType() {
@@ -78,11 +78,11 @@ class Agent {
     /**
      * Checks the time slots that exist in the simulations and makes a new request for a number of unique time slots
      * according to how many slots the Agent wants.
-     * 
+     *
      * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
      */
     ArrayList<Integer> requestTimeSlots() {
-        if (!requestedTimeSlots.isEmpty()){
+        if (!requestedTimeSlots.isEmpty()) {
             requestedTimeSlots.clear();
         }
 
@@ -106,7 +106,7 @@ class Agent {
 
     /**
      * Getter method for retrieving the time slots that the Agent has currently requested.
-     * 
+     *
      * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
      */
     ArrayList<Integer> publishRequestedTimeSlots() {
@@ -115,7 +115,7 @@ class Agent {
 
     /**
      * Setter method for storing the time slots the Agent has been allocated.
-     * 
+     *
      * @param allocatedTimeSlots An allocation of time slots given by the ExchangeArena.
      */
     void receiveAllocatedTimeSlots(ArrayList<Integer> allocatedTimeSlots) {
@@ -124,7 +124,7 @@ class Agent {
 
     /**
      * Getter method for retrieving the time slots that the Agent is currently allocated.
-     * 
+     *
      * @return ArrayList<Integer> Returns the time slots that the Agent is allocated.
      */
     ArrayList<Integer> publishAllocatedTimeSlots() {
@@ -134,7 +134,7 @@ class Agent {
     /**
      * Shares the time slots that are currently allocated to the Agent that it may potentially be willing to
      * exchange under certain circumstances.
-     * 
+     *
      * @return ArrayList<Integer> Returns the time slots that the Agent is allocated but may potentially exchange.
      */
     ArrayList<Integer> publishUnlockedTimeSlots() {
@@ -153,7 +153,7 @@ class Agent {
 
     /**
      * Shares the time slots that are currently allocated to the Agent that it hasn't requested.
-     * 
+     *
      * @return ArrayList<Integer> Returns the time slots that are allocated to the Agent but it doesn't want.
      */
     ArrayList<Integer> publishUnwantedTimeSlots() {
@@ -163,7 +163,7 @@ class Agent {
     /**
      * Takes two arrays of time slots, and returns the time slots from the first array that are not present in the
      * second array.
-     * 
+     *
      * @param potentialTimeSlots the time slots that may be returned if not present in the second array.
      * @param timeSlotsToAvoid the time slots that shouldn't be returned..
      * @return ArrayList<Integer> Returns the time slots from the potentialTimeSlots array that are not present in the
@@ -191,7 +191,7 @@ class Agent {
     /**
      * Make an exchange request for a time slot that another Agent has published as a possible exchange,
      * that this Agent wants but has not currently been allocated.
-     * 
+     *
      * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
      * @return ArrayList<Integer>|null A time slot owned by the other agent that this Agent is requesting
      *  an exchange for.
@@ -205,14 +205,22 @@ class Agent {
 
             // Search the advertising board for potential exchanges of interest.
             for (ArrayList<Integer> advert : advertisingBoard) {
-                for (int j = 1; j < advert.size(); j++) {
-                    if (targetTimeSlots.contains(advert.get(j))) {
-                        // Only take the part of the advert that is relevant, and split adverts with multiple
-                        // exchangeable time slots into multiple adverts.
-                        ArrayList<Integer> potentialExchange = new ArrayList<>();
-                        potentialExchange.add(advert.get(0));
-                        potentialExchange.add(advert.get(j));
-                        potentialExchanges.add(potentialExchange);
+                // Only make requests to agents of the same Agent type.
+                for (Agent a: ExchangeArena.agents) {
+                    if (a.agentID == advert.get(0)) {
+                        if (a.getAgentType() == agentType) {
+                            for (int j = 1; j < advert.size(); j++) {
+                                if (targetTimeSlots.contains(advert.get(j))) {
+                                    // Only take the part of the advert that is relevant, and split adverts with multiple
+                                    // exchangeable time slots into multiple adverts.
+                                    ArrayList<Integer> potentialExchange = new ArrayList<>();
+                                    potentialExchange.add(advert.get(0));
+                                    potentialExchange.add(advert.get(j));
+                                    potentialExchanges.add(potentialExchange);
+                                }
+                            }
+                        }
+                        break;
                     }
                 }
             }
@@ -233,7 +241,7 @@ class Agent {
 
     /**
      * Stores a request for an exchange received from another Agent.
-     * 
+     *
      * @param request An Agent's agentID, the time slot that it wants and the time slot that it
      *  is willing to exchange.
      */
@@ -298,7 +306,7 @@ class Agent {
 
     /**
      * Getter method for retrieving the exchanges received that the Agent has approved to go ahead.
-     * 
+     *
      * @return ArrayList<ArrayList<Integer>> Returns the approved exchange requests.
      */
     ArrayList<ArrayList<Integer>> getExchangeRequestsApproved() {
@@ -307,7 +315,7 @@ class Agent {
 
     /**
      * Checks whether the Agent still has a requested time slot before exchanging it.
-     * 
+     *
      * @param timeSlot The time slot to check the agents allocated time slots for.
      * @return boolean Whether or not the time slot belongs to the Agent and so can be exchanged.
      */
@@ -318,7 +326,7 @@ class Agent {
     /**
      * Completes an exchange that was originally requested by this Agent, making the exchange and updating
      * this Agents relationship with the other Agent involved.
-     * 
+     *
      * @param offer The exchange that is to be completed.
      * @param agentID The agentID of the agent that has fulfilled the exchange request.
      */
@@ -328,13 +336,11 @@ class Agent {
         allocatedTimeSlots.add(offer.get(1));
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (agentType == ExchangeArena.SOCIAL) {
-            for (ArrayList<Integer> favours : favoursOwed) {
-                if (favours.get(0).equals(agentID)) {
-                    int currentFavour = favours.get(1);
-                    favours.set(1, currentFavour + 1);
-                    break;
-                }
+        for (ArrayList<Integer> favours : favoursOwed) {
+            if (favours.get(0).equals(agentID)) {
+                int currentFavour = favours.get(1);
+                favours.set(1, currentFavour + 2);
+                break;
             }
         }
     }
@@ -342,7 +348,7 @@ class Agent {
     /**
      * Completes an exchange that was originally requested by another Agent, making the exchange and updating
      * this Agents relationship with the other Agent involved.
-     * 
+     *
      * @param offer The exchange that is to be completed.
      */
     void completeReceivedExchange(ArrayList<Integer> offer) {
@@ -353,9 +359,8 @@ class Agent {
         allocatedTimeSlots.add(offer.get(2));
         double potentialSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
-
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if ((agentType == ExchangeArena.SOCIAL) && (potentialSatisfaction <= previousSatisfaction)) {
+        if (potentialSatisfaction <= previousSatisfaction) {
             for (ArrayList<Integer> favours : favoursGiven) {
                 if (favours.get(0).equals(offer.get(0))) {
                     int currentFavour = favours.get(1);

@@ -248,10 +248,13 @@ public class ExchangeArena {
                     // Exchanges start by Agents advertising time slots they may be willing to exchange.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a : shuffledAgents) {
-                        ArrayList<Integer> advert = new ArrayList<>();
-                        advert.add(a.agentID);
-                        advert.addAll(a.publishUnlockedTimeSlots());
-                        advertisingBoard.add(advert);
+                        ArrayList<Integer> unlockedTimeSlots = a.publishUnlockedTimeSlots();
+                        if(!unlockedTimeSlots.isEmpty()) {
+                            ArrayList<Integer> advert = new ArrayList<>();
+                            advert.add(a.agentID);
+                            advert.addAll(a.publishUnlockedTimeSlots());
+                            advertisingBoard.add(advert);
+                        }
                     }
 
                     // Each Agent has the opportunity to make exchange requests for advertised time slots.
@@ -519,7 +522,7 @@ public class ExchangeArena {
     /**
      * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and
      * the time slots that are currently available.
-     * 
+     *
      * @param requestedTimeSlots The time slots that the Agent has requested.
      * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
      */
@@ -542,7 +545,7 @@ public class ExchangeArena {
     /**
      * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents
      * in the simulation.
-     * 
+     *
      * @return Double Returns the average satisfaction between 0 and 1 of all agents in the simulation.
      */
     private static double averageAgentSatisfaction() {
@@ -556,7 +559,7 @@ public class ExchangeArena {
     /**
      * Takes all Agents of a given types individual satisfactions and calculates the average satisfaction 
      * of the Agents of that type.
-     * 
+     *
      * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.
      * @return Double Returns the average satisfaction between 0 and 1 of all agents of the given type.
      */
@@ -573,7 +576,7 @@ public class ExchangeArena {
     /**
      * Returns the optimum average satisfaction possible for all agents given the current requests and allocations 
      * in the simulation.
-     * 
+     *
      * @return Double Returns the highest possible average satisfaction between 0 and 1 of all agents in the simulation.
      */
     private static double optimumAgentSatisfaction() {
@@ -606,7 +609,7 @@ public class ExchangeArena {
     /**
      * Takes an agentType and converts it from it's integer format to a descriptive string name to organise the data
      * output by the simulation.
-     * 
+     *
      * @return String Returns the given agentType as a descriptive string.
      */
     private static String getHumanReadableAgentType(int agentType) {
