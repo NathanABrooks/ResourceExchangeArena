@@ -24,6 +24,9 @@ public class ExchangeArena {
     private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
     static final int UNIQUE_TIME_SLOTS = 24;
 
+    // Boolean constant determining whether Agents will trade with other Agent types.
+    static final boolean EXCLUSIVE_TRADING = true;
+
     // Constants representing the available agent types for the simulation.
     static final int SELFISH = 1;
     static final int SOCIAL = 2;
@@ -362,7 +365,7 @@ public class ExchangeArena {
                         individualSatisfaction.add((double) i);
                         individualSatisfaction.add((double) j);
                         individualSatisfaction.add((double) a.getAgentType());
-                        individualSatisfaction.add(a.calculateSatisfaction());
+                        individualSatisfaction.add(a.calculateSatisfaction(null));
 
                         endOfDayIndividualSatisfactions.add(individualSatisfaction);
                     }
