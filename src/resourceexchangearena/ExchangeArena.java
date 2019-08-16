@@ -24,9 +24,6 @@ public class ExchangeArena {
     private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
     static final int UNIQUE_TIME_SLOTS = 24;
 
-    // Boolean constant determining whether Agents will trade with other Agent types.
-    static final boolean EXCLUSIVE_TRADING = true;
-
     // Constants representing the available agent types for the simulation.
     static final int SELFISH = 1;
     static final int SOCIAL = 2;
@@ -295,7 +292,7 @@ public class ExchangeArena {
                     // their relations with other Agents accordingly.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a: shuffledAgents) {
-                        ArrayList<ArrayList<Integer>> offersToAccept = a.getExchangeRequestsApproved();
+                        ArrayList<ArrayList<Integer>> offersToAccept = a.getAllApprovedExchangeRequests();
                         for (ArrayList<Integer> offer : offersToAccept) {
                             if (a.finalCheck(offer.get(1))) {
                                 for (Agent b : agents) {

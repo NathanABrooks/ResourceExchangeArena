@@ -205,35 +205,14 @@ class Agent {
 
             // Search the advertising board for potential exchanges of interest.
             for (ArrayList<Integer> advert : advertisingBoard) {
-                if (ExchangeArena.EXCLUSIVE_TRADING) {
-                    // Only make requests to agents of the same Agent type.
-                    for (Agent a: ExchangeArena.agents) {
-                        if (a.agentID == advert.get(0)) {
-                            if (a.getAgentType() == agentType) {
-                                for (int j = 1; j < advert.size(); j++) {
-                                    if (targetTimeSlots.contains(advert.get(j))) {
-                                        // Only take the part of the advert that is relevant, and split adverts with multiple
-                                        // exchangeable time slots into multiple adverts.
-                                        ArrayList<Integer> potentialExchange = new ArrayList<>();
-                                        potentialExchange.add(advert.get(0));
-                                        potentialExchange.add(advert.get(j));
-                                        potentialExchanges.add(potentialExchange);
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
-                } else {
-                    for (int j = 1; j < advert.size(); j++) {
-                        if (targetTimeSlots.contains(advert.get(j))) {
-                            // Only take the part of the advert that is relevant, and split adverts with multiple
-                            // exchangeable time slots into multiple adverts.
-                            ArrayList<Integer> potentialExchange = new ArrayList<>();
-                            potentialExchange.add(advert.get(0));
-                            potentialExchange.add(advert.get(j));
-                            potentialExchanges.add(potentialExchange);
-                        }
+                for (int j = 1; j < advert.size(); j++) {
+                    if (targetTimeSlots.contains(advert.get(j))) {
+                        // Only take the part of the advert that is relevant, and split adverts with multiple
+                        // exchangeable time slots into multiple adverts.
+                        ArrayList<Integer> potentialExchange = new ArrayList<>();
+                        potentialExchange.add(advert.get(0));
+                        potentialExchange.add(advert.get(j));
+                        potentialExchanges.add(potentialExchange);
                     }
                 }
             }
@@ -322,7 +301,7 @@ class Agent {
      *
      * @return ArrayList<ArrayList<Integer>> Returns the approved exchange requests.
      */
-    ArrayList<ArrayList<Integer>> getExchangeRequestsApproved() {
+    ArrayList<ArrayList<Integer>> getAllApprovedExchangeRequests() {
         return exchangeRequestsApproved;
     }
 
@@ -352,7 +331,7 @@ class Agent {
         for (ArrayList<Integer> favours : favoursOwed) {
             if (favours.get(0).equals(agentID)) {
                 int currentFavour = favours.get(1);
-                favours.set(1, currentFavour + 2);
+                favours.set(1, currentFavour + 1);
                 break;
             }
         }
