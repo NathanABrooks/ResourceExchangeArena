@@ -245,6 +245,11 @@ public class ExchangeArena {
                 for (int k = 1; k <= EXCHANGES; k++) {
                     ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
+                    // Reset the check for whether each Agent has made an interaction this round.
+                    for (Agent a: agents) {
+                        a.setMadeInteraction(false);
+                    }
+
                     // Exchanges start by Agents advertising time slots they may be willing to exchange.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a : shuffledAgents) {
@@ -260,40 +265,46 @@ public class ExchangeArena {
                     // Each Agent has the opportunity to make exchange requests for advertised time slots.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a : shuffledAgents) {
-                        ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
-                        if (chosenAdvert != null) {
-                            // Select an unwanted time slot to offer in the exchange.
-                            ArrayList<Integer> unwantedTimeSlots = a.publishUnwantedTimeSlots();
-                            int selector = random.nextInt(unwantedTimeSlots.size());
-                            int unwantedTimeSlot = unwantedTimeSlots.get(selector);
+                        if (!a.getMadeInteraction()) {
+                            ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
+                            a.setMadeInteraction(true);
+                            if (!chosenAdvert.isEmpty()) {
+                                // Select an unwanted time slot to offer in the exchange.
+                                ArrayList<Integer> unwantedTimeSlots = a.publishUnwantedTimeSlots();
+                                int selector = random.nextInt(unwantedTimeSlots.size());
+                                int unwantedTimeSlot = unwantedTimeSlots.get(selector);
 
-                            ArrayList<Integer> request = new ArrayList<>();
-                            request.add(a.agentID);
-                            request.add(chosenAdvert.get(1));
-                            request.add(unwantedTimeSlot);
+                                ArrayList<Integer> request = new ArrayList<>();
+                                request.add(a.agentID);
+                                request.add(chosenAdvert.get(1));
+                                request.add(unwantedTimeSlot);
 
-                            // The agent who offered the requested time slot receives the exchange request.
-                            for (Agent b : agents) {
-                                if (b.agentID == chosenAdvert.get(0)) {
-                                    b.receiveExchangeRequest(request);
-                                    break;
+                                // The agent who offered the requested time slot receives the exchange request.
+                                for (Agent b : agents) {
+                                    if (b.agentID == chosenAdvert.get(0)) {
+                                        b.receiveExchangeRequest(request);
+                                        b.setMadeInteraction(true);
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
 
-                    // Agents consider the requests they have received.
+                    // Agents who have received a request consider it.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a : shuffledAgents) {
-                        a.considerRequests();
+                        if (!a.getExchangeRequestReceived().isEmpty()) {
+                            a.considerRequest();
+                        }
                     }
 
                     // Agents confirm and complete approved requests if they are able to do so, and update
                     // their relations with other Agents accordingly.
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a: shuffledAgents) {
-                        ArrayList<ArrayList<Integer>> offersToAccept = a.getAllApprovedExchangeRequests();
-                        for (ArrayList<Integer> offer : offersToAccept) {
+                        if (a.getExchangeRequestApproved()) {
+                            ArrayList<Integer> offer = a.getExchangeRequestReceived();
                             if (a.finalCheck(offer.get(1))) {
                                 for (Agent b : agents) {
                                     if (b.agentID == offer.get(0)) {
@@ -305,10 +316,11 @@ public class ExchangeArena {
                                     }
                                 }
                             }
+                            a.setExchangeRequestApproved();
                         }
                         // Clear the agents accepted offers list before the next exchange round.
-                        if (!offersToAccept.isEmpty()) {
-                            a.clearAcceptedRequests();
+                        if (!a.getExchangeRequestReceived().isEmpty()) {
+                            a.setExchangeRequestReceived();
                         }
                     }
 
