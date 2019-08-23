@@ -300,7 +300,7 @@ class Agent {
             if (agentType == ExchangeArena.SOCIAL) {
                 // Social Agents accept offers that improve their satisfaction or if they have negative
                 // social capital with the Agent who made the request.
-                if (potentialSatisfaction > currentSatisfaction) {
+                if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0){
                     exchangeRequestApproved = true;
                 } else {
                     int favoursOwedToRequester = 0;
@@ -324,7 +324,7 @@ class Agent {
             } else {
                 // Selfish Agents and Agents with no known type use the default selfish approach.
                 // Selfish Agents only accept offers that improve their individual satisfaction.
-                if (potentialSatisfaction > currentSatisfaction) {
+                if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0) {
                     exchangeRequestApproved = true;
                 }
             }
@@ -357,7 +357,7 @@ class Agent {
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (newSatisfaction > previousSatisfaction) {
+        if (Double.compare(newSatisfaction, previousSatisfaction) > 0 ) {
             for (ArrayList<Integer> favours : favoursOwed) {
                 if (favours.get(0).equals(agentID)) {
                     int currentFavour = favours.get(1);
@@ -383,7 +383,7 @@ class Agent {
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (newSatisfaction <= previousSatisfaction) {
+        if (Double.compare(newSatisfaction,previousSatisfaction) <= 0) {
             for (ArrayList<Integer> favours : favoursGiven) {
                 if (favours.get(0).equals(offer.get(0))) {
                     int currentFavour = favours.get(1);
