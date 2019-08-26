@@ -70,17 +70,17 @@ public class ExchangeArena {
         ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
         ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
 
-        // Create a unique name that will pair files from the same run of the simulation.
-        long uniqueTag = System.currentTimeMillis();
+        // Create a unique seed that can be used to identify files from the same run of the simulation.
+        long seed = System.currentTimeMillis();
 
         // Create directories to store the data output by the simulation.
         String rawDataOutputFolder =
-                "outputData/" + RELEASE_VERSION + "/" + uniqueTag + "/rawData";
+                "outputData/" + RELEASE_VERSION + "/" + seed + "/rawData";
         Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
         Files.createDirectories(rawDataOutputPath);
 
         String prePreparedDataOutputFolder =
-                "outputData/" + RELEASE_VERSION + "/" + uniqueTag + "/prePreparedData";
+                "outputData/" + RELEASE_VERSION + "/" + seed + "/prePreparedData";
         Path prePreparedDataOutputPath = Paths.get(prePreparedDataOutputFolder);
         Files.createDirectories(prePreparedDataOutputPath);
 
@@ -91,7 +91,7 @@ public class ExchangeArena {
             fileName.append(getHumanReadableAgentType(type));
         }
         fileName.append("_");
-        fileName.append(uniqueTag);
+        fileName.append(seed);
 
         // Stores the average satisfaction of each Agent type at the end of each day, as well
         // as the optimum average satisfaction and the satisfaction if allocations remained random.
@@ -190,8 +190,8 @@ public class ExchangeArena {
 
         for (int i = 1; i <= SIMULATION_RUNS; i++) {
 
-            // The current system time is used to generate a replicable seed.
-            long seed = System.currentTimeMillis();
+            // Increment the simulations seed each run.
+            seed++;
             random.setSeed(seed);
 
             int agentType = 0;
@@ -511,7 +511,7 @@ public class ExchangeArena {
         pythonArgs.add(pythonExe);
         pythonArgs.add(pythonPath);
         pythonArgs.add(RELEASE_VERSION);
-        pythonArgs.add(Long.toString(uniqueTag));
+        pythonArgs.add(Long.toString(seed));
         pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
         pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
         pythonArgs.add(prePreparedBoxPlotFile.getAbsolutePath());
