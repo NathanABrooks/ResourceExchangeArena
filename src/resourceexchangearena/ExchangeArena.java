@@ -25,7 +25,7 @@ public class ExchangeArena {
     static final int UNIQUE_TIME_SLOTS = 24;
 
     // Boolean constant determining whether Agents of different types will initially exist in the same simulation.
-    private static final boolean VARIED_AGENT_TYPES = true;
+    private static final boolean VARIED_AGENT_TYPES = false;
 
     // Constants representing the available agent types for the simulation.
     private static final int NON_TRADER = 0;
