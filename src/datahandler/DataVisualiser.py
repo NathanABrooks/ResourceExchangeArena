@@ -21,7 +21,7 @@ Parameters
 ---------
 releaseVersion : str
     The version of the ResourceExchangeArena program that the data is coming from.
-uniqueTag : str
+seed : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
 endOfDaySatisfactionLevels: str
     The absolute path of the data set required for generating the line graph showing the average satisfaction of each
@@ -44,15 +44,19 @@ print('Starting Data visualisation.', flush=True)
 releaseVersion: str = sys.argv[1]
 
 # Unique identifier to identify which run the produced graphs are associated with.
-uniqueTag: str = sys.argv[2]
+seed: str = sys.argv[2]
 
 # Get the location of the raw data that requires visualising from command line arguments.
 endOfDaySatisfactionLevels: str = sys.argv[3]
 duringDaySatisfactionLevels: str = sys.argv[4]
 endOfDaySatisfactionDistributions: str = sys.argv[5]
 
+# Get the scope of the data to be visualised.
+totalDaysSimulated: int = int(sys.argv[6])
+totalExchangesSimulated: int = int(sys.argv[7])
+
 # Get the specific days to have average satisfaction visualised throughout the day.
-daysToVisualise: List[int] = ast.literal_eval(sys.argv[6])
+daysToVisualise: List[int] = ast.literal_eval(sys.argv[8])
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -62,19 +66,19 @@ baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.
                                         'outputData/'
                                         + releaseVersion
                                         + '/'
-                                        + uniqueTag
+                                        + seed
                                         + '/images')
 duringDayOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                              'outputData/'
                                              + releaseVersion
                                              + '/'
-                                             + uniqueTag
+                                             + seed
                                              + '/images/duringDayAverages')
 distributionsOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                                  'outputData/'
                                                  + releaseVersion
                                                  + '/'
-                                                 + uniqueTag
+                                                 + seed
                                                  + '/images/endOfDayDistributions')
 
 # Create the output directories if they do not already exist.
@@ -90,9 +94,15 @@ baseFileName: str = endOfDaySatisfactionLevels.split('\\')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data, which will be the same for each graph, as global lists.
-days: List[int] = []
-rounds: List[int] = []
+days: List[str] = []
+exchanges: List[str] = []
 fieldNames: List[str] = []
+
+for i in range(1, totalDaysSimulated + 1):
+    days.append(str(i))
+
+for i in range(1, totalExchangesSimulated + 1):
+    exchanges.append(str(i))
 
 # Options for graph styling.
 colours: List[str] = [
@@ -117,14 +127,6 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
 
     # The first column will always be 'Day', and so this shouldn't be stored with the list of global field names.
     fieldNames.extend(setupReader.fieldnames[1:])
-
-    # Store the different days for which data exists as a global list.
-    for row in setupReader:
-        if row['Day'] in days:
-            break
-        else:
-            days.append(row['Day'])
-    endOfDayRawData.seek(0)
 
     reader = csv.reader(endOfDayRawData)
 
@@ -212,17 +214,6 @@ print('Visualising during day averages...', flush=True)
 # Average consumer satisfactions for each agent type at the end of each round day are visualised as a line graph.
 # Only pre-selected days are visualised to minimise compute time.
 with open(duringDaySatisfactionLevels) as duringDayRawData:
-    # Before visualising the full data set, pull data that can be reused for later visualisations.
-    setupReader = csv.DictReader(duringDayRawData)
-
-    # Store the different rounds for which data exists as a global list.
-    for row in setupReader:
-        if row['Day'] != days[0]:
-            break
-        elif row['Round'] not in rounds:
-            rounds.append(row['Round'])
-    duringDayRawData.seek(0)
-
     reader = csv.reader(duringDayRawData)
 
     # Each pre-selected is visualised in its own graph.
@@ -236,7 +227,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
         # Each agent type is plotted separately.
         for j in range(len(fieldNames) - 2):
             endOfRoundAverages: List[int] = []
-            for k in range(len(rounds)):
+            for k in range(len(exchanges)):
                 duringDayRawData.seek(0)
 
                 # The first line contains only headers and so can be skipped.
@@ -244,7 +235,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
                 for row in reader:
                     # The field type column + 1 used as agent types start at 1 as opposed to 0.
                     if int(row[0]) == int(daysToVisualise[i]) \
-                            and int(row[1]) == int(rounds[k]) \
+                            and int(row[1]) == int(exchanges[k]) \
                             and int(row[2]) == int(j + 1):
                         endOfRoundAverages.append(row[3])
                         break
@@ -260,7 +251,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
             # Add the agent types data plots to the graph data.
             data.append(
                 py.graph_objs.Scatter(
-                    x=rounds,
+                    x=exchanges,
                     y=endOfRoundAverages,
                     name=fieldNames[j + 2],
                     line=dict(
@@ -285,7 +276,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
                 linewidth=2,
                 gridcolor='rgb(255, 255, 255)',
                 gridwidth=2,
-                range=[rounds[0], rounds[-1]],
+                range=[exchanges[0], exchanges[-1]],
                 tickmode='linear',
                 tick0=0,
                 dtick=25,
