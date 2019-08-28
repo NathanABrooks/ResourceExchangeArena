@@ -196,6 +196,10 @@ public class ExchangeArena {
             ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
 
             for (int i = 1; i <= SIMULATION_RUNS; i++) {
+                // Clear the list of agents before a simulation begins.
+                if (!agents.isEmpty()) {
+                    agents.clear();
+                }
 
                 int agentType = 0;
                 int agentsOfThisType = 0;
@@ -272,7 +276,7 @@ public class ExchangeArena {
                         // Each Agent has the opportunity to make exchange requests for advertised time slots.
                         Collections.shuffle(shuffledAgents, random);
                         for (Agent a : shuffledAgents) {
-                            if (!a.getMadeInteraction()) {
+                            if (a.canMakeInteraction()) {
                                 ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
                                 a.setMadeInteraction(true);
                                 if (!chosenAdvert.isEmpty()) {
@@ -402,11 +406,6 @@ public class ExchangeArena {
                         System.out.println("RUN: " + i + "  DAY: " + j);
                     }
                 }
-
-                // Clear the list of agents before the next simulation begins.
-                if (!agents.isEmpty()) {
-                    agents.clear();
-                }
             }
 
             // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
@@ -519,6 +518,11 @@ public class ExchangeArena {
                 }
 
                 for (int i = 1; i <= SIMULATION_RUNS; i++) {
+                    // Clear the list of agents before a simulation begins.
+                    if (!agents.isEmpty()) {
+                        agents.clear();
+                    }
+
                     if (type < uniqueAgentTypes.size()) {
                         if (type < 0) {
                             for (int j = 1; j <= POPULATION_SIZE; j++) {
@@ -579,7 +583,7 @@ public class ExchangeArena {
                                 ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
                                 // Reset the check for whether each Agent has made an interaction this round.
-                                for (Agent a : agents) {
+                                for (Agent a : shuffledAgents) {
                                     a.setMadeInteraction(false);
                                 }
 
@@ -598,13 +602,13 @@ public class ExchangeArena {
                                 // Each Agent has the opportunity to make exchange requests for advertised time slots.
                                 Collections.shuffle(shuffledAgents, random);
                                 for (Agent a : shuffledAgents) {
-                                    if (!a.getMadeInteraction()) {
+                                    if (a.canMakeInteraction()) {
                                         ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
                                         a.setMadeInteraction(true);
                                         if (!chosenAdvert.isEmpty()) {
                                             // Select an unwanted time slot to offer in the exchange.
                                             ArrayList<Integer> unwantedTimeSlots = a.publishUnwantedTimeSlots();
-                                            int selector = random.nextInt(unwantedTimeSlots.size());
+                                            int selector = random.nextInt(unwantedTimeSlots.size ());
                                             int unwantedTimeSlot = unwantedTimeSlots.get(selector);
 
                                             ArrayList<Integer> request = new ArrayList<>();
@@ -626,7 +630,7 @@ public class ExchangeArena {
 
                                 // Agents who have received a request consider it.
                                 Collections.shuffle(shuffledAgents, random);
-                                for (Agent a : shuffledAgents) {
+                                for (Agent a : agents) {
                                     if (!a.getExchangeRequestReceived().isEmpty()) {
                                         a.considerRequest();
                                     }
@@ -730,11 +734,6 @@ public class ExchangeArena {
                         if (j % 10 == 0) {
                             System.out.println("Agent Type: " + type + "  RUN: " + i + "  DAY: " + j);
                         }
-                    }
-
-                    // Clear the list of agents before the next simulation begins.
-                    if (!agents.isEmpty()) {
-                        agents.clear();
                     }
                 }
 

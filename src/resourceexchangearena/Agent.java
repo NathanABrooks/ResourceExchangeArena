@@ -43,8 +43,8 @@ class Agent {
      *
      * @return boolean Returns whether the Agent has been involved in an interaction.
      */
-    boolean getMadeInteraction() {
-        return madeInteraction;
+    boolean canMakeInteraction() {
+        return !madeInteraction;
     }
 
     /**
@@ -302,7 +302,7 @@ class Agent {
                 // social capital with the Agent who made the request.
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0){
                     exchangeRequestApproved = true;
-                } else {
+                } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
                     int favoursOwedToRequester = 0;
                     int favoursGivenToRequester = 0;
                     for (ArrayList<Integer> favours : favoursOwed) {
