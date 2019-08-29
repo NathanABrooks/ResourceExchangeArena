@@ -49,7 +49,7 @@ seed: str = sys.argv[2]
 # Get the location of the raw data that requires visualising from command line arguments.
 endOfDaySatisfactionLevels: str = sys.argv[3]
 duringDaySatisfactionLevels: str = sys.argv[4]
-endOfDaySatisfactionDistributions: str = sys.argv[5]
+thirdGraph: str = sys.argv[5]
 
 # Get the scope of the data to be visualised.
 totalDaysSimulated: int = int(sys.argv[6])
@@ -86,8 +86,9 @@ if not os.path.exists(baseOutputDirectory):
     os.makedirs(baseOutputDirectory)
 if not os.path.exists(duringDayOutputDirectory):
     os.makedirs(duringDayOutputDirectory)
-if not os.path.exists(distributionsOutputDirectory):
-    os.makedirs(distributionsOutputDirectory)
+if thirdGraph.find("PopulationDistribution") == -1:
+    if not os.path.exists(distributionsOutputDirectory):
+        os.makedirs(distributionsOutputDirectory)
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
 baseFileName: str = endOfDaySatisfactionLevels.split('\\')[-1]
@@ -314,85 +315,174 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
     print('During day averages visualised.', flush=True)
 print('Visualising end of day distributions...', flush=True)
 
-# Consumer satisfactions for each agent at the end of each round are visualised as a box and whisker plot.
-# Only pre-selected days are visualised to minimise compute time.
-with open(endOfDaySatisfactionDistributions) as boxPlotData:
-    reader = csv.reader(boxPlotData)
 
-    # Each pre-selected is visualised in its own graph.
-    for i in range(len(daysToVisualise)):
+if thirdGraph.find("PopulationDistribution") == -1:
+    # Consumer satisfactions for each agent at the end of each round are visualised as a box and whisker plot.
+    # Only pre-selected days are visualised to minimise compute time.
+    with open(thirdGraph) as boxPlotData:
+        reader = csv.reader(boxPlotData)
+
+        # Each pre-selected is visualised in its own graph.
+        for i in range(len(daysToVisualise)):
+            # Store calculated graph data
+            data: Any = []
+
+            # Each agent type is plotted separately.
+            for j in range(len(fieldNames) - 2):
+                plots: List[int] = []
+                boxPlotData.seek(0)
+
+                # The first line contains only headers and so can be skipped.
+                next(reader)
+                for row in reader:
+                    if int(row[0]) == int(daysToVisualise[i]) \
+                            and int(row[1]) == int(j + 1):
+                        plots.append(row[2])
+
+                # Get a new colour for styling.
+                colour: int = j
+                while colour >= len(colours):
+                    colour -= len(colours)
+
+                # Add the agent types data plots to the graph data.
+                data.append(
+                    py.graph_objs.Box(
+                        x=plots,
+                        name=fieldNames[j + 2],
+                        boxpoints='all',
+                        jitter=0.5,
+                        whiskerwidth=0.2,
+                        fillcolor=colours[colour],
+                        line_width=1,
+                        marker_size=2,
+                    )
+                )
+
+            # The day value is converted into the ordinal word form for styling.
+            day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
+            title: str = 'Consumer satisfaction distribution at the end of the ' + day + ' day'
+
+            # Style the graph layout
+            layout: any = dict(
+                title=title,
+                xaxis=dict(
+                    title='Consumer satisfaction',
+                    showgrid=True,
+                    gridcolor='rgb(255, 255, 255)',
+                    gridwidth=2,
+                    zeroline=True,
+                    zerolinecolor='rgb(255, 255, 255)',
+                    zerolinewidth=2,
+                    range=[0, 1],
+                    tickmode='linear',
+                    tick0=0,
+                    dtick=0.1,
+                ),
+                margin=dict(
+                    l=60,
+                    r=30,
+                    b=80,
+                    t=100,
+                ),
+                paper_bgcolor='rgb(243, 243, 243)',
+                plot_bgcolor='rgb(243, 243, 243)',
+                showlegend=False,
+            )
+
+            # Create the graph and save the file
+            fig: Dict[any, any] = dict(data=data, layout=layout)
+            fileName: str = convertedBaseFileName.replace(
+                'prePreparedEndOfDayAverages', 'endOfDaySatisfactionDistributionsDay' + str(daysToVisualise[i]))
+            fullPath: str = os.path.join(distributionsOutputDirectory, fileName)
+            py.io.write_image(fig, fullPath)
+
+            print('    Box plots day ' + str(daysToVisualise[i]) + ' graphed.', flush=True)
+        print('End of day distributions visualised.', flush=True)
+else:
+    with open(thirdGraph) as populationData:
         # Store calculated graph data
         data: Any = []
 
+        # Used to distinguish results when many agent types present.
+        lineType: int = 0
+
+        reader = csv.reader(populationData)
+
         # Each agent type is plotted separately.
-        for j in range(len(fieldNames) - 2):
-            plots: List[int] = []
-            boxPlotData.seek(0)
+        for i in range(len(fieldNames) - 2):
+            endOfDayPopulations: List[int] = []
+            for j in range(len(days)):
+                populationData.seek(0)
+                for row in reader:
+                    if row[0] == days[j] \
+                            and int(row[1]) == int(i + 1):
+                        endOfDayPopulations.append((row[2]))
+                        break
 
-            # The first line contains only headers and so can be skipped.
-            next(reader)
-            for row in reader:
-                if int(row[0]) == int(daysToVisualise[i]) \
-                        and int(row[1]) == int(j + 1):
-                    plots.append(row[2])
-
-            # Get a new colour for styling.
-            colour: int = j
+            # Get new line styling combination.
+            colour: int = i
             while colour >= len(colours):
                 colour -= len(colours)
+                lineType += 1
+            while lineType >= len(lineTypes):
+                lineType -= len(lineTypes)
 
             # Add the agent types data plots to the graph data.
             data.append(
-                py.graph_objs.Box(
-                    x=plots,
-                    name=fieldNames[j + 2],
-                    boxpoints='all',
-                    jitter=0.5,
-                    whiskerwidth=0.2,
-                    fillcolor=colours[colour],
-                    line_width=1,
-                    marker_size=2,
+                py.graph_objs.Scatter(
+                    x=days,
+                    y=endOfDayPopulations,
+                    name=fieldNames[i + 2],
+                    line=dict(
+                        color=colours[colour],
+                        dash=lineTypes[lineType],
+                        width=1,
+                    ),
                 )
             )
 
-        # The day value is converted into the ordinal word form for styling.
-        day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
-        title: str = 'Consumer satisfaction distribution at the end of the ' + day + ' day'
-
         # Style the graph layout
         layout: any = dict(
-            title=title,
+            title='Population of each Agent type at the end of each day',
             xaxis=dict(
-                title='Consumer satisfaction',
-                showgrid=True,
+                title='Day',
+                showline=True,
+                linecolor='black',
+                linewidth=2,
                 gridcolor='rgb(255, 255, 255)',
                 gridwidth=2,
-                zeroline=True,
-                zerolinecolor='rgb(255, 255, 255)',
-                zerolinewidth=2,
-                range=[0, 1],
+                range=[days[0], days[-1]],
                 tickmode='linear',
                 tick0=0,
-                dtick=0.1,
+                dtick=5,
+            ),
+            yaxis=dict(
+                title='Population',
+                showline=True,
+                linecolor='black',
+                linewidth=2,
+                gridcolor='rgb(255, 255, 255)',
+                gridwidth=2,
+                range=[0, 96],
+                tickmode='linear',
+                tick0=0,
+                dtick=8,
             ),
             margin=dict(
-                l=60,
+                l=40,
                 r=30,
                 b=80,
                 t=100,
             ),
             paper_bgcolor='rgb(243, 243, 243)',
             plot_bgcolor='rgb(243, 243, 243)',
-            showlegend=False,
         )
 
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
-        fileName: str = convertedBaseFileName.replace(
-            'prePreparedEndOfDayAverages', 'endOfDaySatisfactionDistributionsDay' + str(daysToVisualise[i]))
-        fullPath: str = os.path.join(distributionsOutputDirectory, fileName)
+        fileName: str = convertedBaseFileName.replace('prePreparedEndOfDayAverages', 'endOfDayPopulationsPerType')
+        fullPath: str = os.path.join(baseOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-        print('    Box plots day ' + str(daysToVisualise[i]) + ' graphed.', flush=True)
-    print('End of day distributions visualised.', flush=True)
+        print('End of day population distributions visualised.', flush=True)
 print('Data visualisation complete.', flush=True)

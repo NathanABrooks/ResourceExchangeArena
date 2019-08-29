@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
  */
 public class ExchangeArena {
     // The current version of the simulation, used to organise output data.
-    private static final String RELEASE_VERSION = "v1.0";
+    private static final String RELEASE_VERSION = "v2.0";
 
     // Constants defining the scope of the simulation.
     private static final int SIMULATION_RUNS = 50;
@@ -26,6 +26,7 @@ public class ExchangeArena {
     static final int SLOTS_PER_AGENT = 4;
 
     // Boolean constant determining whether Agents of different types will initially exist in the same simulation.
+    // Essentially used to switch between versions 1.0 and 2.0;
     private static final boolean VARIED_AGENT_TYPES = true;
 
     // Constants representing the available agent types for the simulation.
@@ -187,6 +188,21 @@ public class ExchangeArena {
         prePreparedBoxPlotCSVWriter.append("Satisfaction");
         prePreparedBoxPlotCSVWriter.append("\n");
 
+        // Shows how the population of each Agent type varies throughout the simulation, influenced by social learning.
+        File prePreparedPopulationDistributionsFile = new File(
+                prePreparedDataOutputFolder,
+                "prePreparedPopulationDistributionsData_" + fileName + ".csv");
+
+
+        FileWriter prePreparedPopulationDistributionsCSVWriter = new FileWriter(prePreparedPopulationDistributionsFile);
+
+        prePreparedPopulationDistributionsCSVWriter.append("Day");
+        prePreparedPopulationDistributionsCSVWriter.append(",");
+        prePreparedPopulationDistributionsCSVWriter.append("Agent Type");
+        prePreparedPopulationDistributionsCSVWriter.append(",");
+        prePreparedPopulationDistributionsCSVWriter.append("Population");
+        prePreparedPopulationDistributionsCSVWriter.append("\n");
+
         if (VARIED_AGENT_TYPES) {
             // Calculate the number of Agents of each type for when VARIED_AGENT_TYPES is true.
             int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
@@ -194,7 +210,18 @@ public class ExchangeArena {
             // Array lists used to temporarily store data before averaging and adding it to csv files.
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
-            ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
+            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
+
+            for (int i = 1; i <= DAYS; i++) {
+                ArrayList<ArrayList<Integer>> endOfDayPopulationDistribution = new ArrayList<>();
+                endOfDayPopulationDistributions.add(endOfDayPopulationDistribution);
+            }
+            for (ArrayList<ArrayList<Integer>> day: endOfDayPopulationDistributions) {
+                for (int i = 1; i <= uniqueAgentTypes.size(); i++) {
+                    ArrayList<Integer> populations = new ArrayList<>();
+                    day.add(populations);
+                }
+            }
 
             for (int i = 1; i <= SIMULATION_RUNS; i++) {
                 // Clear the list of agents before a simulation begins.
@@ -387,22 +414,6 @@ public class ExchangeArena {
                     averageCSVWriter.append("\n");
                     endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
-                    // The end of day satisfaction is stored for each Agent if the current day exists in
-                    // the daysOfInterest array. This data can later be averaged over simulation runs and added to
-                    // the prePreparedBoxPlotFile.
-                    int currentDay = j;
-                    if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
-                        for (Agent a : agents) {
-                            ArrayList<Double> individualSatisfaction = new ArrayList<>();
-                            individualSatisfaction.add((double) i);
-                            individualSatisfaction.add((double) j);
-                            individualSatisfaction.add((double) a.getAgentType());
-                            individualSatisfaction.add(a.calculateSatisfaction(null));
-
-                            endOfDayIndividualSatisfactions.add(individualSatisfaction);
-                        }
-                    }
-
                     // EVOLUTION
                     int[][] agentFitnessScores = new int[POPULATION_SIZE][2];
                     Collections.shuffle(shuffledAgents, random);
@@ -477,21 +488,18 @@ public class ExchangeArena {
                         }
                     }
 
+                    for (Integer uniqueAgentType : uniqueAgentTypes) {
+                        int populationQuantity = 0;
+                        for (Agent a : agents) {
+                            if (a.getAgentType() == uniqueAgentType) {
+                                populationQuantity++;
+                            }
+                        }
+                        endOfDayPopulationDistributions.get(j - 1).get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
+                    }
                     // Only update the user on the simulations status every 10 days to reduce output spam.
                     if (j % 10 == 0) {
                         System.out.println("RUN: " + i + "  DAY: " + j);
-                        for (Integer uniqueAgentType : uniqueAgentTypes) {
-                            int populationQuantity = 0;
-                            for (Agent a : agents) {
-                                if (a.getAgentType() == uniqueAgentType) {
-                                    populationQuantity++;
-                                }
-                            }
-                            System.out.println("TYPE: "
-                                    + getHumanReadableAgentType(uniqueAgentType)
-                                    + "  POPULATION: "
-                                    + populationQuantity);
-                        }
                     }
                 }
             }
@@ -543,48 +551,23 @@ public class ExchangeArena {
                 }
             }
 
-            // The end of day satisfaction is stored for each Agents for all days in the daysOfInterest array. Each Agent's
-            // satisfaction is averaged over all simulation runs, such that the least satisfied Agent one day is averaged
-            // with the least satisfied Agent of each other day, the second least with the second least etc.
-            for (int day : daysOfInterest) {
-                for (int agentType : uniqueAgentTypes) {
-                    ArrayList<ArrayList<Double>> thisType = new ArrayList<>();
-                    for (ArrayList<Double> endOfDayIndividualSatisfaction : endOfDayIndividualSatisfactions) {
-                        if ((endOfDayIndividualSatisfaction.get(1) == (double) day) &&
-                                (endOfDayIndividualSatisfaction.get(2) == (double) agentType)) {
-                            ArrayList<Double> thisAgent = new ArrayList<>();
-                            thisAgent.add(endOfDayIndividualSatisfaction.get(0));
-                            thisAgent.add(endOfDayIndividualSatisfaction.get(3));
-                            thisType.add(thisAgent);
-                        }
-                    }
-                    ArrayList<ArrayList<Double>> allSatisfactionLevels = new ArrayList<>();
-                    int size = 0;
-                    for (int i = 1; i <= SIMULATION_RUNS; i++) {
-                        ArrayList<Double> satisfactionLevels = new ArrayList<>();
-                        for (ArrayList<Double> thisAgent : thisType) {
-                            if (thisAgent.get(0) == i) {
-                                satisfactionLevels.add(thisAgent.get(1));
-                            }
-                        }
-                        Collections.sort(satisfactionLevels);
-                        size = satisfactionLevels.size();
-                        allSatisfactionLevels.add(satisfactionLevels);
-                    }
-                    for (int i = 0; i < size; i++) {
-                        ArrayList<Double> averageForPosition = new ArrayList<>();
-                        for (ArrayList<Double> satisfactionLevel : allSatisfactionLevels) {
-                            averageForPosition.add(satisfactionLevel.get(i));
-                        }
-                        double averageOverSims = averageForPosition.stream().mapToDouble(val -> val).average().orElse(0.0);
+            for (int i = 1; i <= DAYS; i++) {
+                ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(i - 1);
+                for (int j = 0; j < uniqueAgentTypes.size(); j++) {
+                    prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(i));
+                    prePreparedPopulationDistributionsCSVWriter.append(",");
+                    prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(uniqueAgentTypes.get(j)));
+                    prePreparedPopulationDistributionsCSVWriter.append(",");
 
-                        prePreparedBoxPlotCSVWriter.append(String.valueOf(day));
-                        prePreparedBoxPlotCSVWriter.append(",");
-                        prePreparedBoxPlotCSVWriter.append(String.valueOf(agentType));
-                        prePreparedBoxPlotCSVWriter.append(",");
-                        prePreparedBoxPlotCSVWriter.append(String.valueOf(averageOverSims));
-                        prePreparedBoxPlotCSVWriter.append("\n");
+                    ArrayList<Integer> allPopulations = daysPopulations.get(j);
+                    int sumOfPopulations = 0;
+                    for (Integer population : allPopulations) {
+                        sumOfPopulations = sumOfPopulations + population;
                     }
+                    double averagePopulation = (double) sumOfPopulations / SIMULATION_RUNS;
+
+                    prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
+                    prePreparedPopulationDistributionsCSVWriter.append("\n");
                 }
             }
         } else {                                                                                                         // TODO: THERE IS A LOT OF UNUSED DATA BEING COLLECTED HERE FOR THE RAW DATA FILES, FURTHER OPTIMISATION WOULD REDUCE OUTPUT FILE SIZE BY OVER 1GB.
@@ -924,6 +907,7 @@ public class ExchangeArena {
         prePreparedAverageCSVWriter.close();
         prePreparedIndividualCSVWriter.close();
         prePreparedBoxPlotCSVWriter.close();
+        prePreparedPopulationDistributionsCSVWriter.close();
 
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         String pythonExe = "I:/code/REA_CondaEnvironment/python.exe";
@@ -932,13 +916,20 @@ public class ExchangeArena {
 
         List<String> pythonArgs = new ArrayList<>();
 
+        String thirdGraph;
+        if (VARIED_AGENT_TYPES) {
+            thirdGraph = prePreparedPopulationDistributionsFile.getAbsolutePath();
+        } else {
+            thirdGraph = prePreparedBoxPlotFile.getAbsolutePath();
+        }
+
         pythonArgs.add(pythonExe);
         pythonArgs.add(pythonPath);
         pythonArgs.add(RELEASE_VERSION);
         pythonArgs.add(initialSeed);
         pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
         pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
-        pythonArgs.add(prePreparedBoxPlotFile.getAbsolutePath());
+        pythonArgs.add(thirdGraph);
         pythonArgs.add(Integer.toString(DAYS));
         pythonArgs.add(Integer.toString(EXCHANGES));
         pythonArgs.add(daysToAnalyse);
