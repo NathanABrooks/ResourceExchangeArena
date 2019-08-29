@@ -52,7 +52,7 @@ public class ExchangeArena {
      */
     public static void main(String[] args) throws IOException {
         // Agent types that will be simulated.
-        int[] agentTypes = {SELFISH, SOCIAL};
+        int[] agentTypes = {SELFISH, SOCIAL, SOCIAL, SOCIAL, SOCIAL};
 
         // Days that will have the Agents average satisfaction over the course of the day,
         // and satisfaction distribution at the end of the day visualised.
@@ -238,8 +238,15 @@ public class ExchangeArena {
                         agentType++;
                         agentsOfThisType = 0;
                     }
-                    new Agent(j, agentTypes[agentType]);
-                    agentsOfThisType++;
+                    if (agentType < agentTypes.length) {
+                        new Agent(j, agentTypes[agentType]);
+                        agentsOfThisType++;
+                    } else {
+                        j--;
+                        agentType = 0;
+                        agentsOfThisType = 0;
+                        numberOfEachAgentType = 1;
+                    }
                 }
 
                 // Increment the simulations seed each run.
@@ -415,74 +422,29 @@ public class ExchangeArena {
                     endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
                     // EVOLUTION
-                    int[][] agentFitnessScores = new int[POPULATION_SIZE][2];
+                    int[][] agentFitnessScores = new int[POPULATION_SIZE][3];
                     Collections.shuffle(shuffledAgents, random);
                     for (Agent a : shuffledAgents) {
                         agentFitnessScores[a.agentID - 1][0] = a.agentID;
-                        agentFitnessScores[a.agentID - 1][1] = (int)(a.calculateSatisfaction(null) * 4);
+                        agentFitnessScores[a.agentID - 1][1] = (int)(a.calculateSatisfaction(null) * SLOTS_PER_AGENT);
+                        agentFitnessScores[a.agentID - 1][2] = a.getAgentType();
                     }
 
                     Arrays.sort(agentFitnessScores, Comparator.comparingInt(o -> o[1]));
 
-                    int deathsPerRound = 10;
-                    ArrayList<Integer> theDeathList = new ArrayList<>();
-
-                    int lowestFitness = agentFitnessScores[0][1];
-                    while (theDeathList.size() < deathsPerRound) {
-                        ArrayList<Integer> currentFitnessAgents = new ArrayList<>();
-                        for (int[] agentFitnessScore : agentFitnessScores) {
-                            if (agentFitnessScore[1] == lowestFitness) {
-                                currentFitnessAgents.add(agentFitnessScore[0]);
-                            }
-                        }
-                        int agentsToKill = deathsPerRound - theDeathList.size();
-                        if (currentFitnessAgents.size() <= agentsToKill) {
-                            theDeathList.addAll(currentFitnessAgents);
-                        } else {
-                            for (int k = 1; k <= agentsToKill; k++) {
-                                int selector = random.nextInt(currentFitnessAgents.size());
-                                int selectedAgent = currentFitnessAgents.get(selector);
-                                theDeathList.add(selectedAgent);
-                                currentFitnessAgents.remove(Integer.valueOf(selectedAgent));
-                                if (currentFitnessAgents.size() == 0) {
-                                    break;
-                                }
-                            }
-                        }
-                        lowestFitness++;
-                    }
-
-
-                    int[][] survivingAgentFitnessScores = new int[POPULATION_SIZE - deathsPerRound][2];
-                    int iterator = 0;
-                    for (Agent a : shuffledAgents) {
-                        if(!theDeathList.contains(a.agentID)) {
-                            survivingAgentFitnessScores[iterator][0] = a.agentID;
-                            survivingAgentFitnessScores[iterator][1] = (int)(a.calculateSatisfaction(null) * 4);
-                            iterator++;
-                        }
-                    }
 
                     int totalFitness = 0;
-                    for (int[] agentFitnessScore : survivingAgentFitnessScores) {
+                    for (int[] agentFitnessScore : agentFitnessScores) {
                         totalFitness = totalFitness + agentFitnessScore[1];
                     }
 
-                    for (Integer integer : theDeathList) {
-                        for (Agent a : agents) {
-                            if (a.agentID == integer) {
-                                int rouletteOutcome = random.nextInt(totalFitness) + 1;
-                                int rouletteSegment = 0;
-                                for (int[] agentFitnessScore : survivingAgentFitnessScores) {
-                                    rouletteSegment = rouletteSegment + agentFitnessScore[1];
-                                    if (rouletteSegment >= rouletteOutcome) {
-                                        for (Agent b : agents) {
-                                            if (b.agentID == agentFitnessScore[0]) {
-                                                a.setType(b.getAgentType());
-                                            }
-                                        }
-                                    }
-                                }
+                    for (Agent a : agents) {
+                        int rouletteOutcome = random.nextInt(totalFitness) + 1;
+                        int rouletteSegment = 0;
+                        for (int[] agentFitnessScore : agentFitnessScores) {
+                            rouletteSegment = rouletteSegment + agentFitnessScore[1];
+                            if (rouletteSegment >= rouletteOutcome) {
+                                a.setType(agentFitnessScore[2]);
                                 break;
                             }
                         }
