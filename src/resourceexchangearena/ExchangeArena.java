@@ -23,9 +23,10 @@ public class ExchangeArena {
     private static final int POPULATION_SIZE = 96;
     private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
     static final int UNIQUE_TIME_SLOTS = 24;
+    static final int SLOTS_PER_AGENT = 4;
 
     // Boolean constant determining whether Agents of different types will initially exist in the same simulation.
-    private static final boolean VARIED_AGENT_TYPES = false;
+    private static final boolean VARIED_AGENT_TYPES = true;
 
     // Constants representing the available agent types for the simulation.
     private static final int NON_TRADER = 0;
@@ -223,10 +224,11 @@ public class ExchangeArena {
                     a.initializeFavoursStore();
                 }
 
-                // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
-                List<Agent> shuffledAgents = new ArrayList<>(agents);
 
                 for (int j = 1; j <= DAYS; j++) {
+                    // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
+                    List<Agent> shuffledAgents = new ArrayList<>(agents);
+
                     // Fill the available time slots with all the slots that exist each day.
                     for (int k = 1; k <= UNIQUE_TIME_SLOTS; k++) {
                         for (int l = 1; l <= MAXIMUM_PEAK_CONSUMPTION; l++) {
@@ -401,9 +403,95 @@ public class ExchangeArena {
                         }
                     }
 
+                    // EVOLUTION
+                    int[][] agentFitnessScores = new int[POPULATION_SIZE][2];
+                    Collections.shuffle(shuffledAgents, random);
+                    for (Agent a : shuffledAgents) {
+                        agentFitnessScores[a.agentID - 1][0] = a.agentID;
+                        agentFitnessScores[a.agentID - 1][1] = (int)(a.calculateSatisfaction(null) * 4);
+                    }
+
+                    Arrays.sort(agentFitnessScores, Comparator.comparingInt(o -> o[1]));
+
+                    int deathsPerRound = 10;
+                    ArrayList<Integer> theDeathList = new ArrayList<>();
+
+                    int lowestFitness = agentFitnessScores[0][1];
+                    while (theDeathList.size() < deathsPerRound) {
+                        ArrayList<Integer> currentFitnessAgents = new ArrayList<>();
+                        for (int[] agentFitnessScore : agentFitnessScores) {
+                            if (agentFitnessScore[1] == lowestFitness) {
+                                currentFitnessAgents.add(agentFitnessScore[0]);
+                            }
+                        }
+                        int agentsToKill = deathsPerRound - theDeathList.size();
+                        if (currentFitnessAgents.size() <= agentsToKill) {
+                            theDeathList.addAll(currentFitnessAgents);
+                        } else {
+                            for (int k = 1; k <= agentsToKill; k++) {
+                                int selector = random.nextInt(currentFitnessAgents.size());
+                                int selectedAgent = currentFitnessAgents.get(selector);
+                                theDeathList.add(selectedAgent);
+                                currentFitnessAgents.remove(Integer.valueOf(selectedAgent));
+                                if (currentFitnessAgents.size() == 0) {
+                                    break;
+                                }
+                            }
+                        }
+                        lowestFitness++;
+                    }
+
+
+                    int[][] survivingAgentFitnessScores = new int[POPULATION_SIZE - deathsPerRound][2];
+                    int iterator = 0;
+                    for (Agent a : shuffledAgents) {
+                        if(!theDeathList.contains(a.agentID)) {
+                            survivingAgentFitnessScores[iterator][0] = a.agentID;
+                            survivingAgentFitnessScores[iterator][1] = (int)(a.calculateSatisfaction(null) * 4);
+                            iterator++;
+                        }
+                    }
+
+                    int totalFitness = 0;
+                    for (int[] agentFitnessScore : survivingAgentFitnessScores) {
+                        totalFitness = totalFitness + agentFitnessScore[1];
+                    }
+
+                    for (Integer integer : theDeathList) {
+                        for (Agent a : agents) {
+                            if (a.agentID == integer) {
+                                int rouletteOutcome = random.nextInt(totalFitness) + 1;
+                                int rouletteSegment = 0;
+                                for (int[] agentFitnessScore : survivingAgentFitnessScores) {
+                                    rouletteSegment = rouletteSegment + agentFitnessScore[1];
+                                    if (rouletteSegment >= rouletteOutcome) {
+                                        for (Agent b : agents) {
+                                            if (b.agentID == agentFitnessScore[0]) {
+                                                a.setType(b.getAgentType());
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+
                     // Only update the user on the simulations status every 10 days to reduce output spam.
                     if (j % 10 == 0) {
                         System.out.println("RUN: " + i + "  DAY: " + j);
+                        for (Integer uniqueAgentType : uniqueAgentTypes) {
+                            int populationQuantity = 0;
+                            for (Agent a : agents) {
+                                if (a.getAgentType() == uniqueAgentType) {
+                                    populationQuantity++;
+                                }
+                            }
+                            System.out.println("TYPE: "
+                                    + getHumanReadableAgentType(uniqueAgentType)
+                                    + "  POPULATION: "
+                                    + populationQuantity);
+                        }
                     }
                 }
             }

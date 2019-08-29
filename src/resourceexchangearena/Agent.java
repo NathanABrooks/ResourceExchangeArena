@@ -32,10 +32,17 @@ class Agent {
         this.agentType = agentType;
 
         madeInteraction = false;
-        numberOfTimeSlotsWanted = 4;
+        numberOfTimeSlotsWanted = ExchangeArena.SLOTS_PER_AGENT;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
         ExchangeArena.agents.add(this);
+    }
+
+    /**
+     * Used to change an Agents type during a simulation.
+     */
+    void setType(int type) {
+        agentType = type;
     }
 
     /**
