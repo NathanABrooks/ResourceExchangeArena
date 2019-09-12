@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.sqrt;
+
 /**
  * The arena is the core of the simulation, this is where all the resource exchanges take place.
  */
@@ -19,7 +21,7 @@ public class ExchangeArena {
     // Constants defining the scope of the simulation.
     private static final int SIMULATION_RUNS = 50;
     private static final int DAYS = 50;
-    private static final int EXCHANGES = 200;
+    private static final int EXCHANGES = 50;
     private static final int POPULATION_SIZE = 96;
     private static final int MAXIMUM_PEAK_CONSUMPTION = 16;
     static final int UNIQUE_TIME_SLOTS = 24;
@@ -52,7 +54,7 @@ public class ExchangeArena {
      */
     public static void main(String[] args) throws IOException {
         // Agent types that will be simulated.
-        int[] agentTypes = {SELFISH, SOCIAL, SOCIAL, SOCIAL, SOCIAL};
+        int[] agentTypes = {SELFISH, SOCIAL};
 
         // Days that will have the Agents average satisfaction over the course of the day,
         // and satisfaction distribution at the end of the day visualised.
@@ -131,6 +133,10 @@ public class ExchangeArena {
         for (Integer type : uniqueAgentTypes) {
             prePreparedAverageCSVWriter.append(",");
             prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type));
+        }
+        for (Integer type : uniqueAgentTypes) {
+            prePreparedAverageCSVWriter.append(",");
+            prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type)).append(" Standard Deviation");
         }
         prePreparedAverageCSVWriter.append("\n");
 
@@ -418,37 +424,13 @@ public class ExchangeArena {
                         averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
                         endOfDayAverageSatisfaction.add(typeAverageSatisfaction);
                     }
+                    // Temporarily store the end of day average variance for each agent type.
+                    for (int uniqueAgentType : uniqueAgentTypes) {
+                        double typeAverageSatisfactionSD = averageSatisfactionStandardDeviation(uniqueAgentType);
+                        endOfDayAverageSatisfaction.add(typeAverageSatisfactionSD);
+                    }
                     averageCSVWriter.append("\n");
                     endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
-
-                    // EVOLUTION
-                    int[][] agentFitnessScores = new int[POPULATION_SIZE][3];
-                    Collections.shuffle(shuffledAgents, random);
-                    for (Agent a : shuffledAgents) {
-                        agentFitnessScores[a.agentID - 1][0] = a.agentID;
-                        agentFitnessScores[a.agentID - 1][1] = (int)(a.calculateSatisfaction(null) * SLOTS_PER_AGENT);
-                        agentFitnessScores[a.agentID - 1][2] = a.getAgentType();
-                    }
-
-                    Arrays.sort(agentFitnessScores, Comparator.comparingInt(o -> o[1]));
-
-
-                    int totalFitness = 0;
-                    for (int[] agentFitnessScore : agentFitnessScores) {
-                        totalFitness = totalFitness + agentFitnessScore[1];
-                    }
-
-                    for (Agent a : agents) {
-                        int rouletteOutcome = random.nextInt(totalFitness) + 1;
-                        int rouletteSegment = 0;
-                        for (int[] agentFitnessScore : agentFitnessScores) {
-                            rouletteSegment = rouletteSegment + agentFitnessScore[1];
-                            if (rouletteSegment >= rouletteOutcome) {
-                                a.setType(agentFitnessScore[2]);
-                                break;
-                            }
-                        }
-                    }
 
                     for (Integer uniqueAgentType : uniqueAgentTypes) {
                         int populationQuantity = 0;
@@ -459,6 +441,44 @@ public class ExchangeArena {
                         }
                         endOfDayPopulationDistributions.get(j - 1).get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
                     }
+
+                    // EVOLUTION
+                    int[][] tempAgentFitnessScores = new int[POPULATION_SIZE][3];
+                    for (Agent a : agents) {
+                        tempAgentFitnessScores[a.agentID - 1][0] = a.agentID;
+                        tempAgentFitnessScores[a.agentID - 1][1] = (int)(Math.round(a.calculateSatisfaction(null) * SLOTS_PER_AGENT));
+                        tempAgentFitnessScores[a.agentID - 1][2] = a.getAgentType();
+                    }
+                    int[][] agentFitnessScores = tempAgentFitnessScores.clone();
+                    Arrays.sort(agentFitnessScores, Comparator.comparingInt(o -> o[2]));
+
+                    int totalFitness = 0;
+
+                    for (int[] agentFitnessScore : agentFitnessScores) {
+                        totalFitness = totalFitness + agentFitnessScore[1];
+                    }
+
+                    if (!agents.isEmpty()) {
+                        agents.clear();
+                    }
+
+                    // Create the new generation of Agents for the simulation.
+                    for (int k = 1; k <= POPULATION_SIZE; k++) {
+                        int rouletteOutcome = random.nextInt(totalFitness) + 1;
+                        int rouletteSegment = 0;
+                        for (int[] agentFitnessScore : agentFitnessScores) {
+                            rouletteSegment = rouletteSegment + agentFitnessScore[1];
+                            if (rouletteSegment >= rouletteOutcome) {
+                                new Agent(k, agentFitnessScore[2]);
+                                break;
+                            }
+                        }
+                    }
+
+                    for (Agent a : agents) {
+                        a.initializeFavoursStore();
+                    }
+
                     // Only update the user on the simulations status every 10 days to reduce output spam.
                     if (j % 10 == 0) {
                         System.out.println("RUN: " + i + "  DAY: " + j);
@@ -468,14 +488,16 @@ public class ExchangeArena {
 
             // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
             // are averaged over simulation runs and appended to the prePreparedAverageFile.
-            int types = uniqueAgentTypes.size() + 2;
+            int types = (uniqueAgentTypes.size() * 2) + 2;
             for (int i = 1; i <= DAYS; i++) {
                 prePreparedAverageCSVWriter.append(String.valueOf(i));
                 for (int j = 1; j <= types; j++) {
                     ArrayList<Double> allSatisfactions = new ArrayList<>();
                     for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
                         if (endOfDayAverageSatisfaction.get(0) == (double) i) {
-                            allSatisfactions.add(endOfDayAverageSatisfaction.get(j));
+                            if (!Double.isNaN(endOfDayAverageSatisfaction.get(j))) {
+                                allSatisfactions.add(endOfDayAverageSatisfaction.get(j));
+                            }
                         }
                     }
                     double averageOverSims = allSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
@@ -962,6 +984,29 @@ public class ExchangeArena {
             }
         }
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
+    }
+    /**
+     * Takes all Agents of a given types individual satisfactions and calculates the variance between the average
+     * satisfaction of the Agents of that type.
+     *
+     * @param agentType The type for which to calculate the variance between the average satisfactions of all Agents of
+     *                  that type.
+     * @return Double Returns the variance between the average satisfactions of all agents of the given type.
+     */
+    private static double averageSatisfactionStandardDeviation(int agentType) {
+        double sumDiffsSquared = 0.0;
+        double averageSatisfaction = averageAgentSatisfaction(agentType);
+        int groupSize = 0;
+        for (Agent a : agents) {
+            if (a.getAgentType() == agentType) {
+                double diff = a.calculateSatisfaction(null) - averageSatisfaction;
+                diff *= diff;
+                sumDiffsSquared += diff;
+                groupSize++;
+            }
+        }
+        double populationVariance = sumDiffsSquared  / (double)(groupSize);
+        return sqrt(populationVariance);
     }
 
     /**
