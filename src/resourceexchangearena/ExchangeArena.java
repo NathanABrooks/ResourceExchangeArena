@@ -134,9 +134,11 @@ public class ExchangeArena {
             prePreparedAverageCSVWriter.append(",");
             prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type));
         }
-        for (Integer type : uniqueAgentTypes) {
-            prePreparedAverageCSVWriter.append(",");
-            prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type)).append(" Standard Deviation");
+        if (VARIED_AGENT_TYPES) {
+            for (Integer type : uniqueAgentTypes) {
+                prePreparedAverageCSVWriter.append(",");
+                prePreparedAverageCSVWriter.append(getHumanReadableAgentType(type)).append(" Standard Deviation");
+            }
         }
         prePreparedAverageCSVWriter.append("\n");
 
@@ -450,33 +452,56 @@ public class ExchangeArena {
                         tempAgentFitnessScores[a.agentID - 1][2] = a.getAgentType();
                     }
                     int[][] agentFitnessScores = tempAgentFitnessScores.clone();
-                    Arrays.sort(agentFitnessScores, Comparator.comparingInt(o -> o[2]));
+                    Arrays.sort(agentFitnessScores, Comparator.comparingInt(o -> o[1]));
 
                     int totalFitness = 0;
-
                     for (int[] agentFitnessScore : agentFitnessScores) {
                         totalFitness = totalFitness + agentFitnessScore[1];
                     }
 
-                    if (!agents.isEmpty()) {
-                        agents.clear();
+                    int deathsPerRound = 10;
+                    ArrayList<Integer> agentsToReplace = new ArrayList<>();
+
+                    int lowestFitnessPresent = agentFitnessScores[0][1];
+                    while (agentsToReplace.size() < deathsPerRound) {
+                        ArrayList<Integer> currentFitnessAgents = new ArrayList<>();
+                        for (int[] agentFitnessScore : agentFitnessScores) {
+                            if (agentFitnessScore[1] == lowestFitnessPresent) {
+                                currentFitnessAgents.add(agentFitnessScore[0]);
+                            }
+                        }
+                        int remainingDeaths = deathsPerRound - agentsToReplace.size();
+                        if (currentFitnessAgents.size() <= remainingDeaths) {
+                            agentsToReplace.addAll(currentFitnessAgents);
+                        } else {
+                            for (int k = 0; k < remainingDeaths; k++) {
+                                int selector = random.nextInt(currentFitnessAgents.size());
+                                int selectedAgent = currentFitnessAgents.get(selector);
+                                agentsToReplace.add(selectedAgent);
+                                currentFitnessAgents.remove(Integer.valueOf(selectedAgent));
+                                if (currentFitnessAgents.size() == 0) {
+                                    break;
+                                }
+                            }
+                        }
+                        lowestFitnessPresent++;
                     }
 
-                    // Create the new generation of Agents for the simulation.
-                    for (int k = 1; k <= POPULATION_SIZE; k++) {
-                        int rouletteOutcome = random.nextInt(totalFitness) + 1;
-                        int rouletteSegment = 0;
-                        for (int[] agentFitnessScore : agentFitnessScores) {
-                            rouletteSegment = rouletteSegment + agentFitnessScore[1];
-                            if (rouletteSegment >= rouletteOutcome) {
-                                new Agent(k, agentFitnessScore[2]);
+                    for (Integer agentID : agentsToReplace) {
+                        for (Agent a : agents) {
+                            if (a.agentID == agentID) {
+                                int rouletteOutcome = random.nextInt(totalFitness) + 1;
+                                int rouletteSegment = 0;
+                                for (int[] agentFitnessScore : agentFitnessScores) {
+                                    rouletteSegment = rouletteSegment + agentFitnessScore[1];
+                                    if (rouletteSegment >= rouletteOutcome) {
+                                        a.setType(agentFitnessScore[2]);
+                                        break;
+                                    }
+                                }
                                 break;
                             }
                         }
-                    }
-
-                    for (Agent a : agents) {
-                        a.initializeFavoursStore();
                     }
 
                     // Only update the user on the simulations status every 10 days to reduce output spam.
