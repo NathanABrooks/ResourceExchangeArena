@@ -918,43 +918,7 @@ public class ExchangeArena {
         prePreparedBoxPlotCSVWriter.close();
         prePreparedPopulationDistributionsCSVWriter.close();
 
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
-        String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
-        String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
-        String daysToAnalyse = Arrays.toString(daysOfInterest);
-
-        List<String> pythonArgs = new ArrayList<>();
-
-        String thirdGraph;
-        if (VARIED_AGENT_TYPES) {
-            thirdGraph = prePreparedPopulationDistributionsFile.getAbsolutePath();
-        } else {
-            thirdGraph = prePreparedBoxPlotFile.getAbsolutePath();
-        }
-
-        pythonArgs.add(pythonExe);
-        pythonArgs.add(pythonPath);
-        pythonArgs.add(RELEASE_VERSION);
-        pythonArgs.add(initialSeed);
-        pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
-        pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
-        pythonArgs.add(thirdGraph);
-        pythonArgs.add(Integer.toString(DAYS));
-        pythonArgs.add(Integer.toString(EXCHANGES));
-        pythonArgs.add(daysToAnalyse);
-
-        ProcessBuilder builder = new ProcessBuilder(pythonArgs);
-
-        // IO from the Python is shared with the same terminal as the Java code.
-        builder.inheritIO();
-        builder.redirectErrorStream(true);
-
-        Process process = builder.start();
-        try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        VisualiserInitiator.visualise(daysOfInterest, VARIED_AGENT_TYPES, RELEASE_VERSION, initialSeed, DAYS, EXCHANGES, prePreparedPopulationDistributionsFile, prePreparedBoxPlotFile, prePreparedAverageFile, prePreparedIndividualFile);
     }
 
     /**
