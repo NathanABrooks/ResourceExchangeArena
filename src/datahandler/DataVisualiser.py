@@ -91,7 +91,7 @@ if thirdGraph.find("PopulationDistribution") == -1:
         os.makedirs(distributionsOutputDirectory)
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
-baseFileName: str = endOfDaySatisfactionLevels.split('\\')[-1]
+baseFileName: str = endOfDaySatisfactionLevels.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data, which will be the same for each graph, as global lists.

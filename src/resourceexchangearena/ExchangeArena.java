@@ -16,7 +16,7 @@ import static java.lang.Math.sqrt;
  */
 public class ExchangeArena {
     // The current version of the simulation, used to organise output data.
-    private static final String RELEASE_VERSION = "v2.0";
+    private static final String RELEASE_VERSION = "v2";
 
     // Constants defining the scope of the simulation.
     private static final int SIMULATION_RUNS = 50;
@@ -919,8 +919,8 @@ public class ExchangeArena {
         prePreparedPopulationDistributionsCSVWriter.close();
 
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
-        String pythonExe = "I:/code/REA_CondaEnvironment/python.exe";
-        String pythonPath = "I:/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
+        String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
+        String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
         String daysToAnalyse = Arrays.toString(daysOfInterest);
 
         List<String> pythonArgs = new ArrayList<>();
