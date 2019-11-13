@@ -35,7 +35,7 @@ class Agent {
         numberOfTimeSlotsWanted = ResourceExchangeArena.SLOTS_PER_AGENT;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
-        Arena.agents.add(this);
+        SimulationRun.agents.add(this);
     }
 
     /**
@@ -104,7 +104,7 @@ class Agent {
         if (!favoursOwed.isEmpty()) {
             favoursOwed.clear();
         }
-        for (Agent a: Arena.agents) {
+        for (Agent a: SimulationRun.agents) {
             if (a.agentID != agentID) {
                 ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
                 ArrayList<Integer> favoursGivenRelation = new ArrayList<>();

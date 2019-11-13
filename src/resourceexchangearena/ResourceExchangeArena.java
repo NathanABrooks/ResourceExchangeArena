@@ -39,6 +39,6 @@ public class ResourceExchangeArena {
      * @see IOException
      */
     public static void main(String[] args) throws IOException {
-        new Arena();
-     }
+        ArenaEnvironment environment = new ArenaEnvironment();
+    }
 }
