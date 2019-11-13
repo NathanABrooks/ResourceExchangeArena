@@ -32,10 +32,10 @@ class Agent {
         this.agentType = agentType;
 
         madeInteraction = false;
-        numberOfTimeSlotsWanted = ExchangeArena.SLOTS_PER_AGENT;
+        numberOfTimeSlotsWanted = ResourceExchangeArena.SLOTS_PER_AGENT;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
-        ExchangeArena.agents.add(this);
+        Arena.agents.add(this);
     }
 
     /**
@@ -104,7 +104,7 @@ class Agent {
         if (!favoursOwed.isEmpty()) {
             favoursOwed.clear();
         }
-        for (Agent a: ExchangeArena.agents) {
+        for (Agent a: Arena.agents) {
             if (a.agentID != agentID) {
                 ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
                 ArrayList<Integer> favoursGivenRelation = new ArrayList<>();
@@ -145,11 +145,11 @@ class Agent {
 
         for (int i = 1; i <= numberOfTimeSlotsWanted; i++) {
             // Get the simulations seeded Random object.
-            Random random = ExchangeArena.random;
+            Random random = ResourceExchangeArena.random;
 
             // Selects a random integer representing the time slot between 1 and the total number of available slots.
             // that exist in the simulation.
-            int timeSlot = random.nextInt(ExchangeArena.UNIQUE_TIME_SLOTS) + 1;
+            int timeSlot = random.nextInt(ResourceExchangeArena.UNIQUE_TIME_SLOTS) + 1;
 
             // Ensures all requested time slots are unique.
             if (requestedTimeSlots.contains(timeSlot)) {
@@ -197,8 +197,8 @@ class Agent {
     ArrayList<Integer> publishUnlockedTimeSlots() {
         ArrayList<Integer> unlockedTimeSlots;
         switch(agentType) {
-            case ExchangeArena.SOCIAL:
-            case ExchangeArena.SELFISH:
+            case ResourceExchangeArena.SOCIAL:
+            case ResourceExchangeArena.SELFISH:
                 unlockedTimeSlots = new ArrayList<>(nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots));
                 break;
             default:
@@ -304,7 +304,7 @@ class Agent {
             potentialAllocatedTimeSlots.add(exchangeRequestReceived.get(2));
 
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
-            if (agentType == ExchangeArena.SOCIAL) {
+            if (agentType == ResourceExchangeArena.SOCIAL) {
                 // Social Agents accept offers that improve their satisfaction or if they have negative
                 // social capital with the Agent who made the request.
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0){

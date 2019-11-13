@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class VisualiserInitiator {
-    static void visualise(int[] daysOfInterest, boolean VARIED_AGENT_TYPES, String RELEASE_VERSION, String initialSeed, int DAYS, int EXCHANGES, File prePreparedPopulationDistributionsFile, File prePreparedBoxPlotFile, File prePreparedAverageFile, File prePreparedIndividualFile) throws IOException {
+class VisualiserInitiator {
+    static void visualise(int[] daysOfInterest, String initialSeed, File prePreparedPopulationDistributionsFile, File prePreparedBoxPlotFile, File prePreparedAverageFile, File prePreparedIndividualFile) throws IOException {
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
         String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
@@ -16,7 +16,7 @@ public class VisualiserInitiator {
         List<String> pythonArgs = new ArrayList<>();
 
         String thirdGraph;
-        if (VARIED_AGENT_TYPES) {
+        if (ResourceExchangeArena.VARIED_AGENT_TYPES) {
             thirdGraph = prePreparedPopulationDistributionsFile.getAbsolutePath();
         } else {
             thirdGraph = prePreparedBoxPlotFile.getAbsolutePath();
@@ -24,13 +24,13 @@ public class VisualiserInitiator {
 
         pythonArgs.add(pythonExe);
         pythonArgs.add(pythonPath);
-        pythonArgs.add(RELEASE_VERSION);
+        pythonArgs.add(ResourceExchangeArena.RELEASE_VERSION);
         pythonArgs.add(initialSeed);
         pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
         pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
         pythonArgs.add(thirdGraph);
-        pythonArgs.add(Integer.toString(DAYS));
-        pythonArgs.add(Integer.toString(EXCHANGES));
+        pythonArgs.add(Integer.toString(ResourceExchangeArena.DAYS));
+        pythonArgs.add(Integer.toString(ResourceExchangeArena.EXCHANGES));
         pythonArgs.add(daysToAnalyse);
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);
