@@ -28,6 +28,9 @@ public class ArenaEnvironment extends ResourceExchangeArena{
     static ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
     static ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
 
+    static ArrayList<ArrayList<Double>> endOfDayAverageSatisfactionsForType = new ArrayList<>();
+    static ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
+
     ArenaEnvironment() throws IOException {
         // Array of the unique agent types used in the simulation.
         for (int type : agentTypes) {
@@ -193,7 +196,7 @@ public class ArenaEnvironment extends ResourceExchangeArena{
             }
 
             for (int i = 1; i <= SIMULATION_RUNS; i++) {
-                SimulationRun.simulate(averageCSVWriter, individualCSVWriter);
+                SimulationRun.simulateVariedAgents(averageCSVWriter, individualCSVWriter);
                 System.out.println("RUN: " + i);
             }
 
@@ -266,334 +269,112 @@ public class ArenaEnvironment extends ResourceExchangeArena{
                 }
             }
         } else {                                                                                                         // TODO: THERE IS A LOT OF UNUSED DATA BEING COLLECTED HERE FOR THE RAW DATA FILES, FURTHER OPTIMISATION WOULD REDUCE OUTPUT FILE SIZE BY OVER 1GB.
-//            ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
-//
-//            // Starts at -2 for simulating random and optimal allocations.
-//            for (int type = -2; type < uniqueAgentTypes.size(); type++) {
-//                ArrayList<Double> averagedEndOfDayAverageSatisfactions = new ArrayList<>();
-//                endOfDayAverageSatisfactions.add(averagedEndOfDayAverageSatisfactions);
-//
-//                // Array lists used to temporarily store data before averaging and adding it to csv files.
-//                ArrayList<ArrayList<Double>> endOfDayAverageSatisfactionsForType = new ArrayList<>();
-//                ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
-//                ArrayList<ArrayList<Double>> endOfDayIndividualSatisfactions = new ArrayList<>();
-//
-//                for (int i = 1; i <= DAYS; i++) {
-//                    ArrayList<Double> endOfDayAverageSatisfactionPerDay = new ArrayList<>();
-//                    endOfDayAverageSatisfactionsForType.add(endOfDayAverageSatisfactionPerDay);
-//                }
-//
-//                for (int i = 1; i <= SIMULATION_RUNS; i++) {
-//                    // Clear the list of agents before a simulation begins.
-//                    if (!agents.isEmpty()) {
-//                        agents.clear();
-//                    }
-//
-//                    if (type < uniqueAgentTypes.size()) {
-//                        if (type < 0) {
-//                            for (int j = 1; j <= POPULATION_SIZE; j++) {
-//                                new Agent(j, NON_TRADER);
-//                            }
-//                        } else {
-//                            for (int j = 1; j <= POPULATION_SIZE; j++) {
-//                                new Agent(j, uniqueAgentTypes.get(type));
-//                            }
-//                        }
-//                    } else {
-//                        break;
-//                    }
-//
-//                    // Increment the simulations seed each run.
-//                    seed++;
-//                    random.setSeed(seed);
-//
-//                    // Initialise each Agents relations with each other Agent if trading Agents are being simulated.
-//                    if (type >= 0) {
-//                        for (Agent a : agents) {
-//                            a.initializeFavoursStore();
-//                        }
-//                    }
-//
-//                    // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
-//                    List<Agent> shuffledAgents = new ArrayList<>(agents);
-//
-//                    for (int j = 1; j <= DAYS; j++) {
-//                        // Fill the available time slots with all the slots that exist each day.
-//                        for (int k = 1; k <= UNIQUE_TIME_SLOTS; k++) {
-//                            for (int l = 1; l <= MAXIMUM_PEAK_CONSUMPTION; l++) {
-//                                availableTimeSlots.add(k);
-//                            }
-//                        }
-//                        // Agents start the day by requesting and receiving an allocation of time slots.
-//                        Collections.shuffle(shuffledAgents, random);
-//                        for (Agent a : shuffledAgents) {
-//                            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots();
-//                            ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
-//                            a.receiveAllocatedTimeSlots(allocatedTimeSlots);
-//                        }
-//
-//                        double randomAllocations = CalculateSatisfaction.averageAgentSatisfaction(agents);
-//                        double optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
-//
-//                        // The random and optimum average satisfaction scores are calculated before exchanges take place.
-//                        averageCSVWriter.append(String.valueOf(seed));
-//                        averageCSVWriter.append(",");
-//                        averageCSVWriter.append(String.valueOf(j));
-//                        averageCSVWriter.append(",");
-//                        averageCSVWriter.append(String.valueOf(randomAllocations));
-//                        averageCSVWriter.append(",");
-//                        averageCSVWriter.append(String.valueOf(optimumAllocations));
-//
-//                        if (type >= 0) {
-//                            for (int k = 1; k <= EXCHANGES; k++) {
-//                                ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
-//
-//                                // Reset the check for whether each Agent has made an interaction this round.
-//                                for (Agent a : shuffledAgents) {
-//                                    a.setMadeInteraction(false);
-//                                }
-//
-//                                // Exchanges start by Agents advertising time slots they may be willing to exchange.
-//                                Collections.shuffle(shuffledAgents, random);
-//                                for (Agent a : shuffledAgents) {
-//                                    ArrayList<Integer> unlockedTimeSlots = a.publishUnlockedTimeSlots();
-//                                    if (!unlockedTimeSlots.isEmpty()) {
-//                                        ArrayList<Integer> advert = new ArrayList<>();
-//                                        advert.add(a.agentID);
-//                                        advert.addAll(a.publishUnlockedTimeSlots());
-//                                        advertisingBoard.add(advert);
-//                                    }
-//                                }
-//
-//                                // Each Agent has the opportunity to make exchange requests for advertised time slots.
-//                                Collections.shuffle(shuffledAgents, random);
-//                                for (Agent a : shuffledAgents) {
-//                                    if (a.canMakeInteraction()) {
-//                                        ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
-//                                        a.setMadeInteraction(true);
-//                                        if (!chosenAdvert.isEmpty()) {
-//                                            // Select an unwanted time slot to offer in the exchange.
-//                                            ArrayList<Integer> unwantedTimeSlots = a.publishUnwantedTimeSlots();
-//                                            int selector = random.nextInt(unwantedTimeSlots.size());
-//                                            int unwantedTimeSlot = unwantedTimeSlots.get(selector);
-//
-//                                            ArrayList<Integer> request = new ArrayList<>();
-//                                            request.add(a.agentID);
-//                                            request.add(chosenAdvert.get(1));
-//                                            request.add(unwantedTimeSlot);
-//
-//                                            // The agent who offered the requested time slot receives the exchange request.
-//                                            for (Agent b : agents) {
-//                                                if (b.agentID == chosenAdvert.get(0)) {
-//                                                    b.receiveExchangeRequest(request);
-//                                                    b.setMadeInteraction(true);
-//                                                    break;
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//
-//                                // Agents who have received a request consider it.
-//                                Collections.shuffle(shuffledAgents, random);
-//                                for (Agent a : agents) {
-//                                    if (!a.getExchangeRequestReceived().isEmpty()) {
-//                                        a.considerRequest();
-//                                    }
-//                                }
-//
-//                                // Agents confirm and complete approved requests if they are able to do so, and update
-//                                // their relations with other Agents accordingly.
-//                                Collections.shuffle(shuffledAgents, random);
-//                                for (Agent a : shuffledAgents) {
-//                                    if (a.getExchangeRequestApproved()) {
-//                                        ArrayList<Integer> offer = a.getExchangeRequestReceived();
-//                                        if (a.finalCheck(offer.get(1))) {
-//                                            for (Agent b : agents) {
-//                                                if (b.agentID == offer.get(0)) {
-//                                                    if (b.finalCheck(offer.get(2))) {
-//                                                        b.completeRequestedExchange(offer, a.agentID);
-//                                                        a.completeReceivedExchange(offer);
-//                                                    }
-//                                                    break;
-//                                                }
-//                                            }
-//                                        }
-//                                        a.setExchangeRequestApproved();
-//                                    }
-//                                    // Clear the agents accepted offers list before the next exchange round.
-//                                    if (!a.getExchangeRequestReceived().isEmpty()) {
-//                                        a.setExchangeRequestReceived();
-//                                    }
-//                                }
-//
-//                                for (Agent a : agents) {
-//                                    individualCSVWriter.append(String.valueOf(seed));
-//                                    individualCSVWriter.append(",");
-//                                    individualCSVWriter.append(String.valueOf(j));
-//                                    individualCSVWriter.append(",");
-//                                    individualCSVWriter.append(String.valueOf(k));
-//                                    individualCSVWriter.append(",");
-//                                    individualCSVWriter.append(String.valueOf(a.agentID));
-//                                    individualCSVWriter.append(",");
-//                                    individualCSVWriter.append(String.valueOf(a.getAgentType()));
-//                                    individualCSVWriter.append(",");
-//                                    individualCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
-//                                    individualCSVWriter.append("\n");
-//                                }
-//
-//                                // The average end of round satisfaction is stored for each Agent type if the current day exists in
-//                                // the daysOfInterest array. This data can later be averaged over simulation runs and added to
-//                                // the prePreparedIndividualFile.
-//                                int currentDay = j;
-//                                if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
-//                                    for (int uniqueAgentType : uniqueAgentTypes) {
-//                                        double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
-//                                        ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
-//                                        endOfRoundAverageSatisfaction.add((double) j);
-//                                        endOfRoundAverageSatisfaction.add((double) k);
-//                                        endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
-//                                        endOfRoundAverageSatisfaction.add(averageSatisfactionForType);
-//
-//                                        endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
-//                                    }
-//                                }
-//                            }
-//                        }
-//
-//                        // The average end of day satisfaction is stored for each Agent type to later be averaged
-//                        // and added to the prePreparedAverageFile.
-//                        if (type == -2) {
-//                            endOfDayAverageSatisfactionsForType.get(j - 1).add(randomAllocations);
-//                        } else if (type == -1) {
-//                            endOfDayAverageSatisfactionsForType.get(j - 1).add(optimumAllocations);
-//                        } else {
-//                            double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentTypes.get(type));
-//                            endOfDayAverageSatisfactionsForType.get(j - 1).add(typeAverageSatisfaction);
-//                        }
-//
-//                        // Store the end of day average satisfaction for each agent type.
-//                        for (int uniqueAgentType : uniqueAgentTypes) {
-//                            double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
-//                            averageCSVWriter.append(",");
-//                            averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
-//                        }
-//                        averageCSVWriter.append("\n");
-//
-//                        // The end of day satisfaction is stored for each Agent if the current day exists in
-//                        // the daysOfInterest array. This data can later be averaged over simulation runs and added to
-//                        // the prePreparedBoxPlotFile.
-//                        int currentDay = j;
-//                        if (IntStream.of(daysOfInterest).anyMatch(val -> val == currentDay)) {
-//                            for (Agent a : agents) {
-//                                ArrayList<Double> individualSatisfaction = new ArrayList<>();
-//                                individualSatisfaction.add((double) i);
-//                                individualSatisfaction.add((double) j);
-//                                individualSatisfaction.add((double) a.getAgentType());
-//                                individualSatisfaction.add(a.calculateSatisfaction(null));
-//
-//                                endOfDayIndividualSatisfactions.add(individualSatisfaction);
-//                            }
-//                        }
-//
-//                        // Only update the user on the simulations status every 10 days to reduce output spam.
-//                        if (j % 10 == 0) {
-//                            System.out.println("Agent Type: " + type + "  RUN: " + i + "  DAY: " + j);
-//                        }
-//                    }
-//                }
-//
-//
-//                for (int i = 0; i < DAYS; i++) {
-//                    double averageOverSims = endOfDayAverageSatisfactionsForType.get(i).stream().mapToDouble(val -> val).average().orElse(0.0);
-//                    endOfDayAverageSatisfactions.get(type + 2).add(averageOverSims);
-//                }
-//
-//                // The average end of round satisfaction is stored for each Agent type for all rounds during the days in the
-//                // daysOfInterest array. These end of round averages are themselves averaged over all simulation runs before
-//                // being added to the prePreparedIndividualFile.
-//                if (type >= 0) {
-//                    for (int day : daysOfInterest) {
-//                        for (int i = 1; i <= EXCHANGES; i++) {
-//                            ArrayList<Double> allSimsEndOfRoundAverageSatisfaction = new ArrayList<>();
-//                            for (ArrayList<Double> endOfRoundAverageSatisfaction : endOfRoundAverageSatisfactions) {
-//                                if ((endOfRoundAverageSatisfaction.get(0) == (double) day) &&
-//                                        (endOfRoundAverageSatisfaction.get(1) == (double) i) &&
-//                                        (endOfRoundAverageSatisfaction.get(2) == (double) uniqueAgentTypes.get(type))) {
-//                                    allSimsEndOfRoundAverageSatisfaction.add(endOfRoundAverageSatisfaction.get(3));
-//                                }
-//                            }
-//                            double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream().mapToDouble(val -> val).average().orElse(0.0);
-//
-//                            prePreparedIndividualCSVWriter.append(String.valueOf(day));
-//                            prePreparedIndividualCSVWriter.append(",");
-//                            prePreparedIndividualCSVWriter.append(String.valueOf(i));
-//                            prePreparedIndividualCSVWriter.append(",");
-//                            prePreparedIndividualCSVWriter.append(String.valueOf(uniqueAgentTypes.get(type)));
-//                            prePreparedIndividualCSVWriter.append(",");
-//                            prePreparedIndividualCSVWriter.append(String.valueOf(averageOverSims));
-//                            prePreparedIndividualCSVWriter.append("\n");
-//                        }
-//                    }
-//                }
-//
-//                // The end of day satisfaction is stored for each Agents for all days in the daysOfInterest array. Each Agent's
-//                // satisfaction is averaged over all simulation runs, such that the least satisfied Agent one day is averaged
-//                // with the least satisfied Agent of each other day, the second least with the second least etc.
-//                for (int day : daysOfInterest) {
-//                    for (int agentType : uniqueAgentTypes) {
-//                        ArrayList<ArrayList<Double>> thisType = new ArrayList<>();
-//                        for (ArrayList<Double> endOfDayIndividualSatisfaction : endOfDayIndividualSatisfactions) {
-//                            if ((endOfDayIndividualSatisfaction.get(1) == (double) day) &&
-//                                    (endOfDayIndividualSatisfaction.get(2) == (double) agentType)) {
-//                                ArrayList<Double> thisAgent = new ArrayList<>();
-//                                thisAgent.add(endOfDayIndividualSatisfaction.get(0));
-//                                thisAgent.add(endOfDayIndividualSatisfaction.get(3));
-//                                thisType.add(thisAgent);
-//                            }
-//                        }
-//                        ArrayList<ArrayList<Double>> allSatisfactionLevels = new ArrayList<>();
-//                        int size = 0;
-//                        for (int i = 1; i <= SIMULATION_RUNS; i++) {
-//                            ArrayList<Double> satisfactionLevels = new ArrayList<>();
-//                            for (ArrayList<Double> thisAgent : thisType) {
-//                                if (thisAgent.get(0) == i) {
-//                                    satisfactionLevels.add(thisAgent.get(1));
-//                                }
-//                            }
-//                            Collections.sort(satisfactionLevels);
-//                            size = satisfactionLevels.size();
-//                            allSatisfactionLevels.add(satisfactionLevels);
-//                        }
-//                        for (int i = 0; i < size; i++) {
-//                            ArrayList<Double> averageForPosition = new ArrayList<>();
-//                            for (ArrayList<Double> satisfactionLevel : allSatisfactionLevels) {
-//                                averageForPosition.add(satisfactionLevel.get(i));
-//                            }
-//                            double averageOverSims = averageForPosition.stream().mapToDouble(val -> val).average().orElse(0.0);
-//
-//                            prePreparedBoxPlotCSVWriter.append(String.valueOf(day));
-//                            prePreparedBoxPlotCSVWriter.append(",");
-//                            prePreparedBoxPlotCSVWriter.append(String.valueOf(agentType));
-//                            prePreparedBoxPlotCSVWriter.append(",");
-//                            prePreparedBoxPlotCSVWriter.append(String.valueOf(averageOverSims));
-//                            prePreparedBoxPlotCSVWriter.append("\n");
-//                        }
-//                    }
-//                }
-//            }
-//            // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
-//            // are averaged over simulation runs and appended to the prePreparedAverageFile.
-//            int types = uniqueAgentTypes.size() + 2;
-//            for (int i = 1; i <= DAYS; i++) {
-//                prePreparedAverageCSVWriter.append(String.valueOf(i));
-//                for (int j = 0; j < types; j++) {
-//                    double averageOverSims = endOfDayAverageSatisfactions.get(j).get(i - 1);
-//                    prePreparedAverageCSVWriter.append(",");
-//                    prePreparedAverageCSVWriter.append(String.valueOf(averageOverSims));
-//                }
-//                prePreparedAverageCSVWriter.append("\n");
-//            }
+            ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
+
+            // Starts at -2 for simulating random and optimal allocations.
+            for (int type = -2; type < uniqueAgentTypes.size(); type++) {
+                ArrayList<Double> averagedEndOfDayAverageSatisfactions = new ArrayList<>();
+                endOfDayAverageSatisfactions.add(averagedEndOfDayAverageSatisfactions);
+
+                for (int i = 1; i <= DAYS; i++) {
+                    ArrayList<Double> endOfDayAverageSatisfactionPerDay = new ArrayList<>();
+                    endOfDayAverageSatisfactionsForType.add(endOfDayAverageSatisfactionPerDay);
+                }
+
+                for (int i = 1; i <= SIMULATION_RUNS; i++) {
+                   SimulationRun.simulate(i, type, averageCSVWriter, individualCSVWriter);
+                }
+
+                for (int i = 0; i < DAYS; i++) {
+                    double averageOverSims = endOfDayAverageSatisfactionsForType.get(i).stream().mapToDouble(val -> val).average().orElse(0.0);
+                    endOfDayAverageSatisfactions.get(type + 2).add(averageOverSims);
+                }
+
+                // The average end of round satisfaction is stored for each Agent type for all rounds during the days in the
+                // daysOfInterest array. These end of round averages are themselves averaged over all simulation runs before
+                // being added to the prePreparedIndividualFile.
+                if (type >= 0) {
+                    for (int day : daysOfInterest) {
+                        for (int i = 1; i <= EXCHANGES; i++) {
+                            ArrayList<Double> allSimsEndOfRoundAverageSatisfaction = new ArrayList<>();
+                            for (ArrayList<Double> endOfRoundAverageSatisfaction : endOfRoundAverageSatisfactions) {
+                                if ((endOfRoundAverageSatisfaction.get(0) == (double) day) &&
+                                        (endOfRoundAverageSatisfaction.get(1) == (double) i) &&
+                                        (endOfRoundAverageSatisfaction.get(2) == (double) uniqueAgentTypes.get(type))) {
+                                    allSimsEndOfRoundAverageSatisfaction.add(endOfRoundAverageSatisfaction.get(3));
+                                }
+                            }
+                            double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream().mapToDouble(val -> val).average().orElse(0.0);
+
+                            prePreparedIndividualCSVWriter.append(String.valueOf(day));
+                            prePreparedIndividualCSVWriter.append(",");
+                            prePreparedIndividualCSVWriter.append(String.valueOf(i));
+                            prePreparedIndividualCSVWriter.append(",");
+                            prePreparedIndividualCSVWriter.append(String.valueOf(uniqueAgentTypes.get(type)));
+                            prePreparedIndividualCSVWriter.append(",");
+                            prePreparedIndividualCSVWriter.append(String.valueOf(averageOverSims));
+                            prePreparedIndividualCSVWriter.append("\n");
+                        }
+                    }
+                }
+
+                // The end of day satisfaction is stored for each Agents for all days in the daysOfInterest array. Each Agent's
+                // satisfaction is averaged over all simulation runs, such that the least satisfied Agent one day is averaged
+                // with the least satisfied Agent of each other day, the second least with the second least etc.
+                for (int day : daysOfInterest) {
+                    for (int agentType : uniqueAgentTypes) {
+                        ArrayList<ArrayList<Double>> thisType = new ArrayList<>();
+                        for (ArrayList<Double> endOfDayIndividualSatisfaction : endOfDayIndividualSatisfactions) {
+                            if ((endOfDayIndividualSatisfaction.get(1) == (double) day) &&
+                                    (endOfDayIndividualSatisfaction.get(2) == (double) agentType)) {
+                                ArrayList<Double> thisAgent = new ArrayList<>();
+                                thisAgent.add(endOfDayIndividualSatisfaction.get(0));
+                                thisAgent.add(endOfDayIndividualSatisfaction.get(3));
+                                thisType.add(thisAgent);
+                            }
+                        }
+                        ArrayList<ArrayList<Double>> allSatisfactionLevels = new ArrayList<>();
+                        int size = 0;
+                        for (int i = 1; i <= SIMULATION_RUNS; i++) {
+                            ArrayList<Double> satisfactionLevels = new ArrayList<>();
+                            for (ArrayList<Double> thisAgent : thisType) {
+                                if (thisAgent.get(0) == i) {
+                                    satisfactionLevels.add(thisAgent.get(1));
+                                }
+                            }
+                            Collections.sort(satisfactionLevels);
+                            size = satisfactionLevels.size();
+                            allSatisfactionLevels.add(satisfactionLevels);
+                        }
+                        for (int i = 0; i < size; i++) {
+                            ArrayList<Double> averageForPosition = new ArrayList<>();
+                            for (ArrayList<Double> satisfactionLevel : allSatisfactionLevels) {
+                                averageForPosition.add(satisfactionLevel.get(i));
+                            }
+                            double averageOverSims = averageForPosition.stream().mapToDouble(val -> val).average().orElse(0.0);
+
+                            prePreparedBoxPlotCSVWriter.append(String.valueOf(day));
+                            prePreparedBoxPlotCSVWriter.append(",");
+                            prePreparedBoxPlotCSVWriter.append(String.valueOf(agentType));
+                            prePreparedBoxPlotCSVWriter.append(",");
+                            prePreparedBoxPlotCSVWriter.append(String.valueOf(averageOverSims));
+                            prePreparedBoxPlotCSVWriter.append("\n");
+                        }
+                    }
+                }
+            }
+            // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
+            // are averaged over simulation runs and appended to the prePreparedAverageFile.
+            int types = uniqueAgentTypes.size() + 2;
+            for (int i = 1; i <= DAYS; i++) {
+                prePreparedAverageCSVWriter.append(String.valueOf(i));
+                for (int j = 0; j < types; j++) {
+                    double averageOverSims = endOfDayAverageSatisfactions.get(j).get(i - 1);
+                    prePreparedAverageCSVWriter.append(",");
+                    prePreparedAverageCSVWriter.append(String.valueOf(averageOverSims));
+                }
+                prePreparedAverageCSVWriter.append("\n");
+            }
         }
 
         // Close the csv file writers once the simulation is complete.

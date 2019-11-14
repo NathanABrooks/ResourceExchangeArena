@@ -14,8 +14,7 @@ class SimulationRun {
     // List of all the possible allocations that exist in the current simulation.
     private static List<Integer> availableTimeSlots = new ArrayList<>();
 
-
-    static void simulate(FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException {
+    static void simulateVariedAgents(FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException {
         // Clear the list of agents before a simulation begins.
         if (!agents.isEmpty()) {
             agents.clear();
@@ -232,6 +231,225 @@ class SimulationRun {
         }
     }
 
+    static void simulate(int i, int type, FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException {
+        // Clear the list of agents before a simulation begins.
+        if (!agents.isEmpty()) {
+            agents.clear();
+         }
+
+        if (type < ArenaEnvironment.uniqueAgentTypes.size()) {
+            if (type < 0) {
+                for (int j = 1; j <= ArenaEnvironment.POPULATION_SIZE; j++) {
+                    new Agent(j, ArenaEnvironment.NON_TRADER);
+                }
+            } else {
+                for (int j = 1; j <= ArenaEnvironment.POPULATION_SIZE; j++) {
+                    new Agent(j, ArenaEnvironment.uniqueAgentTypes.get(type));
+                }
+            }
+        } else {
+            return;
+        }
+        // Increment the simulations seed each run.
+        ArenaEnvironment.seed++;
+        ResourceExchangeArena.random.setSeed(ArenaEnvironment.seed);
+
+        // Initialise each Agents relations with each other Agent if trading Agents are being simulated.
+        if (type >= 0) {
+            for (Agent a : agents) {
+                a.initializeFavoursStore();
+            }
+        }
+
+        // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
+        List<Agent> shuffledAgents = new ArrayList<>(agents);
+
+        for (int j = 1; j <= ArenaEnvironment.DAYS; j++) {
+            // Fill the available time slots with all the slots that exist each day.
+            for (int k = 1; k <= ArenaEnvironment.UNIQUE_TIME_SLOTS; k++) {
+                for (int l = 1; l <= ArenaEnvironment.MAXIMUM_PEAK_CONSUMPTION; l++) {
+                    availableTimeSlots.add(k);
+                }
+            }
+            // Agents start the day by requesting and receiving an allocation of time slots.
+            Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
+            for (Agent a : shuffledAgents) {
+                ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots();
+                ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
+                a.receiveAllocatedTimeSlots(allocatedTimeSlots);
+            }
+
+            double randomAllocations = CalculateSatisfaction.averageAgentSatisfaction(agents);
+            double optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
+
+            // The random and optimum average satisfaction scores are calculated before exchanges take place.
+            averageCSVWriter.append(String.valueOf(ArenaEnvironment.seed));
+            averageCSVWriter.append(",");
+            averageCSVWriter.append(String.valueOf(j));
+            averageCSVWriter.append(",");
+            averageCSVWriter.append(String.valueOf(randomAllocations));
+            averageCSVWriter.append(",");
+            averageCSVWriter.append(String.valueOf(optimumAllocations));
+
+            if (type >= 0) {
+                for (int k = 1; k <= ArenaEnvironment.EXCHANGES; k++) {
+                    ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
+
+                    // Reset the check for whether each Agent has made an interaction this round.
+                    for (Agent a : shuffledAgents) {
+                        a.setMadeInteraction(false);
+                    }
+
+                    // Exchanges start by Agents advertising time slots they may be willing to exchange.
+                    Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
+                    for (Agent a : shuffledAgents) {
+                        ArrayList<Integer> unlockedTimeSlots = a.publishUnlockedTimeSlots();
+                        if (!unlockedTimeSlots.isEmpty()) {
+                            ArrayList<Integer> advert = new ArrayList<>();
+                            advert.add(a.agentID);
+                            advert.addAll(a.publishUnlockedTimeSlots());
+                            advertisingBoard.add(advert);
+                        }
+                    }
+
+                    // Each Agent has the opportunity to make exchange requests for advertised time slots.
+                    Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
+                    for (Agent a : shuffledAgents) {
+                        if (a.canMakeInteraction()) {
+                            ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
+                            a.setMadeInteraction(true);
+                            if (!chosenAdvert.isEmpty()) {
+                                // Select an unwanted time slot to offer in the exchange.
+                                ArrayList<Integer> unwantedTimeSlots = a.publishUnwantedTimeSlots();
+                                int selector = ResourceExchangeArena.random.nextInt(unwantedTimeSlots.size());
+                                int unwantedTimeSlot = unwantedTimeSlots.get(selector);
+
+                                ArrayList<Integer> request = new ArrayList<>();
+                                request.add(a.agentID);
+                                request.add(chosenAdvert.get(1));
+                                request.add(unwantedTimeSlot);
+
+                                // The agent who offered the requested time slot receives the exchange request.
+                                for (Agent b : agents) {
+                                    if (b.agentID == chosenAdvert.get(0)) {
+                                        b.receiveExchangeRequest(request);
+                                        b.setMadeInteraction(true);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Agents who have received a request consider it.
+                    Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
+                    for (Agent a : agents) {
+                        if (!a.getExchangeRequestReceived().isEmpty()) {
+                            a.considerRequest();
+                        }
+                    }
+
+                    // Agents confirm and complete approved requests if they are able to do so, and update
+                    // their relations with other Agents accordingly.
+                    Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
+                    for (Agent a : shuffledAgents) {
+                        if (a.getExchangeRequestApproved()) {
+                            ArrayList<Integer> offer = a.getExchangeRequestReceived();
+                            if (a.finalCheck(offer.get(1))) {
+                                for (Agent b : agents) {
+                                    if (b.agentID == offer.get(0)) {
+                                        if (b.finalCheck(offer.get(2))) {
+                                            b.completeRequestedExchange(offer, a.agentID);
+                                            a.completeReceivedExchange(offer);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            a.setExchangeRequestApproved();
+                        }
+                        // Clear the agents accepted offers list before the next exchange round.
+                        if (!a.getExchangeRequestReceived().isEmpty()) {
+                            a.setExchangeRequestReceived();
+                        }
+                    }
+
+                    for (Agent a : agents) {
+                        individualCSVWriter.append(String.valueOf(ArenaEnvironment.seed));
+                        individualCSVWriter.append(",");
+                        individualCSVWriter.append(String.valueOf(j));
+                        individualCSVWriter.append(",");
+                        individualCSVWriter.append(String.valueOf(k));
+                        individualCSVWriter.append(",");
+                        individualCSVWriter.append(String.valueOf(a.agentID));
+                        individualCSVWriter.append(",");
+                        individualCSVWriter.append(String.valueOf(a.getAgentType()));
+                        individualCSVWriter.append(",");
+                        individualCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
+                        individualCSVWriter.append("\n");
+                    }
+
+                    // The average end of round satisfaction is stored for each Agent type if the current day exists in
+                    // the daysOfInterest array. This data can later be averaged over simulation runs and added to
+                    // the prePreparedIndividualFile.
+                    int currentDay = j;
+                    if (IntStream.of(ArenaEnvironment.daysOfInterest).anyMatch(val -> val == currentDay)) {
+                        for (int uniqueAgentType : ArenaEnvironment.uniqueAgentTypes) {
+                            double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
+                            ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
+                            endOfRoundAverageSatisfaction.add((double) currentDay);
+                            endOfRoundAverageSatisfaction.add((double) k);
+                            endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
+                            endOfRoundAverageSatisfaction.add(averageSatisfactionForType);
+
+                            ArenaEnvironment.endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
+                        }
+                    }
+                }
+            }
+
+            // The average end of day satisfaction is stored for each Agent type to later be averaged
+            // and added to the prePreparedAverageFile.
+            if (type == -2) {
+                ArenaEnvironment.endOfDayAverageSatisfactionsForType.get(j - 1).add(randomAllocations);
+            } else if (type == -1) {
+                ArenaEnvironment.endOfDayAverageSatisfactionsForType.get(j - 1).add(optimumAllocations);
+            } else {
+                double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, ArenaEnvironment.uniqueAgentTypes.get(type));
+                ArenaEnvironment.endOfDayAverageSatisfactionsForType.get(j - 1).add(typeAverageSatisfaction);
+            }
+
+            // Store the end of day average satisfaction for each agent type.
+            for (int uniqueAgentType : ArenaEnvironment.uniqueAgentTypes) {
+                double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
+                averageCSVWriter.append(",");
+                averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
+            }
+            averageCSVWriter.append("\n");
+
+            // The end of day satisfaction is stored for each Agent if the current day exists in
+            // the daysOfInterest array. This data can later be averaged over simulation runs and added to
+            // the prePreparedBoxPlotFile.
+            int currentDay = j;
+            if (IntStream.of(ArenaEnvironment.daysOfInterest).anyMatch(val -> val == currentDay)) {
+                for (Agent a : agents) {
+                    ArrayList<Double> individualSatisfaction = new ArrayList<>();
+                    individualSatisfaction.add((double) i);
+                    individualSatisfaction.add((double) j);
+                    individualSatisfaction.add((double) a.getAgentType());
+                    individualSatisfaction.add(a.calculateSatisfaction(null));
+
+                    ArenaEnvironment.endOfDayIndividualSatisfactions.add(individualSatisfaction);
+                }
+            }
+
+            // Only update the user on the simulations status every 10 days to reduce output spam.
+            if (j % 10 == 0) {
+                System.out.println("Agent Type: " + type + "  RUN: " + i + "  DAY: " + j);
+            }
+        }
+    }
+
     /**
      * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and
      * the time slots that are currently available.
@@ -239,7 +457,7 @@ class SimulationRun {
      * @param requestedTimeSlots The time slots that the Agent has requested.
      * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
      */
-    private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {                // TODO: CAN ASSIGN SAME SLOT TWICE TO AN AGENT, NEED TO USE PSEUDO RANDOM APPROACH WITH HASH MAPS, ASSIGNING MOST COMMONLY AVAILABLE SLOTS FIRST TO SOLVE THIS.
+    private static ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
         for (int i = 1; i <= requestedTimeSlots.size(); i++) {

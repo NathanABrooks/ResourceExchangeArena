@@ -8,7 +8,7 @@ import java.util.*;
  */
 public class ResourceExchangeArena {
     // The current version of the simulation, used to organise output data.
-    static final String RELEASE_VERSION = "v2";
+    static final String RELEASE_VERSION = "v1";
 
     // Constants defining the scope of the simulation.
     static final int SIMULATION_RUNS = 50;
@@ -21,7 +21,7 @@ public class ResourceExchangeArena {
 
     // Boolean constant determining whether Agents of different types will initially exist in the same simulation.
     // Essentially used to switch between versions 1.0 and 2.0;
-    static final boolean VARIED_AGENT_TYPES = true;
+    static final boolean VARIED_AGENT_TYPES = false;
 
     // Constants representing the available agent types for the simulation.
     static final int NON_TRADER = 0;
