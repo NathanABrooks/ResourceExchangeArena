@@ -19,12 +19,7 @@ public class ResourceExchangeArena {
     static final int UNIQUE_TIME_SLOTS = 24;
     static final int SLOTS_PER_AGENT = 4;
 
-    // Boolean constant determining whether Agents of different types will initially exist in the same simulation.
-    // Essentially used to switch between versions 1.0 and 2.0;
-    static final boolean VARIED_AGENT_TYPES = true;
-
     // Constants representing the available agent types for the simulation.
-    static final int NON_TRADER = 0;
     static final int SELFISH = 1;
     static final int SOCIAL = 2;
 

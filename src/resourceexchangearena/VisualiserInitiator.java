@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 class VisualiserInitiator {
-    static void visualise(int[] daysOfInterest, String initialSeed, File prePreparedPopulationDistributionsFile, File prePreparedBoxPlotFile, File prePreparedAverageFile, File prePreparedIndividualFile) throws IOException {
+    static void visualise(int[] daysOfInterest, String initialSeed, File prePreparedPopulationDistributionsFile, File prePreparedAverageFile, File prePreparedIndividualFile) throws IOException {
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
         String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
@@ -16,11 +16,9 @@ class VisualiserInitiator {
         List<String> pythonArgs = new ArrayList<>();
 
         String thirdGraph;
-        if (ResourceExchangeArena.VARIED_AGENT_TYPES) {
-            thirdGraph = prePreparedPopulationDistributionsFile.getAbsolutePath();
-        } else {
-            thirdGraph = prePreparedBoxPlotFile.getAbsolutePath();
-        }
+
+        thirdGraph = prePreparedPopulationDistributionsFile.getAbsolutePath();
+
 
         pythonArgs.add(pythonExe);
         pythonArgs.add(pythonPath);
