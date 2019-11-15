@@ -196,7 +196,7 @@ public class ArenaEnvironment extends ResourceExchangeArena{
             }
 
             for (int i = 1; i <= SIMULATION_RUNS; i++) {
-                SimulationRun.simulateVariedAgents(averageCSVWriter, individualCSVWriter);
+                SimulationRun.simulateVariedAgents(i, averageCSVWriter, individualCSVWriter);
                 System.out.println("RUN: " + i);
             }
 
