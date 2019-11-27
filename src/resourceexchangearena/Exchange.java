@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 class Exchange {
-    static void exchange(ArrayList<Agent> shuffledAgents, int j, int k, FileWriter individualCSVWriter) throws IOException {
+    Exchange(ArrayList<Agent> shuffledAgents, int j, int k, FileWriter individualCSVWriter) throws IOException {
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
         // Reset the check for whether each Agent has made an interaction this round.

@@ -8,7 +8,7 @@ class SimulationRun {
     // List of all the Agents that are part of the current simulation.
     static ArrayList<Agent> agents = new ArrayList<>();
 
-    static void simulate(int i, FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException {
+    SimulationRun(int i, FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException {
         // Clear the list of agents before a simulation begins.
         if (!agents.isEmpty()) {
             agents.clear();
@@ -45,7 +45,7 @@ class SimulationRun {
 
 
         for (int j = 1; j <= ResourceExchangeArena.DAYS; j++) {
-            Day.day(i, j, averageCSVWriter, individualCSVWriter);
+            Day currentDay = new Day(i, j, averageCSVWriter, individualCSVWriter);
         }
     }
 }

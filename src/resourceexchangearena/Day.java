@@ -11,7 +11,7 @@ public class Day {
     // List of all the possible allocations that exist in the current simulation.
     private static List<Integer> availableTimeSlots = new ArrayList<>();
 
-    static void day(int i, int j, FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException{
+    Day(int i, int j, FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException{
         // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
         ArrayList<Agent> shuffledAgents = new ArrayList<>(SimulationRun.agents);
 
@@ -42,7 +42,7 @@ public class Day {
         averageCSVWriter.append(String.valueOf(optimumAllocations));
 
         for (int k = 1; k <= ArenaEnvironment.EXCHANGES; k++) {
-            Exchange.exchange(shuffledAgents, j, k, individualCSVWriter);
+            Exchange currentExchange = new Exchange(shuffledAgents, j, k, individualCSVWriter);
         }
 
         // The average end of day satisfaction is stored for each Agent type to later be averaged

@@ -174,7 +174,7 @@ public class ArenaEnvironment extends ResourceExchangeArena{
         }
 
         for (int i = 1; i <= SIMULATION_RUNS; i++) {
-            SimulationRun.simulate(i, averageCSVWriter, individualCSVWriter);
+            SimulationRun currentRun = new SimulationRun(i, averageCSVWriter, individualCSVWriter);
             System.out.println("RUN: " + i);
         }
 
