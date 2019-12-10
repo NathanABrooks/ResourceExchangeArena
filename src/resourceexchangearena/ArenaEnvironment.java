@@ -11,22 +11,22 @@ import java.util.*;
 public class ArenaEnvironment extends ResourceExchangeArena{
 
     // Agent types that will be simulated.
-    static int[] agentTypes = {SELFISH, SOCIAL};
+    int[] agentTypes = {SELFISH, SOCIAL};
 
     // Days that will have the Agents average satisfaction over the course of the day,
     // and satisfaction distribution at the end of the day visualised.
-    static int[] daysOfInterest = {1, 25, 50};
+    int[] daysOfInterest = {1, 25, 50};
 
     // Calculate the number of Agents of each type.
-    static int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
+    int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
 
     static long seed;
 
-    static ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
+    ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
 
-    static ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
-    static ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
-    static ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
+    ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
+    ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
+    ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
 
     ArenaEnvironment() throws IOException {
         // Array of the unique agent types used in the simulation.
@@ -174,7 +174,7 @@ public class ArenaEnvironment extends ResourceExchangeArena{
         }
 
         for (int i = 1; i <= SIMULATION_RUNS; i++) {
-            SimulationRun currentRun = new SimulationRun(i, averageCSVWriter, individualCSVWriter);
+            SimulationRun currentRun = new SimulationRun(i, averageCSVWriter, individualCSVWriter, numberOfEachAgentType, agentTypes, uniqueAgentTypes, endOfDayAverageSatisfactions, endOfDayPopulationDistributions, daysOfInterest, endOfRoundAverageSatisfactions);
             System.out.println("RUN: " + i);
         }
 

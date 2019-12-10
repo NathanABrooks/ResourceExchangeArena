@@ -27,7 +27,7 @@ class Agent {
      *  used to identify it to others in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
      */
-    Agent(int agentID, int agentType){
+    Agent(int agentID, int agentType, ArrayList<Agent> agents){
         this.agentID = agentID;
         this.agentType = agentType;
 
@@ -35,7 +35,7 @@ class Agent {
         numberOfTimeSlotsWanted = ResourceExchangeArena.SLOTS_PER_AGENT;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
-        SimulationRun.agents.add(this);
+        agents.add(this);
     }
 
     /**
@@ -97,14 +97,14 @@ class Agent {
      * Identifies all other Agents in the ExchangeArena and initialises counts of favours given to
      * and received from each other Agent.
      */
-    void initializeFavoursStore() {
+    void initializeFavoursStore(ArrayList<Agent> agents) {
         if (!favoursGiven.isEmpty()) {
             favoursGiven.clear();
         }
         if (!favoursOwed.isEmpty()) {
             favoursOwed.clear();
         }
-        for (Agent a: SimulationRun.agents) {
+        for (Agent a: agents) {
             if (a.agentID != agentID) {
                 ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
                 ArrayList<Integer> favoursGivenRelation = new ArrayList<>();

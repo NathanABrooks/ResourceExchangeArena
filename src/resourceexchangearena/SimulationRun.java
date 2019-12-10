@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 class SimulationRun {
     // List of all the Agents that are part of the current simulation.
-    static ArrayList<Agent> agents = new ArrayList<>();
+    ArrayList<Agent> agents = new ArrayList<>();
 
-    SimulationRun(int i, FileWriter averageCSVWriter, FileWriter individualCSVWriter) throws IOException {
+    SimulationRun(int i, FileWriter averageCSVWriter, FileWriter individualCSVWriter, int numberOfEachAgentType, int[] agentTypes, ArrayList<Integer> uniqueAgentTypes, ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions, ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions, int[] daysOfInterest, ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions) throws IOException {
         // Clear the list of agents before a simulation begins.
         if (!agents.isEmpty()) {
             agents.clear();
@@ -19,18 +19,18 @@ class SimulationRun {
 
         // Create the Agents for the simulation.
         for (int j = 1; j <= ResourceExchangeArena.POPULATION_SIZE; j++) {
-            if (agentsOfThisType >= ArenaEnvironment.numberOfEachAgentType) {
+            if (agentsOfThisType >= numberOfEachAgentType) {
                 agentType++;
                 agentsOfThisType = 0;
             }
-            if (agentType < ArenaEnvironment.agentTypes.length) {
-                new Agent(j, ArenaEnvironment.agentTypes[agentType]);
+            if (agentType < agentTypes.length) {
+                new Agent(j, agentTypes[agentType], agents);
                 agentsOfThisType++;
             } else {
                 j--;
                 agentType = 0;
                 agentsOfThisType = 0;
-                ArenaEnvironment.numberOfEachAgentType = 1;
+                numberOfEachAgentType = 1;
             }
         }
 
@@ -40,12 +40,12 @@ class SimulationRun {
 
         // Initialise each Agents relations with each other Agent if trading Agents are being simulated.
         for (Agent a : agents) {
-            a.initializeFavoursStore();
+            a.initializeFavoursStore(agents);
         }
 
 
         for (int j = 1; j <= ResourceExchangeArena.DAYS; j++) {
-            Day currentDay = new Day(i, j, averageCSVWriter, individualCSVWriter);
+            Day currentDay = new Day(i, j, averageCSVWriter, individualCSVWriter, agents, uniqueAgentTypes, endOfDayAverageSatisfactions, endOfDayPopulationDistributions, daysOfInterest, endOfRoundAverageSatisfactions);
         }
     }
 }

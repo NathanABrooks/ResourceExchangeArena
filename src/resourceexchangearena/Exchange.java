@@ -7,11 +7,11 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 class Exchange {
-    Exchange(ArrayList<Agent> shuffledAgents, int j, int k, FileWriter individualCSVWriter) throws IOException {
+    Exchange(ArrayList<Agent> shuffledAgents, int j, int k, FileWriter individualCSVWriter, ArrayList<Agent> agents, int[] daysOfInterest, ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions, ArrayList<Integer> uniqueAgentTypes) throws IOException {
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
         // Reset the check for whether each Agent has made an interaction this round.
-        for (Agent a : SimulationRun.agents) {
+        for (Agent a : agents) {
             a.setMadeInteraction(false);
         }
 
@@ -45,7 +45,7 @@ class Exchange {
                     request.add(unwantedTimeSlot);
 
                     // The agent who offered the requested time slot receives the exchange request.
-                    for (Agent b : SimulationRun.agents) {
+                    for (Agent b : agents) {
                         if (b.agentID == chosenAdvert.get(0)) {
                             b.receiveExchangeRequest(request);
                             b.setMadeInteraction(true);
@@ -71,7 +71,7 @@ class Exchange {
             if (a.getExchangeRequestApproved()) {
                 ArrayList<Integer> offer = a.getExchangeRequestReceived();
                 if (a.finalCheck(offer.get(1))) {
-                    for (Agent b : SimulationRun.agents) {
+                    for (Agent b : agents) {
                         if (b.agentID == offer.get(0)) {
                             if (b.finalCheck(offer.get(2))) {
                                 b.completeRequestedExchange(offer, a.agentID);
@@ -89,7 +89,7 @@ class Exchange {
             }
         }
 
-        for (Agent a : SimulationRun.agents) {
+        for (Agent a : agents) {
             individualCSVWriter.append(String.valueOf(ArenaEnvironment.seed));
             individualCSVWriter.append(",");
             individualCSVWriter.append(String.valueOf(j));
@@ -107,16 +107,16 @@ class Exchange {
         // The average end of round satisfaction is stored for each Agent type if the current day exists in
         // the daysOfInterest array. This data can later be averaged over simulation runs and added to
         // the prePreparedIndividualFile.
-        if (IntStream.of(ArenaEnvironment.daysOfInterest).anyMatch(val -> val == j)) {
-            for (int uniqueAgentType : ArenaEnvironment.uniqueAgentTypes) {
-                double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(SimulationRun.agents, uniqueAgentType);
+        if (IntStream.of(daysOfInterest).anyMatch(val -> val == j)) {
+            for (int uniqueAgentType : uniqueAgentTypes) {
+                double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
                 ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
                 endOfRoundAverageSatisfaction.add((double) j);
                 endOfRoundAverageSatisfaction.add((double) k);
                 endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
                 endOfRoundAverageSatisfaction.add(averageSatisfactionForType);
 
-                ArenaEnvironment.endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
+                endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
             }
         }
     }
