@@ -7,7 +7,16 @@ import java.util.Arrays;
 import java.util.List;
 
 class VisualiserInitiator {
-    static void visualise(int[] daysOfInterest, String initialSeed, File prePreparedPopulationDistributionsFile, File prePreparedAverageFile, File prePreparedIndividualFile) throws IOException {
+    static void visualise(
+            String releaseVersion,
+            int days,
+            int exchanges,
+            int[] daysOfInterest,
+            String initialSeed,
+            File prePreparedPopulationDistributionsFile,
+            File prePreparedAverageFile,
+            File prePreparedIndividualFile
+    ) throws IOException {
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
         String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
@@ -22,13 +31,13 @@ class VisualiserInitiator {
 
         pythonArgs.add(pythonExe);
         pythonArgs.add(pythonPath);
-        pythonArgs.add(ResourceExchangeArena.RELEASE_VERSION);
+        pythonArgs.add(releaseVersion);
         pythonArgs.add(initialSeed);
         pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
         pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
         pythonArgs.add(thirdGraph);
-        pythonArgs.add(Integer.toString(ResourceExchangeArena.DAYS));
-        pythonArgs.add(Integer.toString(ResourceExchangeArena.EXCHANGES));
+        pythonArgs.add(Integer.toString(days));
+        pythonArgs.add(Integer.toString(exchanges));
         pythonArgs.add(daysToAnalyse);
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);

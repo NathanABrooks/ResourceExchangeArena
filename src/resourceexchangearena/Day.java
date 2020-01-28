@@ -11,20 +11,37 @@ public class Day {
     // List of all the possible allocations that exist in the current simulation.
     private List<Integer> availableTimeSlots = new ArrayList<>();
 
-    Day(int i, int j, FileWriter averageCSVWriter, FileWriter individualCSVWriter, ArrayList<Agent> agents, ArrayList<Integer> uniqueAgentTypes, ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions, ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions, int[] daysOfInterest, ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions) throws IOException{
+    Day(
+            int day,
+            int maximumPeakConsumption,
+            int uniqueTimeSlots,
+            int exchanges,
+            int slotsPerAgent,
+            FileWriter averageCSVWriter,
+            FileWriter individualCSVWriter,
+            ArrayList<Agent> agents,
+            ArrayList<Integer> uniqueAgentTypes,
+            ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
+            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
+            int[] daysOfInterest,
+            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions
+    ) throws IOException{
+
         // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
         ArrayList<Agent> shuffledAgents = new ArrayList<>(agents);
 
         // Fill the available time slots with all the slots that exist each day.
-        for (int k = 1; k <= ArenaEnvironment.UNIQUE_TIME_SLOTS; k++) {
-            for (int l = 1; l <= ArenaEnvironment.MAXIMUM_PEAK_CONSUMPTION; l++) {
-                availableTimeSlots.add(k);
+        for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
+            for (int unit = 1; unit <= maximumPeakConsumption; unit++) {
+                availableTimeSlots.add(timeSlot);
             }
         }
+
         // Agents start the day by requesting and receiving an allocation of time slots.
         Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
+
         for (Agent a : shuffledAgents) {
-            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots();
+            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(uniqueTimeSlots);
             ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
             a.receiveAllocatedTimeSlots(allocatedTimeSlots);
         }
@@ -33,22 +50,31 @@ public class Day {
         double optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
 
         // The random and optimum average satisfaction scores are calculated before exchanges take place.
-        averageCSVWriter.append(String.valueOf(ArenaEnvironment.seed));
+        averageCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
         averageCSVWriter.append(",");
-        averageCSVWriter.append(String.valueOf(j));
+        averageCSVWriter.append(String.valueOf(day));
         averageCSVWriter.append(",");
         averageCSVWriter.append(String.valueOf(randomAllocations));
         averageCSVWriter.append(",");
         averageCSVWriter.append(String.valueOf(optimumAllocations));
 
-        for (int k = 1; k <= ArenaEnvironment.EXCHANGES; k++) {
-            Exchange currentExchange = new Exchange(shuffledAgents, j, k, individualCSVWriter, agents, daysOfInterest, endOfRoundAverageSatisfactions, uniqueAgentTypes);
+        for (int exchange = 1; exchange <= exchanges; exchange++) {
+            new Exchange(
+                    shuffledAgents,
+                    day,
+                    exchange,
+                    individualCSVWriter,
+                    agents,
+                    daysOfInterest,
+                    endOfRoundAverageSatisfactions,
+                    uniqueAgentTypes
+            );
         }
 
         // The average end of day satisfaction is stored for each Agent type to later be averaged
         // and added to the prePreparedAverageFile.
         ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
-        endOfDayAverageSatisfaction.add((double) j);
+        endOfDayAverageSatisfaction.add((double) day);
         endOfDayAverageSatisfaction.add(randomAllocations);
         endOfDayAverageSatisfaction.add(optimumAllocations);
 
@@ -74,10 +100,10 @@ public class Day {
                     populationQuantity++;
                 }
             }
-            endOfDayPopulationDistributions.get(j - 1).get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
+            endOfDayPopulationDistributions.get(day - 1).get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
         }
 
-        SocialLearning.Evolve(agents);
+        SocialLearning.Evolve(agents, slotsPerAgent);
     }
 
     /**
@@ -90,7 +116,7 @@ public class Day {
     private ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
-        for (int i = 1; i <= requestedTimeSlots.size(); i++) {
+        for (int requestedTimeSlot = 1; requestedTimeSlot <= requestedTimeSlots.size(); requestedTimeSlot++) {
             // Only allocate time slots if there are slots available to allocate.
             if (!availableTimeSlots.isEmpty()) {
                 int selector = ResourceExchangeArena.random.nextInt(availableTimeSlots.size());

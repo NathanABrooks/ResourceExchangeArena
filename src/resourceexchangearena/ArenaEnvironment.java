@@ -8,27 +8,34 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class ArenaEnvironment extends ResourceExchangeArena{
-
-    // Agent types that will be simulated.
-    int[] agentTypes = {SELFISH, SOCIAL};
-
-    // Days that will have the Agents average satisfaction over the course of the day,
-    // and satisfaction distribution at the end of the day visualised.
-    int[] daysOfInterest = {1, 25, 50};
-
-    // Calculate the number of Agents of each type.
-    int numberOfEachAgentType = POPULATION_SIZE / agentTypes.length;
-
-    static long seed;
-
-    ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
+public class ArenaEnvironment {
 
     ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
 
-    ArenaEnvironment() throws IOException {
+    ArenaEnvironment(
+            String releaseVersion,
+            int[] daysOfInterest,
+            int simulationRuns,
+            int days,
+            int exchanges,
+            int populationSize,
+            int maximumPeakConsumption,
+            int uniqueTimeSlots,
+            int slotsPerAgent
+    ) throws IOException {
+
+        String initialSeed = Long.toString(ResourceExchangeArena.seed);
+
+        // Agent types that will be simulated.
+        int[] agentTypes = {ResourceExchangeArena.SELFISH, ResourceExchangeArena.SOCIAL};
+
+        // Calculate the number of Agents of each type.
+        int numberOfEachAgentType = populationSize / agentTypes.length;
+
+        ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
+
         // Array of the unique agent types used in the simulation.
         for (int type : agentTypes) {
             if (!uniqueAgentTypes.contains(type)) {
@@ -39,18 +46,14 @@ public class ArenaEnvironment extends ResourceExchangeArena{
         // Sort the agent types so that they are ordered correctly in the output csv files.
         Collections.sort(uniqueAgentTypes);
 
-        // Create a unique seed that can be used to identify files from the same run of the simulation.
-        long seed = System.currentTimeMillis();
-        String initialSeed = Long.toString(seed);
-
         // Create directories to store the data output by the simulation.
         String rawDataOutputFolder =
-                "outputData/" + RELEASE_VERSION + "/" + initialSeed + "/rawData";
+                "outputData/" + releaseVersion + "/" + initialSeed + "/rawData";
         Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
         Files.createDirectories(rawDataOutputPath);
 
         String prePreparedDataOutputFolder =
-                "outputData/" + RELEASE_VERSION + "/" + initialSeed + "/prePreparedData";
+                "outputData/" + releaseVersion + "/" + initialSeed + "/prePreparedData";
         Path prePreparedDataOutputPath = Paths.get(prePreparedDataOutputFolder);
         Files.createDirectories(prePreparedDataOutputPath);
 
@@ -162,33 +165,49 @@ public class ArenaEnvironment extends ResourceExchangeArena{
         prePreparedPopulationDistributionsCSVWriter.append("\n");
 
         // Array lists used to temporarily store data before averaging and adding it to csv files.
-        for (int i = 1; i <= DAYS; i++) {
+        for (int day = 1; day <= days; day++) {
             ArrayList<ArrayList<Integer>> endOfDayPopulationDistribution = new ArrayList<>();
             endOfDayPopulationDistributions.add(endOfDayPopulationDistribution);
         }
         for (ArrayList<ArrayList<Integer>> day : endOfDayPopulationDistributions) {
-            for (int i = 1; i <= uniqueAgentTypes.size(); i++) {
+            for (int agentType = 1; agentType <= uniqueAgentTypes.size(); agentType++) {
                 ArrayList<Integer> populations = new ArrayList<>();
                 day.add(populations);
             }
         }
 
-        for (int i = 1; i <= SIMULATION_RUNS; i++) {
-            SimulationRun currentRun = new SimulationRun(i, averageCSVWriter, individualCSVWriter, numberOfEachAgentType, agentTypes, uniqueAgentTypes, endOfDayAverageSatisfactions, endOfDayPopulationDistributions, daysOfInterest, endOfRoundAverageSatisfactions);
-            System.out.println("RUN: " + i);
+        for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
+            new SimulationRun(
+                    populationSize,
+                    numberOfEachAgentType,
+                    days,
+                    exchanges,
+                    daysOfInterest,
+                    maximumPeakConsumption,
+                    uniqueTimeSlots,
+                    slotsPerAgent,
+                    agentTypes,
+                    uniqueAgentTypes,
+                    endOfDayAverageSatisfactions,
+                    endOfDayPopulationDistributions,
+                    endOfRoundAverageSatisfactions,
+                    averageCSVWriter,
+                    individualCSVWriter
+            );
+            System.out.println("RUN: " + simulationRun);
         }
 
         // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
         // are averaged over simulation runs and appended to the prePreparedAverageFile.
         int types = (uniqueAgentTypes.size() * 2) + 2;
-        for (int i = 1; i <= DAYS; i++) {
-            prePreparedAverageCSVWriter.append(String.valueOf(i));
-            for (int j = 1; j <= types; j++) {
+        for (int day = 1; day <= days; day++) {
+            prePreparedAverageCSVWriter.append(String.valueOf(day));
+            for (int agentType = 1; agentType <= types; agentType++) {
                 ArrayList<Double> allSatisfactions = new ArrayList<>();
                 for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
-                    if (endOfDayAverageSatisfaction.get(0) == (double) i) {
-                        if (!Double.isNaN(endOfDayAverageSatisfaction.get(j))) {
-                            allSatisfactions.add(endOfDayAverageSatisfaction.get(j));
+                    if (endOfDayAverageSatisfaction.get(0) == (double) day) {
+                        if (!Double.isNaN(endOfDayAverageSatisfaction.get(agentType))) {
+                            allSatisfactions.add(endOfDayAverageSatisfaction.get(agentType));
                         }
                     }
                 }
@@ -203,12 +222,12 @@ public class ArenaEnvironment extends ResourceExchangeArena{
         // daysOfInterest array. These end of round averages are themselves averaged over all simulation runs before
         // being added to the prePreparedIndividualFile.
         for (int day : daysOfInterest) {
-            for (int i = 1; i <= EXCHANGES; i++) {
+            for (int exchange = 1; exchange <= exchanges; exchange++) {
                 for (int agentType : uniqueAgentTypes) {
                     ArrayList<Double> allSimsEndOfRoundAverageSatisfaction = new ArrayList<>();
                     for (ArrayList<Double> endOfRoundAverageSatisfaction : endOfRoundAverageSatisfactions) {
                         if ((endOfRoundAverageSatisfaction.get(0) == (double) day) &&
-                                (endOfRoundAverageSatisfaction.get(1) == (double) i) &&
+                                (endOfRoundAverageSatisfaction.get(1) == (double) exchange) &&
                                 (endOfRoundAverageSatisfaction.get(2) == (double) agentType)) {
                             allSimsEndOfRoundAverageSatisfaction.add(endOfRoundAverageSatisfaction.get(3));
                         }
@@ -217,7 +236,7 @@ public class ArenaEnvironment extends ResourceExchangeArena{
 
                     prePreparedIndividualCSVWriter.append(String.valueOf(day));
                     prePreparedIndividualCSVWriter.append(",");
-                    prePreparedIndividualCSVWriter.append(String.valueOf(i));
+                    prePreparedIndividualCSVWriter.append(String.valueOf(exchange));
                     prePreparedIndividualCSVWriter.append(",");
                     prePreparedIndividualCSVWriter.append(String.valueOf(agentType));
                     prePreparedIndividualCSVWriter.append(",");
@@ -227,20 +246,20 @@ public class ArenaEnvironment extends ResourceExchangeArena{
             }
         }
 
-        for (int i = 1; i <= DAYS; i++) {
-            ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(i - 1);
-            for (int j = 0; j < uniqueAgentTypes.size(); j++) {
-                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(i));
+        for (int day = 1; day <= days; day++) {
+            ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(day - 1);
+            for (int agentType = 0; agentType < uniqueAgentTypes.size(); agentType++) {
+                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(day));
                 prePreparedPopulationDistributionsCSVWriter.append(",");
-                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(uniqueAgentTypes.get(j)));
+                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(uniqueAgentTypes.get(agentType)));
                 prePreparedPopulationDistributionsCSVWriter.append(",");
 
-                ArrayList<Integer> allPopulations = daysPopulations.get(j);
+                ArrayList<Integer> allPopulations = daysPopulations.get(agentType);
                 int sumOfPopulations = 0;
                 for (Integer population : allPopulations) {
                     sumOfPopulations = sumOfPopulations + population;
                 }
-                double averagePopulation = (double) sumOfPopulations / SIMULATION_RUNS;
+                double averagePopulation = (double) sumOfPopulations / simulationRuns;
 
                 prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
                 prePreparedPopulationDistributionsCSVWriter.append("\n");
@@ -254,6 +273,15 @@ public class ArenaEnvironment extends ResourceExchangeArena{
         prePreparedIndividualCSVWriter.close();
         prePreparedPopulationDistributionsCSVWriter.close();
 
-        VisualiserInitiator.visualise(daysOfInterest, initialSeed, prePreparedPopulationDistributionsFile, prePreparedAverageFile, prePreparedIndividualFile);
+        VisualiserInitiator.visualise(
+                releaseVersion,
+                days,
+                exchanges,
+                daysOfInterest,
+                initialSeed,
+                prePreparedPopulationDistributionsFile,
+                prePreparedAverageFile,
+                prePreparedIndividualFile
+        );
     }
 }

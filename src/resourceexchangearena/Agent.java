@@ -27,12 +27,12 @@ class Agent {
      *  used to identify it to others in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
      */
-    Agent(int agentID, int agentType, ArrayList<Agent> agents){
+    Agent(int agentID, int agentType, int requiredSlots,  ArrayList<Agent> agents){
         this.agentID = agentID;
         this.agentType = agentType;
 
         madeInteraction = false;
-        numberOfTimeSlotsWanted = ResourceExchangeArena.SLOTS_PER_AGENT;
+        numberOfTimeSlotsWanted = requiredSlots;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
         agents.add(this);
@@ -138,7 +138,8 @@ class Agent {
      *
      * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
      */
-    ArrayList<Integer> requestTimeSlots() {
+    ArrayList<Integer> requestTimeSlots(int possibleTimeSlots) {
+
         if (!requestedTimeSlots.isEmpty()) {
             requestedTimeSlots.clear();
         }
@@ -149,7 +150,7 @@ class Agent {
 
             // Selects a random integer representing the time slot between 1 and the total number of available slots.
             // that exist in the simulation.
-            int timeSlot = random.nextInt(ResourceExchangeArena.UNIQUE_TIME_SLOTS) + 1;
+            int timeSlot = random.nextInt(possibleTimeSlots) + 1;
 
             // Ensures all requested time slots are unique.
             if (requestedTimeSlots.contains(timeSlot)) {

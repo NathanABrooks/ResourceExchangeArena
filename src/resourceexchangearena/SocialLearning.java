@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 class SocialLearning {
-    static void Evolve(ArrayList<Agent> agents) {
+    static void Evolve(ArrayList<Agent> agents, int slotsPerAgent) {
         // EVOLUTION
-        int[][] tempAgentFitnessScores = new int[ResourceExchangeArena.POPULATION_SIZE][3];
+        int[][] tempAgentFitnessScores = new int[agents.size()][3];
         for (Agent a : agents) {
             tempAgentFitnessScores[a.agentID - 1][0] = a.agentID;
-            tempAgentFitnessScores[a.agentID - 1][1] = (int) (Math.round(a.calculateSatisfaction(null) * ResourceExchangeArena.SLOTS_PER_AGENT));
+            tempAgentFitnessScores[a.agentID - 1][1] = (int) (Math.round(a.calculateSatisfaction(null) * slotsPerAgent));
             tempAgentFitnessScores[a.agentID - 1][2] = a.getAgentType();
         }
         int[][] agentFitnessScores = tempAgentFitnessScores.clone();

@@ -7,7 +7,17 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 class Exchange {
-    Exchange(ArrayList<Agent> shuffledAgents, int j, int k, FileWriter individualCSVWriter, ArrayList<Agent> agents, int[] daysOfInterest, ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions, ArrayList<Integer> uniqueAgentTypes) throws IOException {
+    Exchange(
+            ArrayList<Agent> shuffledAgents,
+            int day,
+            int exchange,
+            FileWriter individualCSVWriter,
+            ArrayList<Agent> agents,
+            int[] daysOfInterest,
+            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
+            ArrayList<Integer> uniqueAgentTypes
+    ) throws IOException {
+
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
         // Reset the check for whether each Agent has made an interaction this round.
@@ -90,11 +100,11 @@ class Exchange {
         }
 
         for (Agent a : agents) {
-            individualCSVWriter.append(String.valueOf(ArenaEnvironment.seed));
+            individualCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
             individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(j));
+            individualCSVWriter.append(String.valueOf(day));
             individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(k));
+            individualCSVWriter.append(String.valueOf(exchange));
             individualCSVWriter.append(",");
             individualCSVWriter.append(String.valueOf(a.agentID));
             individualCSVWriter.append(",");
@@ -107,12 +117,12 @@ class Exchange {
         // The average end of round satisfaction is stored for each Agent type if the current day exists in
         // the daysOfInterest array. This data can later be averaged over simulation runs and added to
         // the prePreparedIndividualFile.
-        if (IntStream.of(daysOfInterest).anyMatch(val -> val == j)) {
+        if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
             for (int uniqueAgentType : uniqueAgentTypes) {
                 double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
                 ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
-                endOfRoundAverageSatisfaction.add((double) j);
-                endOfRoundAverageSatisfaction.add((double) k);
+                endOfRoundAverageSatisfaction.add((double) day);
+                endOfRoundAverageSatisfaction.add((double) exchange);
                 endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
                 endOfRoundAverageSatisfaction.add(averageSatisfactionForType);
 
