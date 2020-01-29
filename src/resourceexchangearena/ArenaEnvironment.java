@@ -341,9 +341,9 @@ public class ArenaEnvironment {
                 for (ArrayList<Double> endOfDaySatisfaction : endOfDaySatisfactions) {
                     if ((endOfDaySatisfaction.get(0) == (double) day) &&
                             (endOfDaySatisfaction.get(1) == (double) agentType)) {
-                        individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(0)));
+                        individualSatisfactionsCSVWriter.append(String.valueOf(day));
                         individualSatisfactionsCSVWriter.append(",");
-                        individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(1)));
+                        individualSatisfactionsCSVWriter.append(String.valueOf(agentType));
                         individualSatisfactionsCSVWriter.append(",");
                         individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(2)));
                         individualSatisfactionsCSVWriter.append("\n");
@@ -421,6 +421,7 @@ public class ArenaEnvironment {
          * @param days Integer value representing the number of days to be simulated.
          * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per
          *                  day.
+         * @param endOfDaySatisfactionsFile  Stores the satisfaction of each agent at the end of days of interest.
          * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day,
          *                                 as well as the optimum average satisfaction and the satisfaction if
          *                                 allocations remained random.
@@ -437,6 +438,7 @@ public class ArenaEnvironment {
                 daysOfInterest,
                 days,
                 exchanges,
+                endOfDaySatisfactionsFile,
                 averageSatisfactionsFile,
                 individualsDataFile,
                 populationDistributionsFile

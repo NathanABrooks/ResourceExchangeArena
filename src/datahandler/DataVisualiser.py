@@ -52,13 +52,14 @@ seed: str = sys.argv[2]
 averageSatisfactionLevels: str = sys.argv[3]
 keyDaysSatisfactionLevels: str = sys.argv[4]
 populationDistributions: str = sys.argv[5]
+individualSatisfactions: str = sys.argv[6]
 
 # Get the scope of the data to be visualised.
-totalDaysSimulated: int = int(sys.argv[6])
-totalExchangesSimulated: int = int(sys.argv[7])
+totalDaysSimulated: int = int(sys.argv[7])
+totalExchangesSimulated: int = int(sys.argv[8])
 
 # Get the specific days to have average satisfaction visualised throughout the day.
-daysToVisualise: List[int] = ast.literal_eval(sys.argv[8])
+daysToVisualise: List[int] = ast.literal_eval(sys.argv[9])
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -384,4 +385,75 @@ with open(populationDistributions) as populationData:
     fileName: str = convertedBaseFileName.replace('endOfDayAverages', 'populationDistribution')
     fullPath: str = os.path.join(baseOutputDirectory, fileName)
     py.io.write_image(fig, fullPath)
+
+# Average consumer satisfactions for each agent type at the end of each round day are visualised as a line graph.
+# Only pre-selected days are visualised to minimise compute time.
+with open(individualSatisfactions) as individualSatisfactionDeviations:
+    reader = csv.reader(individualSatisfactionDeviations)
+
+    # Each pre-selected is visualised in its own graph.
+    for i in range(len(daysToVisualise)):
+
+        # Store calculated graph data
+        data: Any = []
+
+        # Used to distinguish results when many agent types present.
+        lineType: int = 0
+
+        # Each agent type is plotted separately.
+        for j in range(len(fieldNames) - 2):
+            satisfactions: List[int] = []
+            individualSatisfactionDeviations.seek(0)
+
+            # The first line contains only headers and so can be skipped.
+            next(reader)
+            for row in reader:
+                # The field type column + 1 used as agent types start at 1 as opposed to 0.
+                if int(row[0]) == int(daysToVisualise[i]) \
+                        and int(row[1]) == int(j + 1):
+                    satisfactions.append(row[2])
+
+            # Get new line styling combination.
+            colour: int = j
+            while colour >= len(colours):
+                colour -= len(colours)
+                lineType += 1
+            while lineType >= len(lineTypes):
+                lineType -= len(lineTypes)
+
+            # Add the agent types data plots to the graph data.
+            data.append(
+                py.graph_objs.Violin(
+                    y=satisfactions,
+                    name=fieldNames[j + 2],
+                    line=dict(
+                        color=colours[colour],
+                        width=1,
+                    ),
+                    meanline_visible=True,
+                    scalemode='count',
+                    spanmode='hard',
+                )
+            )
+
+        # The day value is converted into the ordinal word form for styling.
+        day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
+        title: str = 'Satisfaction deviation during the ' + day + ' day'
+
+        # Style the graph layout
+        layout: any = dict(
+            title=title,
+            violinmode='overlay',
+            violingap=0,
+            violingroupgap=0,
+            paper_bgcolor='rgb(243, 243, 243)',
+            plot_bgcolor='rgb(243, 243, 243)',
+        )
+
+        # Create the graph and save the file
+        fig: Dict[any, any] = dict(data=data, layout=layout)
+        fileName: str = convertedBaseFileName.replace(
+            'endOfDayAverages', 'satisfactionDeviationsDay' + str(daysToVisualise[i]))
+        fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
+        py.io.write_image(fig, fullPath)
 print('Data visualisation complete.', flush=True)
