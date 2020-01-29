@@ -169,7 +169,7 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
             range=[days[0], days[-1]],
             tickmode='linear',
             tick0=0,
-            dtick=5,
+            dtick=10,
         ),
         yaxis=dict(
             title='Average consumer satisfaction',

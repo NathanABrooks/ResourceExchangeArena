@@ -45,7 +45,7 @@ public class ResourceExchangeArena {
 
         // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
         // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
-        // 'false' OUTSIDE OF TESTING OR WHERE OTHERWISE REQUIRED.
+        // 'false' OUTSIDE OF STATISTICAL TESTING OR WHERE OTHERWISE REQUIRED.
         final boolean ADDITIONAL_DATA = false;
 
         //#############################################################################################################
@@ -54,8 +54,8 @@ public class ResourceExchangeArena {
         // arena environments as shown on line 104.
 
         // Constants defining the scope of the simulation.
-        final int SIMULATION_RUNS = 50;
-        final int DAYS = 50;
+        final int SIMULATION_RUNS = 100;
+        final int DAYS = 365;
         final int EXCHANGES = 50;
         final int POPULATION_SIZE = 96;
         final int MAXIMUM_PEAK_CONSUMPTION = 16;
