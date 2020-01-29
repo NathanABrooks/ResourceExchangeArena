@@ -7,38 +7,50 @@ import java.util.Arrays;
 import java.util.List;
 
 class VisualiserInitiator {
-    static void visualise(
+
+    /**
+     * The arena is the environment in which all simulations take place.
+     *
+     * @param releaseVersion String representing the current version of the simulation, used to organise output data.
+     * @param initialSeed String representing the seed of the first simulation run included in the results, this string
+     *                    added to the results file names so that they can be easily replicated.
+     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param days Integer value representing the number of days to be simulated.
+     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
+     * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day, as
+     *                                 well as the optimum average satisfaction and the satisfaction if allocations
+     *                                 remained random.
+     * @param individualsDataFile Stores the satisfaction of each individual Agent at the end of every round throughout
+     *                            the simulation.
+     * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the simulation,
+     *                                    influenced by social learning.
+     * @exception IOException On input error.
+     * @see IOException
+     */
+    VisualiserInitiator(
             String releaseVersion,
+            String initialSeed,
+            int[] daysOfInterest,
             int days,
             int exchanges,
-            int[] daysOfInterest,
-            String initialSeed,
-            File prePreparedPopulationDistributionsFile,
-            File prePreparedAverageFile,
-            File prePreparedIndividualFile
+            File averageSatisfactionsFile,
+            File individualsDataFile,
+            File populationDistributionsFile
     ) throws IOException {
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
-        String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
-        String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
-        String daysToAnalyse = Arrays.toString(daysOfInterest);
 
+        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         List<String> pythonArgs = new ArrayList<>();
 
-        String thirdGraph;
-
-        thirdGraph = prePreparedPopulationDistributionsFile.getAbsolutePath();
-
-
-        pythonArgs.add(pythonExe);
-        pythonArgs.add(pythonPath);
+        pythonArgs.add(ResourceExchangeArena.pythonExe);
+        pythonArgs.add(ResourceExchangeArena.pythonPath);
         pythonArgs.add(releaseVersion);
         pythonArgs.add(initialSeed);
-        pythonArgs.add(prePreparedAverageFile.getAbsolutePath());
-        pythonArgs.add(prePreparedIndividualFile.getAbsolutePath());
-        pythonArgs.add(thirdGraph);
+        pythonArgs.add(averageSatisfactionsFile.getAbsolutePath());
+        pythonArgs.add(individualsDataFile.getAbsolutePath());
+        pythonArgs.add(populationDistributionsFile.getAbsolutePath());
         pythonArgs.add(Integer.toString(days));
         pythonArgs.add(Integer.toString(exchanges));
-        pythonArgs.add(daysToAnalyse);
+        pythonArgs.add(Arrays.toString(daysOfInterest));
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);
 

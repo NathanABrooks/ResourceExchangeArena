@@ -7,15 +7,14 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the ExchangeArena.java main method and produces a series of graphs 
-visualising the data. The three types of graphs are as follows:
+""" Takes pre-prepared data from the VisualiserInitiator.java method and produces a series of graphs 
+visualising the data. The types of graphs are as follows:
  - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
     satisfaction of all agents if time slots were allocated randomly or optimally.
  - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
     generated for each of a series of days passed as a parameter.
- - Box and whisker plots showing the distribution of agents satisfaction for each agent type at the end of the same
-    series of days for which line graphs are generated.
-All graphs use data that has been averaged over a series of simulations by the ExchangeArena.java code.
+ - A line graph showing how the population distribution alters over the course of the simulation.
+All graphs use data that has been averaged over a series of simulations.
 
 Parameters
 ---------
@@ -23,22 +22,25 @@ releaseVersion : str
     The version of the ResourceExchangeArena program that the data is coming from.
 seed : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-endOfDaySatisfactionLevels: str
+averageSatisfactionLevels: str
     The absolute path of the data set required for generating the line graph showing the average satisfaction of each
     agent type at the end of each day.
-duringDaySatisfactionLevels: str
+keyDaysSatisfactionLevels: str
     The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
     agent type at the end of each round of trading.
-endOfDaySatisfactionDistributions: str
-    The absolute path of the data set required for generating the box and whisker plots showing the distribution of
-    agents satisfaction for each agent type at the end of the same series of days for which line graphs are generated.
+populationDistributions: str
+    The absolute path of the data set required for generating the line graph showing the average population
+    distributions at the end of each day.
+totalDaysSimulated: int
+    The total number of days that have been simulated, determines graphs axis dimensions.    
+totalExchangesSimulated: int
+    The total number of exchanges that have been simulated, determines graphs axis dimensions.    
 daysToVisualise: str
     The specific days that will have a line graph of the agent satisfactions at the end of each round throughout the day
-    and a box and whisker plot of the agent satisfactions at the end of the day generated.
-    Note that this is immediately converted to type List[int].
+    generated. Note that this is immediately converted to type List[int].
 """
 
-print('Starting Data visualisation.', flush=True)
+print('Starting data visualisation...', flush=True)
 
 # Get the current release from command line arguments.
 releaseVersion: str = sys.argv[1]
@@ -47,9 +49,9 @@ releaseVersion: str = sys.argv[1]
 seed: str = sys.argv[2]
 
 # Get the location of the raw data that requires visualising from command line arguments.
-endOfDaySatisfactionLevels: str = sys.argv[3]
-duringDaySatisfactionLevels: str = sys.argv[4]
-thirdGraph: str = sys.argv[5]
+averageSatisfactionLevels: str = sys.argv[3]
+keyDaysSatisfactionLevels: str = sys.argv[4]
+populationDistributions: str = sys.argv[5]
 
 # Get the scope of the data to be visualised.
 totalDaysSimulated: int = int(sys.argv[6])
@@ -63,13 +65,13 @@ inflect = inflect.engine()
 
 # Get the directories in which the generated graphs will be stored.
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                        'outputData/'
+                                        'results/'
                                         + releaseVersion
                                         + '/'
                                         + seed
                                         + '/images')
 duringDayOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-                                             'outputData/'
+                                             'results/'
                                              + releaseVersion
                                              + '/'
                                              + seed
@@ -82,7 +84,7 @@ if not os.path.exists(duringDayOutputDirectory):
     os.makedirs(duringDayOutputDirectory)
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
-baseFileName: str = endOfDaySatisfactionLevels.split('/')[-1]
+baseFileName: str = averageSatisfactionLevels.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data, which will be the same for each graph, as global lists.
@@ -90,11 +92,11 @@ days: List[str] = []
 exchanges: List[str] = []
 fieldNames: List[str] = []
 
-for i in range(1, totalDaysSimulated + 1):
-    days.append(str(i))
+for day in range(1, totalDaysSimulated + 1):
+    days.append(str(day))
 
-for i in range(1, totalExchangesSimulated + 1):
-    exchanges.append(str(i))
+for exchange in range(1, totalExchangesSimulated + 1):
+    exchanges.append(str(exchange))
 
 # Options for graph styling.
 colours: List[str] = [
@@ -103,11 +105,9 @@ colours: List[str] = [
 ]
 lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
 
-print('Visualising end of day averages...', flush=True)
-
 # Average consumer satisfactions for each agent type for each day are visualised as a line graph.
 # Hypothetical random and optimum allocations are also visualised.
-with open(endOfDaySatisfactionLevels) as endOfDayRawData:
+with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
     # Store calculated graph data
     data: Any = []
 
@@ -115,24 +115,23 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
     lineType: int = 0
 
     # Before visualising the full data set, pull data that can be reused for later visualisations.
-    setupReader = csv.DictReader(endOfDayRawData)
+    setupReader = csv.DictReader(dailyAverageSatisfactionLevels)
 
     # The first column will always be 'Day', and so this shouldn't be stored with the list of global field names.
     fieldNames.extend(setupReader.fieldnames[1:])
 
-    reader = csv.reader(endOfDayRawData)
+    reader = csv.reader(dailyAverageSatisfactionLevels)
 
     # Each agent type, including random and optimum allocation, is plotted separately.
     for i in range(len(fieldNames)):
         endOfDayAverages: List[int] = []
-        endOfDayRawData.seek(0)
+        dailyAverageSatisfactionLevels.seek(0)
         for j in range(len(days)):
             for row in reader:
                 if row[0] == days[j]:
                     # Append the column + 1, to account for the 'Day' column.
                     endOfDayAverages.append((row[i + 1]))
                     break
-        print('    ' + str(i + 1) + '/' + str(len(fieldNames)) + ' agent types processed.', flush=True)
 
         # Get new line styling combination, calculated to match with graphs not including random or optimum allocations.
         colour = i + (len(colours) - 2)
@@ -196,17 +195,14 @@ with open(endOfDaySatisfactionLevels) as endOfDayRawData:
 
     # Create the graph and save the file
     fig: Dict[any, any] = dict(data=data, layout=layout)
-    fileName: str = convertedBaseFileName.replace('prePreparedEndOfDayAverages', 'endOfDayAverages')
+    fileName: str = convertedBaseFileName
     fullPath: str = os.path.join(baseOutputDirectory, fileName)
     py.io.write_image(fig, fullPath)
 
-    print('End of day averages visualised.', flush=True)
-print('Visualising during day averages...', flush=True)
-
 # Average consumer satisfactions for each agent type at the end of each round day are visualised as a line graph.
 # Only pre-selected days are visualised to minimise compute time.
-with open(duringDaySatisfactionLevels) as duringDayRawData:
-    reader = csv.reader(duringDayRawData)
+with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
+    reader = csv.reader(duringKeyDaysSatisfactionLevels)
 
     # Each pre-selected is visualised in its own graph.
     for i in range(len(daysToVisualise)):
@@ -220,7 +216,7 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
         for j in range(len(fieldNames) - 2):
             endOfRoundAverages: List[int] = []
             for k in range(len(exchanges)):
-                duringDayRawData.seek(0)
+                duringKeyDaysSatisfactionLevels.seek(0)
 
                 # The first line contains only headers and so can be skipped.
                 next(reader)
@@ -298,15 +294,13 @@ with open(duringDaySatisfactionLevels) as duringDayRawData:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            'prePreparedEndOfDayAverages', 'duringDayAveragesDay' + str(daysToVisualise[i]))
+            'endOfDayAverages', 'duringDayAveragesDay' + str(daysToVisualise[i]))
         fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-        print('    During day ' + str(daysToVisualise[i]) + ' averages graphed.', flush=True)
-    print('During day averages visualised.', flush=True)
-print('Visualising end of day distributions...', flush=True)
 
-with open(thirdGraph) as populationData:
+# The population distribution for each day is visualised as a line graph.
+with open(populationDistributions) as populationData:
     # Store calculated graph data
     data: Any = []
 
@@ -387,9 +381,7 @@ with open(thirdGraph) as populationData:
 
     # Create the graph and save the file
     fig: Dict[any, any] = dict(data=data, layout=layout)
-    fileName: str = convertedBaseFileName.replace('prePreparedEndOfDayAverages', 'endOfDayPopulationsPerType')
+    fileName: str = convertedBaseFileName.replace('endOfDayAverages', 'populationDistribution')
     fullPath: str = os.path.join(baseOutputDirectory, fileName)
     py.io.write_image(fig, fullPath)
-
-    print('End of day population distributions visualised.', flush=True)
 print('Data visualisation complete.', flush=True)

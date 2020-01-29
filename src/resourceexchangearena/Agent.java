@@ -23,16 +23,19 @@ class Agent {
 
     /**
      * This is the constructor for Agent objects.
+     *
      * @param agentID This is an integer value that is unique to the individual agent and
      *  used to identify it to others in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
+     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param agents Array List of all the agents that exist in the current simulation.
      */
-    Agent(int agentID, int agentType, int requiredSlots,  ArrayList<Agent> agents){
+    Agent(int agentID, int agentType, int slotsPerAgent,  ArrayList<Agent> agents){
         this.agentID = agentID;
         this.agentType = agentType;
 
         madeInteraction = false;
-        numberOfTimeSlotsWanted = requiredSlots;
+        numberOfTimeSlotsWanted = slotsPerAgent;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
         agents.add(this);
@@ -40,6 +43,9 @@ class Agent {
 
     /**
      * Used to change an Agents type during a simulation.
+     *
+     * @param type Integer value representing the type the agent should become, types are listed in the main
+     *             'ResourceExchangeArena' class.
      */
     void setType(int type) {
         agentType = type;
@@ -56,6 +62,8 @@ class Agent {
 
     /**
      * Setter for whether the Agent has been involved in an interaction.
+     *
+     * @param state Boolean value representing whether the agent has made an interaction during this exchange round.
      */
     void setMadeInteraction(boolean state) {
         madeInteraction = state;
@@ -96,6 +104,8 @@ class Agent {
     /**
      * Identifies all other Agents in the ExchangeArena and initialises counts of favours given to
      * and received from each other Agent.
+     *
+     * @param agents Array List of all the agents that exist in the current simulation.
      */
     void initializeFavoursStore(ArrayList<Agent> agents) {
         if (!favoursGiven.isEmpty()) {
@@ -136,9 +146,10 @@ class Agent {
      * Checks the time slots that exist in the simulations and makes a new request for a number of unique time slots
      * according to how many slots the Agent wants.
      *
+     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
      */
-    ArrayList<Integer> requestTimeSlots(int possibleTimeSlots) {
+    ArrayList<Integer> requestTimeSlots(int uniqueTimeSlots) {
 
         if (!requestedTimeSlots.isEmpty()) {
             requestedTimeSlots.clear();
@@ -150,7 +161,7 @@ class Agent {
 
             // Selects a random integer representing the time slot between 1 and the total number of available slots.
             // that exist in the simulation.
-            int timeSlot = random.nextInt(possibleTimeSlots) + 1;
+            int timeSlot = random.nextInt(uniqueTimeSlots) + 1;
 
             // Ensures all requested time slots are unique.
             if (requestedTimeSlots.contains(timeSlot)) {

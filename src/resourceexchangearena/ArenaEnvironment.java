@@ -10,33 +10,54 @@ import java.util.*;
 
 public class ArenaEnvironment {
 
+    // Data that is averaged over simulation runs is held within the arenaEnvironment.
     ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
 
+    /**
+     * The arena is the environment in which all simulations take place.
+     *
+     * @param releaseVersion String representing the current version of the simulation, used to organise output data.
+     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
+     *                       exchange and at the end of each day.
+     * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
+     * @param days Integer value representing the number of days to be simulated.
+     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
+     * @param populationSize Integer value representing the size of the initial agent population.
+     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
+     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
+     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
+     *                               end of each day.
+     * @exception IOException On input error.
+     * @see IOException
+     */
     ArenaEnvironment(
             String releaseVersion,
             int[] daysOfInterest,
+            boolean additionalData,
             int simulationRuns,
             int days,
             int exchanges,
             int populationSize,
             int maximumPeakConsumption,
             int uniqueTimeSlots,
-            int slotsPerAgent
+            int slotsPerAgent,
+            int numberOfAgentsToEvolve
     ) throws IOException {
 
+        System.out.println("Starting simulation...");
+
+        // The starting seed is copied to a string so that it can be tied to results for future replication.
         String initialSeed = Long.toString(ResourceExchangeArena.seed);
 
         // Agent types that will be simulated.
         int[] agentTypes = {ResourceExchangeArena.SELFISH, ResourceExchangeArena.SOCIAL};
 
-        // Calculate the number of Agents of each type.
-        int numberOfEachAgentType = populationSize / agentTypes.length;
-
-        ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
-
         // Array of the unique agent types used in the simulation.
+        ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
         for (int type : agentTypes) {
             if (!uniqueAgentTypes.contains(type)) {
                 uniqueAgentTypes.add(type);
@@ -46,16 +67,11 @@ public class ArenaEnvironment {
         // Sort the agent types so that they are ordered correctly in the output csv files.
         Collections.sort(uniqueAgentTypes);
 
-        // Create directories to store the data output by the simulation.
-        String rawDataOutputFolder =
-                "outputData/" + releaseVersion + "/" + initialSeed + "/rawData";
-        Path rawDataOutputPath = Paths.get(rawDataOutputFolder);
-        Files.createDirectories(rawDataOutputPath);
-
-        String prePreparedDataOutputFolder =
-                "outputData/" + releaseVersion + "/" + initialSeed + "/prePreparedData";
-        Path prePreparedDataOutputPath = Paths.get(prePreparedDataOutputFolder);
-        Files.createDirectories(prePreparedDataOutputPath);
+        // Create a directory to store the data output by the simulation.
+        String dataOutputFolder =
+                "results/" + releaseVersion + "/" + initialSeed + "/data";
+        Path dataOutputPath = Paths.get(dataOutputFolder);
+        Files.createDirectories(dataOutputPath);
 
         // Create an identifying filename containing the seed and types of agents in the simulation to form
         // the basis of the filenames for all data output by the simulation.
@@ -68,101 +84,117 @@ public class ArenaEnvironment {
 
         // Stores the average satisfaction of each Agent type at the end of each day, as well
         // as the optimum average satisfaction and the satisfaction if allocations remained random.
-        File averageFile = new File(
-                rawDataOutputFolder,
+        // Values are averaged over multiple simulation runs rather than stored separately.
+        File averageSatisfactionsFile = new File(
+                dataOutputFolder,
                 "endOfDayAverages_" + fileName + ".csv");
 
-        FileWriter averageCSVWriter = new FileWriter(averageFile);
+        FileWriter averageSatisfactionsCSVWriter = new FileWriter(averageSatisfactionsFile);
 
-        averageCSVWriter.append("Simulation Run");
-        averageCSVWriter.append(",");
-        averageCSVWriter.append("Day");
-        averageCSVWriter.append(",");
-        averageCSVWriter.append("Random (No exchange)");
-        averageCSVWriter.append(",");
-        averageCSVWriter.append("Optimum (No exchange)");
+        averageSatisfactionsCSVWriter.append("Day");
+        averageSatisfactionsCSVWriter.append(",");
+        averageSatisfactionsCSVWriter.append("Random (No exchange)");
+        averageSatisfactionsCSVWriter.append(",");
+        averageSatisfactionsCSVWriter.append("Optimum (No exchange)");
         for (Integer type : uniqueAgentTypes) {
-            averageCSVWriter.append(",");
-            averageCSVWriter.append(Inflect.getHumanReadableAgentType(type));
-        }
-        averageCSVWriter.append("\n");
-
-        // Stores the average satisfaction of each Agent type at the end of each day, as well
-        // as the optimum average satisfaction and the satisfaction if allocations remained random.
-        // Values are averaged over multiple simulation runs rather than stored separately.
-        File prePreparedAverageFile = new File(
-                prePreparedDataOutputFolder,
-                "prePreparedEndOfDayAverages_" + fileName + ".csv");
-
-        FileWriter prePreparedAverageCSVWriter = new FileWriter(prePreparedAverageFile);
-
-        prePreparedAverageCSVWriter.append("Day");
-        prePreparedAverageCSVWriter.append(",");
-        prePreparedAverageCSVWriter.append("Random (No exchange)");
-        prePreparedAverageCSVWriter.append(",");
-        prePreparedAverageCSVWriter.append("Optimum (No exchange)");
-        for (Integer type : uniqueAgentTypes) {
-            prePreparedAverageCSVWriter.append(",");
-            prePreparedAverageCSVWriter.append(Inflect.getHumanReadableAgentType(type));
+            averageSatisfactionsCSVWriter.append(",");
+            averageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type));
         }
         for (Integer type : uniqueAgentTypes) {
-            prePreparedAverageCSVWriter.append(",");
-            prePreparedAverageCSVWriter.append(Inflect.getHumanReadableAgentType(type)).append(" Standard Deviation");
+            averageSatisfactionsCSVWriter.append(",");
+            averageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type)).append(" Standard Deviation");
         }
 
-        prePreparedAverageCSVWriter.append("\n");
-
-        // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
-        File individualFile = new File(
-                rawDataOutputFolder,
-                "duringDayAverages_" + fileName + ".csv");
-
-        FileWriter individualCSVWriter = new FileWriter(individualFile);
-
-        individualCSVWriter.append("Simulation Run");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Day");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Round");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Agent ID");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Agent Type");
-        individualCSVWriter.append(",");
-        individualCSVWriter.append("Satisfaction");
-        individualCSVWriter.append("\n");
+        averageSatisfactionsCSVWriter.append("\n");
 
         // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
         // Only stores data for days in the daysOfInterest array and averages data over multiple simulation runs.
-        File prePreparedIndividualFile = new File(
-                prePreparedDataOutputFolder,
-                "prePreparedDuringDayAverages_" + fileName + ".csv");
+        File individualsDataFile = new File(
+                dataOutputFolder,
+                "duringDayAverages_" + fileName + ".csv");
 
-        FileWriter prePreparedIndividualCSVWriter = new FileWriter(prePreparedIndividualFile);
+        FileWriter individualsDataCSVWriter = new FileWriter(individualsDataFile);
 
-        prePreparedIndividualCSVWriter.append("Day");
-        prePreparedIndividualCSVWriter.append(",");
-        prePreparedIndividualCSVWriter.append("Round");
-        prePreparedIndividualCSVWriter.append(",");
-        prePreparedIndividualCSVWriter.append("Agent Type");
-        prePreparedIndividualCSVWriter.append(",");
-        prePreparedIndividualCSVWriter.append("Satisfaction");
-        prePreparedIndividualCSVWriter.append("\n");
+        individualsDataCSVWriter.append("Day");
+        individualsDataCSVWriter.append(",");
+        individualsDataCSVWriter.append("Round");
+        individualsDataCSVWriter.append(",");
+        individualsDataCSVWriter.append("Agent Type");
+        individualsDataCSVWriter.append(",");
+        individualsDataCSVWriter.append("Satisfaction");
+        individualsDataCSVWriter.append("\n");
 
         // Shows how the population of each Agent type varies throughout the simulation, influenced by social learning.
-        File prePreparedPopulationDistributionsFile = new File(
-                prePreparedDataOutputFolder,
-                "prePreparedPopulationDistributionsData_" + fileName + ".csv");
+        File populationDistributionsFile = new File(
+                dataOutputFolder,
+                "populationDistributions_" + fileName + ".csv");
 
 
-        FileWriter prePreparedPopulationDistributionsCSVWriter = new FileWriter(prePreparedPopulationDistributionsFile);
+        FileWriter populationDistributionsCSVWriter = new FileWriter(populationDistributionsFile);
 
-        prePreparedPopulationDistributionsCSVWriter.append("Day");
-        prePreparedPopulationDistributionsCSVWriter.append(",");
-        prePreparedPopulationDistributionsCSVWriter.append("Agent Type");
-        prePreparedPopulationDistributionsCSVWriter.append(",");
-        prePreparedPopulationDistributionsCSVWriter.append("Population");
-        prePreparedPopulationDistributionsCSVWriter.append("\n");
+        populationDistributionsCSVWriter.append("Day");
+        populationDistributionsCSVWriter.append(",");
+        populationDistributionsCSVWriter.append("Agent Type");
+        populationDistributionsCSVWriter.append(",");
+        populationDistributionsCSVWriter.append("Population");
+        populationDistributionsCSVWriter.append("\n");
+
+        // Temporary file that is  deleted prior to graph generation. Used as a placeholder for when additional data
+        // has not been requested.
+        File tempFile = new File(
+                dataOutputFolder,
+                "temp" + ".csv");
+        FileWriter additionalAverageSatisfactionsCSVWriter = new FileWriter(tempFile);
+        FileWriter additionalIndividualsDataCSVWriter = new FileWriter(tempFile);
+
+        if (additionalData) {
+            // Create a directory to store the additional data output by the simulation.
+            String additionalDataOutputFolder =
+                    "results/" + releaseVersion + "/" + initialSeed + "/additionalData";
+            Path additionalDataOutputPath = Paths.get(additionalDataOutputFolder);
+            Files.createDirectories(additionalDataOutputPath);
+
+            // Stores the average satisfaction of each agent type at the end of each day, as well
+            // as the optimum average satisfaction and the satisfaction if allocations remained random.
+            File additionalAverageSatisfactionsFile = new File(
+                    additionalDataOutputFolder,
+                    "endOfDayAverages_" + fileName + ".csv");
+
+            additionalAverageSatisfactionsCSVWriter = new FileWriter(additionalAverageSatisfactionsFile);
+
+            additionalAverageSatisfactionsCSVWriter.append("Simulation Run");
+            additionalAverageSatisfactionsCSVWriter.append(",");
+            additionalAverageSatisfactionsCSVWriter.append("Day");
+            additionalAverageSatisfactionsCSVWriter.append(",");
+            additionalAverageSatisfactionsCSVWriter.append("Random (No exchange)");
+            additionalAverageSatisfactionsCSVWriter.append(",");
+            additionalAverageSatisfactionsCSVWriter.append("Optimum (No exchange)");
+            for (Integer type : uniqueAgentTypes) {
+                additionalAverageSatisfactionsCSVWriter.append(",");
+                additionalAverageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type));
+            }
+            additionalAverageSatisfactionsCSVWriter.append("\n");
+
+            // Stores the satisfaction of each individual agent at the end of every round throughout the simulation.
+            File additionalIndividualsDataFile = new File(
+                    additionalDataOutputFolder,
+                    "duringDayAverages_" + fileName + ".csv");
+
+            additionalIndividualsDataCSVWriter = new FileWriter(additionalIndividualsDataFile);
+
+            additionalIndividualsDataCSVWriter.append("Simulation Run");
+            additionalIndividualsDataCSVWriter.append(",");
+            additionalIndividualsDataCSVWriter.append("Day");
+            additionalIndividualsDataCSVWriter.append(",");
+            additionalIndividualsDataCSVWriter.append("Round");
+            additionalIndividualsDataCSVWriter.append(",");
+            additionalIndividualsDataCSVWriter.append("Agent ID");
+            additionalIndividualsDataCSVWriter.append(",");
+            additionalIndividualsDataCSVWriter.append("Agent Type");
+            additionalIndividualsDataCSVWriter.append(",");
+            additionalIndividualsDataCSVWriter.append("Satisfaction");
+            additionalIndividualsDataCSVWriter.append("\n");
+        }
 
         // Array lists used to temporarily store data before averaging and adding it to csv files.
         for (int day = 1; day <= days; day++) {
@@ -176,32 +208,69 @@ public class ArenaEnvironment {
             }
         }
 
+        // Run as many simulations as has been requested.
         for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
+
+            /*
+             * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in
+             * a single location.
+             *
+             * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+             * @param additionalData Boolean value that configures the simulation to output the state of each agent
+             *                       after each exchange and at the end of each day.
+             * @param days Integer value representing the number of days to be simulated.
+             * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
+             *                  per day.
+             * @param populationSize Integer value representing the size of the initial agent population.
+             * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time
+             *                               slot.
+             * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
+             *                        simulation.
+             * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+             * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change
+             *                               at the end of each day.
+             * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same
+             *                   type can exist multiple times in the array where more agents of one type are required.
+             * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
+             *                         simulation begins.
+             * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
+             *                                       each round.
+             * @param endOfDayAverageSatisfactions  Stores the average satisfaction for each agent type at the end of
+             *                                      each day.
+             * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
+             * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of
+             *                         each day when additional data is requested.
+             * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
+             *                            exchange when  additional data is requested.
+             * @exception IOException On input error.
+             * @see IOException
+             */
             new SimulationRun(
-                    populationSize,
-                    numberOfEachAgentType,
+                    daysOfInterest,
+                    additionalData,
                     days,
                     exchanges,
-                    daysOfInterest,
+                    populationSize,
                     maximumPeakConsumption,
                     uniqueTimeSlots,
                     slotsPerAgent,
+                    numberOfAgentsToEvolve,
                     agentTypes,
                     uniqueAgentTypes,
+                    endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
                     endOfDayPopulationDistributions,
-                    endOfRoundAverageSatisfactions,
-                    averageCSVWriter,
-                    individualCSVWriter
+                    additionalAverageSatisfactionsCSVWriter,
+                    additionalIndividualsDataCSVWriter
             );
-            System.out.println("RUN: " + simulationRun);
+            System.out.println("RUNS COMPLETED: " + simulationRun);
         }
 
         // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
-        // are averaged over simulation runs and appended to the prePreparedAverageFile.
+        // are averaged over simulation runs and appended to the averageSatisfactionsFile.
         int types = (uniqueAgentTypes.size() * 2) + 2;
         for (int day = 1; day <= days; day++) {
-            prePreparedAverageCSVWriter.append(String.valueOf(day));
+            averageSatisfactionsCSVWriter.append(String.valueOf(day));
             for (int agentType = 1; agentType <= types; agentType++) {
                 ArrayList<Double> allSatisfactions = new ArrayList<>();
                 for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
@@ -212,15 +281,15 @@ public class ArenaEnvironment {
                     }
                 }
                 double averageOverSims = allSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
-                prePreparedAverageCSVWriter.append(",");
-                prePreparedAverageCSVWriter.append(String.valueOf(averageOverSims));
+                averageSatisfactionsCSVWriter.append(",");
+                averageSatisfactionsCSVWriter.append(String.valueOf(averageOverSims));
             }
-            prePreparedAverageCSVWriter.append("\n");
+            averageSatisfactionsCSVWriter.append("\n");
         }
 
         // The average end of round satisfaction is stored for each Agent type for all rounds during the days in the
         // daysOfInterest array. These end of round averages are themselves averaged over all simulation runs before
-        // being added to the prePreparedIndividualFile.
+        // being added to the individualsDataFile.
         for (int day : daysOfInterest) {
             for (int exchange = 1; exchange <= exchanges; exchange++) {
                 for (int agentType : uniqueAgentTypes) {
@@ -232,16 +301,17 @@ public class ArenaEnvironment {
                             allSimsEndOfRoundAverageSatisfaction.add(endOfRoundAverageSatisfaction.get(3));
                         }
                     }
-                    double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream().mapToDouble(val -> val).average().orElse(0.0);
+                    double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream()
+                            .mapToDouble(val -> val).average().orElse(0.0);
 
-                    prePreparedIndividualCSVWriter.append(String.valueOf(day));
-                    prePreparedIndividualCSVWriter.append(",");
-                    prePreparedIndividualCSVWriter.append(String.valueOf(exchange));
-                    prePreparedIndividualCSVWriter.append(",");
-                    prePreparedIndividualCSVWriter.append(String.valueOf(agentType));
-                    prePreparedIndividualCSVWriter.append(",");
-                    prePreparedIndividualCSVWriter.append(String.valueOf(averageOverSims));
-                    prePreparedIndividualCSVWriter.append("\n");
+                    individualsDataCSVWriter.append(String.valueOf(day));
+                    individualsDataCSVWriter.append(",");
+                    individualsDataCSVWriter.append(String.valueOf(exchange));
+                    individualsDataCSVWriter.append(",");
+                    individualsDataCSVWriter.append(String.valueOf(agentType));
+                    individualsDataCSVWriter.append(",");
+                    individualsDataCSVWriter.append(String.valueOf(averageOverSims));
+                    individualsDataCSVWriter.append("\n");
                 }
             }
         }
@@ -249,10 +319,10 @@ public class ArenaEnvironment {
         for (int day = 1; day <= days; day++) {
             ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(day - 1);
             for (int agentType = 0; agentType < uniqueAgentTypes.size(); agentType++) {
-                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(day));
-                prePreparedPopulationDistributionsCSVWriter.append(",");
-                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(uniqueAgentTypes.get(agentType)));
-                prePreparedPopulationDistributionsCSVWriter.append(",");
+                populationDistributionsCSVWriter.append(String.valueOf(day));
+                populationDistributionsCSVWriter.append(",");
+                populationDistributionsCSVWriter.append(String.valueOf(uniqueAgentTypes.get(agentType)));
+                populationDistributionsCSVWriter.append(",");
 
                 ArrayList<Integer> allPopulations = daysPopulations.get(agentType);
                 int sumOfPopulations = 0;
@@ -261,27 +331,53 @@ public class ArenaEnvironment {
                 }
                 double averagePopulation = (double) sumOfPopulations / simulationRuns;
 
-                prePreparedPopulationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
-                prePreparedPopulationDistributionsCSVWriter.append("\n");
+                populationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
+                populationDistributionsCSVWriter.append("\n");
             }
         }
 
         // Close the csv file writers once the simulation is complete.
-        individualCSVWriter.close();
-        averageCSVWriter.close();
-        prePreparedAverageCSVWriter.close();
-        prePreparedIndividualCSVWriter.close();
-        prePreparedPopulationDistributionsCSVWriter.close();
+        averageSatisfactionsCSVWriter.close();
+        individualsDataCSVWriter.close();
+        populationDistributionsCSVWriter.close();
+        additionalAverageSatisfactionsCSVWriter.close();
+        additionalIndividualsDataCSVWriter.close();
 
-        VisualiserInitiator.visualise(
+        // Delete the temporary file.
+        if (!tempFile.delete()) {
+            System.out.println("Issues with temporary file");
+        }
+
+        /*
+         * The arena is the environment in which all simulations take place.
+         *
+         * @param releaseVersion String representing the current version of the simulation, used to organise output
+         *                       data.
+         * @param initialSeed String representing the seed of the first simulation run included in the results, this
+         *                    string added to the results file names so that they can be easily replicated.
+         * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+         * @param days Integer value representing the number of days to be simulated.
+         * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per
+         *                  day.
+         * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day,
+         *                                 as well as the optimum average satisfaction and the satisfaction if
+         *                                 allocations remained random.
+         * @param individualsDataFile Stores the satisfaction of each individual Agent at the end of every round
+         *                            throughout the simulation.
+         * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the
+         *                                    simulation, influenced by social learning.
+         * @exception IOException On input error.
+         * @see IOException
+         */
+        new VisualiserInitiator(
                 releaseVersion,
+                initialSeed,
+                daysOfInterest,
                 days,
                 exchanges,
-                daysOfInterest,
-                initialSeed,
-                prePreparedPopulationDistributionsFile,
-                prePreparedAverageFile,
-                prePreparedIndividualFile
+                averageSatisfactionsFile,
+                individualsDataFile,
+                populationDistributionsFile
         );
     }
 }

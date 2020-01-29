@@ -7,15 +7,39 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 class Exchange {
+
+    /**
+     * With each exchange all agents form pairwise exchanges and are able to consider a trade with their partner for
+     * one time slot.
+     *
+     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
+     *                       exchange and at the end of each day.
+     * @param day Integer value representing the current day being simulated.
+     * @param exchange Integer value representing the current exchange being simulated.
+     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
+     *                         begins.
+     * @param agents Array List of all the agents that exist in the current simulation.
+     * @param shuffledAgents Array List of all the agents that exist in the current simulation that has been randomly
+     *                       shuffled for fairness when determining the order in which agents are able to request
+     *                       trades.
+     * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
+     *                                       round.
+     * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each exchange when
+     *                            additional data is requested.
+     * @exception IOException On input error.
+     * @see IOException
+     */
     Exchange(
-            ArrayList<Agent> shuffledAgents,
+            int[] daysOfInterest,
+            boolean additionalData,
             int day,
             int exchange,
-            FileWriter individualCSVWriter,
+            ArrayList<Integer> uniqueAgentTypes,
             ArrayList<Agent> agents,
-            int[] daysOfInterest,
+            ArrayList<Agent> shuffledAgents,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
-            ArrayList<Integer> uniqueAgentTypes
+            FileWriter individualCSVWriter
     ) throws IOException {
 
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
@@ -99,19 +123,21 @@ class Exchange {
             }
         }
 
-        for (Agent a : agents) {
-            individualCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
-            individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(day));
-            individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(exchange));
-            individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(a.agentID));
-            individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(a.getAgentType()));
-            individualCSVWriter.append(",");
-            individualCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
-            individualCSVWriter.append("\n");
+        if (additionalData) {
+            for (Agent a : agents) {
+                individualCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
+                individualCSVWriter.append(",");
+                individualCSVWriter.append(String.valueOf(day));
+                individualCSVWriter.append(",");
+                individualCSVWriter.append(String.valueOf(exchange));
+                individualCSVWriter.append(",");
+                individualCSVWriter.append(String.valueOf(a.agentID));
+                individualCSVWriter.append(",");
+                individualCSVWriter.append(String.valueOf(a.getAgentType()));
+                individualCSVWriter.append(",");
+                individualCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
+                individualCSVWriter.append("\n");
+            }
         }
 
         // The average end of round satisfaction is stored for each Agent type if the current day exists in
@@ -119,7 +145,8 @@ class Exchange {
         // the prePreparedIndividualFile.
         if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
             for (int uniqueAgentType : uniqueAgentTypes) {
-                double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
+                double averageSatisfactionForType =
+                        CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
                 ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
                 endOfRoundAverageSatisfaction.add((double) day);
                 endOfRoundAverageSatisfaction.add((double) exchange);

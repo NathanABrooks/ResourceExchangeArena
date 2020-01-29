@@ -9,6 +9,7 @@ class CalculateSatisfaction  {
      * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents
      * in the simulation.
      *
+     * @param agents Array List of all the agents that exist in the current simulation.
      * @return Double Returns the average satisfaction between 0 and 1 of all agents in the simulation.
      */
     static double averageAgentSatisfaction(ArrayList<Agent> agents) {
@@ -23,6 +24,7 @@ class CalculateSatisfaction  {
      * Takes all Agents of a given types individual satisfactions and calculates the average satisfaction
      * of the Agents of that type.
      *
+     * @param agents Array List of all the agents that exist in the current simulation.
      * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.
      * @return Double Returns the average satisfaction between 0 and 1 of all agents of the given type.
      */
@@ -39,6 +41,7 @@ class CalculateSatisfaction  {
      * Takes all Agents of a given types individual satisfactions and calculates the variance between the average
      * satisfaction of the Agents of that type.
      *
+     * @param agents Array List of all the agents that exist in the current simulation.
      * @param agentType The type for which to calculate the variance between the average satisfactions of all Agents of
      *                  that type.
      * @return Double Returns the variance between the average satisfactions of all agents of the given type.
@@ -63,6 +66,7 @@ class CalculateSatisfaction  {
      * Returns the optimum average satisfaction possible for all agents given the current requests and allocations
      * in the simulation.
      *
+     * @param agents Array List of all the agents that exist in the current simulation.
      * @return Double Returns the highest possible average satisfaction between 0 and 1 of all agents in the simulation.
      */
     static double optimumAgentSatisfaction(ArrayList<Agent> agents) {

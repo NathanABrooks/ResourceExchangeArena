@@ -11,20 +11,50 @@ public class Day {
     // List of all the possible allocations that exist in the current simulation.
     private List<Integer> availableTimeSlots = new ArrayList<>();
 
+    /**
+     * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
+     * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
+     *
+     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
+     *                       exchange and at the end of each day.
+     * @param day Integer value representing the current day being simulated.
+     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
+     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
+     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
+     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
+     *                               end of each day.
+     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
+     *                         begins.
+     * @param agents Array List of all the agents that exist in the current simulation.
+     * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
+     *                                       round.
+     * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
+     * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
+     * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of each day
+     *                         when additional data is requested.
+     * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each exchange when
+     *                            additional data is requested.
+     * @exception IOException On input error.
+     * @see IOException
+     */
     Day(
+            int[] daysOfInterest,
+            boolean additionalData,
             int day,
+            int exchanges,
             int maximumPeakConsumption,
             int uniqueTimeSlots,
-            int exchanges,
             int slotsPerAgent,
-            FileWriter averageCSVWriter,
-            FileWriter individualCSVWriter,
-            ArrayList<Agent> agents,
+            int numberOfAgentsToEvolve,
             ArrayList<Integer> uniqueAgentTypes,
+            ArrayList<Agent> agents,
+            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
             ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
-            int[] daysOfInterest,
-            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions
+            FileWriter averageCSVWriter,
+            FileWriter individualCSVWriter
     ) throws IOException{
 
         // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
@@ -39,40 +69,66 @@ public class Day {
 
         // Agents start the day by requesting and receiving an allocation of time slots.
         Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
-
         for (Agent a : shuffledAgents) {
             ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(uniqueTimeSlots);
             ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
             a.receiveAllocatedTimeSlots(allocatedTimeSlots);
         }
 
+        // The random and optimum average satisfaction scores are calculated before exchanges take place.
         double randomAllocations = CalculateSatisfaction.averageAgentSatisfaction(agents);
         double optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
 
-        // The random and optimum average satisfaction scores are calculated before exchanges take place.
-        averageCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
-        averageCSVWriter.append(",");
-        averageCSVWriter.append(String.valueOf(day));
-        averageCSVWriter.append(",");
-        averageCSVWriter.append(String.valueOf(randomAllocations));
-        averageCSVWriter.append(",");
-        averageCSVWriter.append(String.valueOf(optimumAllocations));
+        if (additionalData) {
+            averageCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
+            averageCSVWriter.append(",");
+            averageCSVWriter.append(String.valueOf(day));
+            averageCSVWriter.append(",");
+            averageCSVWriter.append(String.valueOf(randomAllocations));
+            averageCSVWriter.append(",");
+            averageCSVWriter.append(String.valueOf(optimumAllocations));
+        }
 
+        // A pre-determined number of pairwise exchanges take place, during each exchange all agents have a chance to
+        // trade with another agent.
         for (int exchange = 1; exchange <= exchanges; exchange++) {
+
+            /*
+             * With each exchange all agents form pairwise exchanges and are able to consider a trade with their
+             * partner for one time slot.
+             *
+             * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+             * @param additionalData Boolean value that configures the simulation to output the state of each agent
+             *                       after each exchange and at the end of each day.
+             * @param day Integer value representing the current day being simulated.
+             * @param exchange Integer value representing the current exchange being simulated.
+             * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
+             *                         simulation begins.
+             * @param agents Array List of all the agents that exist in the current simulation.
+             * @param shuffledAgents Array List of all the agents that exist in the current simulation that has been
+             *                       randomly shuffled for fairness when determining the order in which agents are able
+             *                       to request trades.
+             * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
+             *                                       each round.
+             * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
+             *                            exchange when additional data is requested.
+             * @exception IOException On input error.
+             * @see IOException
+             */
             new Exchange(
-                    shuffledAgents,
+                    daysOfInterest,
+                    additionalData,
                     day,
                     exchange,
-                    individualCSVWriter,
+                    uniqueAgentTypes,
                     agents,
-                    daysOfInterest,
+                    shuffledAgents,
                     endOfRoundAverageSatisfactions,
-                    uniqueAgentTypes
+                    individualCSVWriter
             );
         }
 
-        // The average end of day satisfaction is stored for each Agent type to later be averaged
-        // and added to the prePreparedAverageFile.
+        // The average end of day satisfaction is stored for each agent type to later be averaged and analysed.
         ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
         endOfDayAverageSatisfaction.add((double) day);
         endOfDayAverageSatisfaction.add(randomAllocations);
@@ -81,16 +137,21 @@ public class Day {
         // Store the end of day average satisfaction for each agent type.
         for (int uniqueAgentType : uniqueAgentTypes) {
             double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
-            averageCSVWriter.append(",");
-            averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
             endOfDayAverageSatisfaction.add(typeAverageSatisfaction);
+            if (additionalData) {
+                averageCSVWriter.append(",");
+                averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
+            }
         }
         // Temporarily store the end of day average variance for each agent type.
         for (int uniqueAgentType : uniqueAgentTypes) {
-            double typeAverageSatisfactionSD = CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, uniqueAgentType);
+            double typeAverageSatisfactionSD =
+                    CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, uniqueAgentType);
             endOfDayAverageSatisfaction.add(typeAverageSatisfactionSD);
         }
-        averageCSVWriter.append("\n");
+        if (additionalData) {
+            averageCSVWriter.append("\n");
+        }
         endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
         for (Integer uniqueAgentType : uniqueAgentTypes) {
@@ -100,10 +161,20 @@ public class Day {
                     populationQuantity++;
                 }
             }
-            endOfDayPopulationDistributions.get(day - 1).get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
+            endOfDayPopulationDistributions.get(day - 1)
+                    .get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
         }
 
-        SocialLearning.Evolve(agents, slotsPerAgent);
+        /*
+         * Here is where social learning occurs. The approach uses roulette wheel selection to allow each agent in the
+         * population to adapt its strategy based on the success of it's peers.
+         *
+         * @param agents Array List of all the agents that exist in the current simulation.
+         * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+         * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at
+         *                               the end of each day.
+         */
+        new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve);
     }
 
     /**
