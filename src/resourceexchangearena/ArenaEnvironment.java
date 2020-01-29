@@ -10,7 +10,8 @@ import java.util.*;
 
 public class ArenaEnvironment {
 
-    // Data that is averaged over simulation runs is held within the arenaEnvironment.
+    // Data that is collected over simulation runs is held within the arenaEnvironment.
+    ArrayList<ArrayList<Double>> endOfDaySatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
@@ -139,6 +140,21 @@ public class ArenaEnvironment {
         populationDistributionsCSVWriter.append("Population");
         populationDistributionsCSVWriter.append("\n");
 
+        // Shows how the population's satisfaction levels vary on days of interest..
+        File endOfDaySatisfactionsFile = new File(
+                dataOutputFolder,
+                "endOfDaySatisfactions_" + fileName + ".csv");
+
+
+        FileWriter individualSatisfactionsCSVWriter = new FileWriter(endOfDaySatisfactionsFile);
+
+        individualSatisfactionsCSVWriter.append("Day");
+        individualSatisfactionsCSVWriter.append(",");
+        individualSatisfactionsCSVWriter.append("Agent Type");
+        individualSatisfactionsCSVWriter.append(",");
+        individualSatisfactionsCSVWriter.append("Satisfaction");
+        individualSatisfactionsCSVWriter.append("\n");
+
         // Temporary file that is  deleted prior to graph generation. Used as a placeholder for when additional data
         // has not been requested.
         File tempFile = new File(
@@ -233,6 +249,7 @@ public class ArenaEnvironment {
              *                   type can exist multiple times in the array where more agents of one type are required.
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
+             * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
              * @param endOfDayAverageSatisfactions  Stores the average satisfaction for each agent type at the end of
@@ -257,6 +274,7 @@ public class ArenaEnvironment {
                     numberOfAgentsToEvolve,
                     agentTypes,
                     uniqueAgentTypes,
+                    endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
                     endOfDayPopulationDistributions,
@@ -316,6 +334,26 @@ public class ArenaEnvironment {
             }
         }
 
+        // Individual satisfaction levels for days of interest are sorted into a csv file so that they can be added to
+        // violin plots.
+        for (int day : daysOfInterest) {
+            for (int agentType : uniqueAgentTypes) {
+                for (ArrayList<Double> endOfDaySatisfaction : endOfDaySatisfactions) {
+                    if ((endOfDaySatisfaction.get(0) == (double) day) &&
+                            (endOfDaySatisfaction.get(1) == (double) agentType)) {
+                        individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(0)));
+                        individualSatisfactionsCSVWriter.append(",");
+                        individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(1)));
+                        individualSatisfactionsCSVWriter.append(",");
+                        individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(2)));
+                        individualSatisfactionsCSVWriter.append("\n");
+                    }
+                }
+            }
+        }
+
+        // The population distributions for the simulations are averaged before being added to the population
+        // distributions csv file.
         for (int day = 1; day <= days; day++) {
             ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(day - 1);
             for (int agentType = 0; agentType < uniqueAgentTypes.size(); agentType++) {
@@ -338,6 +376,7 @@ public class ArenaEnvironment {
 
         // Close the csv file writers once the simulation is complete.
         averageSatisfactionsCSVWriter.close();
+        individualSatisfactionsCSVWriter.close();
         individualsDataCSVWriter.close();
         populationDistributionsCSVWriter.close();
         additionalAverageSatisfactionsCSVWriter.close();

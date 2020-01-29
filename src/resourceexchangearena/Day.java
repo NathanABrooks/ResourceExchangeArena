@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Day {
 
@@ -28,6 +29,7 @@ public class Day {
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
      * @param agents Array List of all the agents that exist in the current simulation.
+     * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
      * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
@@ -50,6 +52,7 @@ public class Day {
             int numberOfAgentsToEvolve,
             ArrayList<Integer> uniqueAgentTypes,
             ArrayList<Agent> agents,
+            ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
             ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
@@ -163,6 +166,17 @@ public class Day {
             }
             endOfDayPopulationDistributions.get(day - 1)
                     .get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
+        }
+
+        // On days of interest, store the satisfaction for each agent at the end of the day to be added to violin plots.
+        if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
+            for (Agent a : agents) {
+                ArrayList<Double> endOfDaySatisfaction = new ArrayList<>();
+                endOfDaySatisfaction.add((double) day);
+                endOfDaySatisfaction.add((double) a.getAgentType());
+                endOfDaySatisfaction.add(a.calculateSatisfaction(null));
+                endOfDaySatisfactions.add(endOfDaySatisfaction);
+            }
         }
 
         /*

@@ -25,6 +25,7 @@ class SimulationRun {
      *                   can exist multiple times in the array where more agents of one type are required.
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
+     * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
      * @param endOfDayAverageSatisfactions  Stores the average satisfaction for each agent type at the end of each day.
@@ -48,6 +49,7 @@ class SimulationRun {
             int numberOfAgentsToEvolve,
             int[] agentTypes,
             ArrayList<Integer> uniqueAgentTypes,
+            ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
             ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
@@ -123,6 +125,7 @@ class SimulationRun {
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
              * @param agents Array List of all the agents that exist in the current simulation.
+             * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
              * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of
@@ -146,6 +149,7 @@ class SimulationRun {
                     numberOfAgentsToEvolve,
                     uniqueAgentTypes,
                     agents,
+                    endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
                     endOfDayPopulationDistributions,

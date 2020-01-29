@@ -142,7 +142,7 @@ class Exchange {
 
         // The average end of round satisfaction is stored for each Agent type if the current day exists in
         // the daysOfInterest array. This data can later be averaged over simulation runs and added to
-        // the prePreparedIndividualFile.
+        // the individual data file.
         if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
             for (int uniqueAgentType : uniqueAgentTypes) {
                 double averageSatisfactionForType =

@@ -56,7 +56,7 @@ public class ResourceExchangeArena {
         // Constants defining the scope of the simulation.
         final int SIMULATION_RUNS = 100;
         final int DAYS = 365;
-        final int EXCHANGES = 50;
+        final int EXCHANGES = 200;
         final int POPULATION_SIZE = 96;
         final int MAXIMUM_PEAK_CONSUMPTION = 16;
         final int UNIQUE_TIME_SLOTS = 24;
