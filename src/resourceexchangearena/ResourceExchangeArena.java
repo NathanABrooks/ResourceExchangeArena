@@ -36,6 +36,9 @@ public class ResourceExchangeArena {
         // The seed can be set to replicate previous simulations.
         seed = System.currentTimeMillis();
 
+        // Set the simulations initial random seed.
+        random.setSeed(seed);
+
         // Days that will have the Agents average satisfaction over the course of the day,
         // and satisfaction distribution at the end of the day visualised.
         final int[] DAYS_OF_INTEREST = {1, 25, 50};
@@ -47,6 +50,8 @@ public class ResourceExchangeArena {
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
+        // In order to schedule multiple parameter combinations when performing a parameter sweep, manually add further
+        // arena environments as shown on line 104.
 
         // Constants defining the scope of the simulation.
         final int SIMULATION_RUNS = 50;
@@ -58,9 +63,6 @@ public class ResourceExchangeArena {
         final int SLOTS_PER_AGENT = 4;
         final int NUMBER_OF_AGENTS_TO_EVOLVE = 10;
         //#############################################################################################################
-
-        // Set the simulations initial random seed.
-        random.setSeed(seed);
 
         /*
          * The arena is the environment in which all simulations take place.
@@ -97,5 +99,47 @@ public class ResourceExchangeArena {
                 SLOTS_PER_AGENT,
                 NUMBER_OF_AGENTS_TO_EVOLVE
         );
+
+/*      EXAMPLES OF SCHEDULING MULTIPLE PARAMETER COMBINATIONS, simply alter the desired parameter...
+                new ArenaEnvironment(
+                        RELEASE_VERSION,
+                        DAYS_OF_INTEREST,
+                        ADDITIONAL_DATA,
+                        SIMULATION_RUNS,
+                        DAYS,
+                        EXCHANGES,
+                        POPULATION_SIZE,
+                        MAXIMUM_PEAK_CONSUMPTION,
+                        UNIQUE_TIME_SLOTS,
+                        SLOTS_PER_AGENT,
+                        20
+                );
+                new ArenaEnvironment(
+                        RELEASE_VERSION,
+                        DAYS_OF_INTEREST,
+                        ADDITIONAL_DATA,
+                        SIMULATION_RUNS,
+                        DAYS,
+                        EXCHANGES,
+                        POPULATION_SIZE,
+                        MAXIMUM_PEAK_CONSUMPTION,
+                        UNIQUE_TIME_SLOTS,
+                        SLOTS_PER_AGENT,
+                        30
+                );
+                new ArenaEnvironment(
+                        RELEASE_VERSION,
+                        DAYS_OF_INTEREST,
+                        ADDITIONAL_DATA,
+                        SIMULATION_RUNS,
+                        DAYS,
+                        EXCHANGES,
+                        POPULATION_SIZE,
+                        MAXIMUM_PEAK_CONSUMPTION,
+                        UNIQUE_TIME_SLOTS,
+                        SLOTS_PER_AGENT,
+                        40
+                );
+ */
     }
 }
