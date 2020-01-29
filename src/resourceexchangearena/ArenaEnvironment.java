@@ -348,6 +348,29 @@ public class ArenaEnvironment {
             System.out.println("Issues with temporary file");
         }
 
+        // Stores the key data about the finished simulation.
+        File simulationData = new File(
+                "results/" + releaseVersion + "/" + initialSeed,
+                "simulationData_" + fileName + ".txt");
+
+        FileWriter simulationDataWriter = new FileWriter(simulationData);
+
+        simulationDataWriter.append("Simulation Information: \n\n");
+        simulationDataWriter.append("Release version: ").append(releaseVersion).append("\n");
+        simulationDataWriter.append("Days of interest: ").append(Arrays.toString(daysOfInterest)).append("\n");
+        simulationDataWriter.append("Additional data: ").append(String.valueOf(additionalData)).append("\n");
+        simulationDataWriter.append("Simulation runs: ").append(String.valueOf(simulationRuns)).append("\n");
+        simulationDataWriter.append("Days: ").append(String.valueOf(days)).append("\n");
+        simulationDataWriter.append("Exchanges: ").append(String.valueOf(exchanges)).append("\n");
+        simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
+        simulationDataWriter.append("Maximum peak consumption: ").append(String.valueOf(maximumPeakConsumption))
+                .append("\n");
+        simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
+        simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
+        simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve));
+
+        simulationDataWriter.close();
+
         /*
          * The arena is the environment in which all simulations take place.
          *
