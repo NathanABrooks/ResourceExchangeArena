@@ -51,17 +51,18 @@ public class ResourceExchangeArena {
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
         // In order to schedule multiple parameter combinations when performing a parameter sweep, manually add further
-        // arena environments as shown on line 104.
+        // arena environments as shown on line 108.
 
         // Constants defining the scope of the simulation.
-        final int SIMULATION_RUNS = 100;
+        final int SIMULATION_RUNS = 500;
         final int DAYS = 365;
-        final int EXCHANGES = 200;
+        final int EXCHANGES = 50;
         final int POPULATION_SIZE = 96;
         final int MAXIMUM_PEAK_CONSUMPTION = 16;
         final int UNIQUE_TIME_SLOTS = 24;
         final int SLOTS_PER_AGENT = 4;
         final int NUMBER_OF_AGENTS_TO_EVOLVE = 10;
+        final int[] AGENT_TYPES = {SELFISH, SOCIAL};
         //#############################################################################################################
 
         /*
@@ -83,6 +84,8 @@ public class ResourceExchangeArena {
          * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
          * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at
          *                               the end of each day.
+         * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
+         *                   can exist multiple times in the array where more agents of one type are required.
          * @exception IOException On input error.
          * @see IOException
          */
@@ -97,7 +100,8 @@ public class ResourceExchangeArena {
                 MAXIMUM_PEAK_CONSUMPTION,
                 UNIQUE_TIME_SLOTS,
                 SLOTS_PER_AGENT,
-                NUMBER_OF_AGENTS_TO_EVOLVE
+                NUMBER_OF_AGENTS_TO_EVOLVE,
+                AGENT_TYPES
         );
 
 /*      EXAMPLES OF SCHEDULING MULTIPLE PARAMETER COMBINATIONS, simply alter the desired parameter...
@@ -112,7 +116,8 @@ public class ResourceExchangeArena {
                         MAXIMUM_PEAK_CONSUMPTION,
                         UNIQUE_TIME_SLOTS,
                         SLOTS_PER_AGENT,
-                        20
+                        20,
+                        AGENT_TYPES
                 );
                 new ArenaEnvironment(
                         RELEASE_VERSION,
@@ -125,7 +130,8 @@ public class ResourceExchangeArena {
                         MAXIMUM_PEAK_CONSUMPTION,
                         UNIQUE_TIME_SLOTS,
                         SLOTS_PER_AGENT,
-                        30
+                        30,
+                        AGENT_TYPES
                 );
                 new ArenaEnvironment(
                         RELEASE_VERSION,
@@ -138,7 +144,8 @@ public class ResourceExchangeArena {
                         MAXIMUM_PEAK_CONSUMPTION,
                         UNIQUE_TIME_SLOTS,
                         SLOTS_PER_AGENT,
-                        40
+                        40,
+                        AGENT_TYPES
                 );
  */
     }

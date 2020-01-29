@@ -32,6 +32,8 @@ public class ArenaEnvironment {
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
      *                               end of each day.
+     * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
+     *                   can exist multiple times in the array where more agents of one type are required.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -46,16 +48,14 @@ public class ArenaEnvironment {
             int maximumPeakConsumption,
             int uniqueTimeSlots,
             int slotsPerAgent,
-            int numberOfAgentsToEvolve
+            int numberOfAgentsToEvolve,
+            int[] agentTypes
     ) throws IOException {
 
         System.out.println("Starting simulation...");
 
         // The starting seed is copied to a string so that it can be tied to results for future replication.
         String initialSeed = Long.toString(ResourceExchangeArena.seed);
-
-        // Agent types that will be simulated.
-        int[] agentTypes = {ResourceExchangeArena.SELFISH, ResourceExchangeArena.SOCIAL};
 
         // Array of the unique agent types used in the simulation.
         ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
