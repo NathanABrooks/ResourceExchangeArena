@@ -407,8 +407,13 @@ public class ArenaEnvironment {
         simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
         simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve));
-        simulationDataWriter.append("Starting ratio of agent types: ").append(Arrays.toString(agentTypes)).append("\n");
-
+        simulationDataWriter.append("Starting ratio of agent types: ");
+        for (int type : agentTypes) {
+            if(type != agentTypes[0]){
+                simulationDataWriter.append(" : ");
+            }
+            simulationDataWriter.append(Inflect.getHumanReadableAgentType(type));
+        }
         simulationDataWriter.close();
 
         /*
