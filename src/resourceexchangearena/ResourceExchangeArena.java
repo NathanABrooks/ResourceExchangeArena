@@ -54,7 +54,7 @@ public class ResourceExchangeArena {
         // arena environments as shown on line 108.
 
         // Constants defining the scope of the simulation.
-        final int SIMULATION_RUNS = 500;
+        final int SIMULATION_RUNS = 5;
         final int DAYS = 365;
         final int EXCHANGES = 50;
         final int POPULATION_SIZE = 96;
