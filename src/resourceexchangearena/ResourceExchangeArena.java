@@ -33,6 +33,35 @@ public class ResourceExchangeArena {
         // The current version of the simulation, used to organise output data.
         final String RELEASE_VERSION = "v3";
 
+        //#############################################################################################################
+        // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
+        // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
+        // the following arrays. All possible combinations will be simulated.
+
+        // Number of exchange rounds per day.
+        final int[] EXCHANGES_ARRAY = {50};
+
+        // Number of agents that will evolve their strategy per day.
+        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {10,0};
+
+        // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
+        // selfish agents for each social agent.
+        final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL},{SELFISH, SELFISH, SELFISH, SOCIAL}};
+        //#############################################################################################################
+
+        // Alter the length of time to be simulated.
+        final int DAYS = 365;
+
+        // Increase the number of simulation runs for more consistent results.
+        final int SIMULATION_RUNS = 5;
+
+        // Alter the number of Agents and their requirements. Note that the simulation has not been designed in order
+        // to support this and so some combinations may cause errors.
+        final int POPULATION_SIZE = 96;
+        final int MAXIMUM_PEAK_CONSUMPTION = 16;
+        final int UNIQUE_TIME_SLOTS = 24;
+        final int SLOTS_PER_AGENT = 4;
+
         // The seed can be set to replicate previous simulations.
         seed = System.currentTimeMillis();
 
@@ -47,23 +76,6 @@ public class ResourceExchangeArena {
         // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
         // 'false' OUTSIDE OF STATISTICAL TESTING OR WHERE OTHERWISE REQUIRED.
         final boolean ADDITIONAL_DATA = false;
-
-        //#############################################################################################################
-        // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
-        // In order to schedule multiple parameter combinations when performing a parameter sweep, manually add further
-        // arena environments as shown on line 108.
-
-        // Constants defining the scope of the simulation.
-        final int SIMULATION_RUNS = 5;
-        final int DAYS = 365;
-        final int EXCHANGES = 50;
-        final int POPULATION_SIZE = 96;
-        final int MAXIMUM_PEAK_CONSUMPTION = 16;
-        final int UNIQUE_TIME_SLOTS = 24;
-        final int SLOTS_PER_AGENT = 4;
-        final int NUMBER_OF_AGENTS_TO_EVOLVE = 10;
-        final int[] AGENT_TYPES = {SELFISH, SOCIAL};
-        //#############################################################################################################
 
         /*
          * The arena is the environment in which all simulations take place.
@@ -89,64 +101,25 @@ public class ResourceExchangeArena {
          * @exception IOException On input error.
          * @see IOException
          */
-        new ArenaEnvironment(
-                RELEASE_VERSION,
-                DAYS_OF_INTEREST,
-                ADDITIONAL_DATA,
-                SIMULATION_RUNS,
-                DAYS,
-                EXCHANGES,
-                POPULATION_SIZE,
-                MAXIMUM_PEAK_CONSUMPTION,
-                UNIQUE_TIME_SLOTS,
-                SLOTS_PER_AGENT,
-                NUMBER_OF_AGENTS_TO_EVOLVE,
-                AGENT_TYPES
-        );
-
-/*      EXAMPLES OF SCHEDULING MULTIPLE PARAMETER COMBINATIONS, simply alter the desired parameter...
-                new ArenaEnvironment(
-                        RELEASE_VERSION,
-                        DAYS_OF_INTEREST,
-                        ADDITIONAL_DATA,
-                        SIMULATION_RUNS,
-                        DAYS,
-                        EXCHANGES,
-                        POPULATION_SIZE,
-                        MAXIMUM_PEAK_CONSUMPTION,
-                        UNIQUE_TIME_SLOTS,
-                        SLOTS_PER_AGENT,
-                        20,
-                        AGENT_TYPES
-                );
-                new ArenaEnvironment(
-                        RELEASE_VERSION,
-                        DAYS_OF_INTEREST,
-                        ADDITIONAL_DATA,
-                        SIMULATION_RUNS,
-                        DAYS,
-                        EXCHANGES,
-                        POPULATION_SIZE,
-                        MAXIMUM_PEAK_CONSUMPTION,
-                        UNIQUE_TIME_SLOTS,
-                        SLOTS_PER_AGENT,
-                        30,
-                        AGENT_TYPES
-                );
-                new ArenaEnvironment(
-                        RELEASE_VERSION,
-                        DAYS_OF_INTEREST,
-                        ADDITIONAL_DATA,
-                        SIMULATION_RUNS,
-                        DAYS,
-                        EXCHANGES,
-                        POPULATION_SIZE,
-                        MAXIMUM_PEAK_CONSUMPTION,
-                        UNIQUE_TIME_SLOTS,
-                        SLOTS_PER_AGENT,
-                        40,
-                        AGENT_TYPES
-                );
- */
+        for (int EXCHANGES : EXCHANGES_ARRAY) {
+            for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
+                for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
+                    new ArenaEnvironment(
+                            RELEASE_VERSION,
+                            DAYS_OF_INTEREST,
+                            ADDITIONAL_DATA,
+                            SIMULATION_RUNS,
+                            DAYS,
+                            EXCHANGES,
+                            POPULATION_SIZE,
+                            MAXIMUM_PEAK_CONSUMPTION,
+                            UNIQUE_TIME_SLOTS,
+                            SLOTS_PER_AGENT,
+                            NUMBER_OF_AGENTS_TO_EVOLVE,
+                            AGENT_TYPES
+                    );
+                }
+            }
+        }
     }
 }
