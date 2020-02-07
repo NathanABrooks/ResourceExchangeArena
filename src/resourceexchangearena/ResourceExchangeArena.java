@@ -1,6 +1,11 @@
 package resourceexchangearena;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -30,8 +35,8 @@ public class ResourceExchangeArena {
      */
     public static void main(String[] args) throws IOException {
 
-        // The current version of the simulation, used to organise output data.
-        final String RELEASE_VERSION = "v3";
+        // Name of the folder that will contain all of the simulations currently being ran.
+        final String FOLDER_NAME = "newTest";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -46,7 +51,7 @@ public class ResourceExchangeArena {
 
         // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
         // selfish agents for each social agent.
-        final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL},{SELFISH, SELFISH, SELFISH, SOCIAL}};
+        final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
         //#############################################################################################################
 
         // Alter the length of time to be simulated.
@@ -62,12 +67,6 @@ public class ResourceExchangeArena {
         final int UNIQUE_TIME_SLOTS = 24;
         final int SLOTS_PER_AGENT = 4;
 
-        // The seed can be set to replicate previous simulations.
-        seed = System.currentTimeMillis();
-
-        // Set the simulations initial random seed.
-        random.setSeed(seed);
-
         // Days that will have the Agents average satisfaction over the course of the day,
         // and satisfaction distribution at the end of the day visualised.
         final int[] DAYS_OF_INTEREST = {1, 25, 50};
@@ -77,11 +76,16 @@ public class ResourceExchangeArena {
         // 'false' OUTSIDE OF STATISTICAL TESTING OR WHERE OTHERWISE REQUIRED.
         final boolean ADDITIONAL_DATA = false;
 
+        // The seed can be set to replicate previous simulations.
+        seed = System.currentTimeMillis();
+
+        // Set the simulations initial random seed.
+        random.setSeed(seed);
+
         /*
          * The arena is the environment in which all simulations take place.
          *
-         * @param releaseVersion String representing the current version of the simulation, used to organise output
-         *                       data.
+         * @param folderName String representing the output destination folder, used to organise output data.
          * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
          * @param additionalData Boolean value that configures the simulation to output the state of each agent after
          *                       each exchange and at the end of each day.
@@ -101,11 +105,35 @@ public class ResourceExchangeArena {
          * @exception IOException On input error.
          * @see IOException
          */
+
+        // Create a directory to store the data output by all simulations being run.
+        String dataOutputFolder = "results/" + FOLDER_NAME;
+        Path dataOutputPath = Paths.get(dataOutputFolder);
+        Files.createDirectories(dataOutputPath);
+
+        // Stores the key data about the finished simulation.
+        File allSimulationsData = new File(
+                "results/" + FOLDER_NAME,"allSimulationsData.txt");
+
+        FileWriter allSimulationsDataWriter = new FileWriter(allSimulationsData);
+
+        allSimulationsDataWriter.append("Simulation Information (all runs): \n\n");
+        allSimulationsDataWriter.append("Days of interest: ").append(Arrays.toString(DAYS_OF_INTEREST)).append("\n");
+        allSimulationsDataWriter.append("Additional data: ").append(String.valueOf(ADDITIONAL_DATA)).append("\n");
+        allSimulationsDataWriter.append("Simulation runs: ").append(String.valueOf(SIMULATION_RUNS)).append("\n");
+        allSimulationsDataWriter.append("Days: ").append(String.valueOf(DAYS)).append("\n");
+        allSimulationsDataWriter.append("Population size: ").append(String.valueOf(POPULATION_SIZE)).append("\n");
+        allSimulationsDataWriter.append("Maximum peak consumption: ").append(String.valueOf(MAXIMUM_PEAK_CONSUMPTION))
+                .append("\n");
+        allSimulationsDataWriter.append("Unique time slots: ").append(String.valueOf(UNIQUE_TIME_SLOTS)).append("\n");
+        allSimulationsDataWriter.append("Slots per agent: ").append(String.valueOf(SLOTS_PER_AGENT)).append("\n\n\n");
+        allSimulationsDataWriter.append("Simulation Information (specific run details): \n\n");
+
         for (int EXCHANGES : EXCHANGES_ARRAY) {
             for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
                 for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
                     new ArenaEnvironment(
-                            RELEASE_VERSION,
+                            FOLDER_NAME,
                             DAYS_OF_INTEREST,
                             ADDITIONAL_DATA,
                             SIMULATION_RUNS,
@@ -118,8 +146,24 @@ public class ResourceExchangeArena {
                             NUMBER_OF_AGENTS_TO_EVOLVE,
                             AGENT_TYPES
                     );
+
+                    allSimulationsDataWriter.append("Seed: ").append(String.valueOf(seed)).append("\n");
+                    allSimulationsDataWriter.append("Exchanges: ").append(String.valueOf(EXCHANGES)).append("\n");
+                    allSimulationsDataWriter.append("Number of agents to evolve: ").append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
+                            .append("\n");
+                    allSimulationsDataWriter.append("Starting ratio of agent types: ");
+                    int typesListed = 0;
+                    for (int type : AGENT_TYPES) {
+                        if(typesListed != 0){
+                            allSimulationsDataWriter.append(" : ");
+                        }
+                        typesListed++;
+                        allSimulationsDataWriter.append(Inflect.getHumanReadableAgentType(type));
+                    }
+                    allSimulationsDataWriter.append("\n\n");
                 }
             }
         }
+        allSimulationsDataWriter.close();
     }
 }

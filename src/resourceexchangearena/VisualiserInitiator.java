@@ -11,7 +11,7 @@ class VisualiserInitiator {
     /**
      * The arena is the environment in which all simulations take place.
      *
-     * @param releaseVersion String representing the current version of the simulation, used to organise output data.
+     * @param folderName String representing the output destination folder, used to organise output data.
      * @param initialSeed String representing the seed of the first simulation run included in the results, this string
      *                    added to the results file names so that they can be easily replicated.
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
@@ -29,7 +29,7 @@ class VisualiserInitiator {
      * @see IOException
      */
     VisualiserInitiator(
-            String releaseVersion,
+            String folderName,
             String initialSeed,
             int[] daysOfInterest,
             int days,
@@ -45,7 +45,7 @@ class VisualiserInitiator {
 
         pythonArgs.add(ResourceExchangeArena.pythonExe);
         pythonArgs.add(ResourceExchangeArena.pythonPath);
-        pythonArgs.add(releaseVersion);
+        pythonArgs.add(folderName);
         pythonArgs.add(initialSeed);
         pythonArgs.add(averageSatisfactionsFile.getAbsolutePath());
         pythonArgs.add(individualsDataFile.getAbsolutePath());

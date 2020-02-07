@@ -18,8 +18,8 @@ All graphs use data that has been averaged over a series of simulations.
 
 Parameters
 ---------
-releaseVersion : str
-    The version of the ResourceExchangeArena program that the data is coming from.
+folderName : str
+    The output destination folder, used to organise output data.
 seed : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
 averageSatisfactionLevels: str
@@ -42,8 +42,8 @@ daysToVisualise: str
 
 print('Starting data visualisation...', flush=True)
 
-# Get the current release from command line arguments.
-releaseVersion: str = sys.argv[1]
+# Get the output folder from command line arguments.
+folderName: str = sys.argv[1]
 
 # Unique identifier to identify which run the produced graphs are associated with.
 seed: str = sys.argv[2]
@@ -67,13 +67,13 @@ inflect = inflect.engine()
 # Get the directories in which the generated graphs will be stored.
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                         'results/'
-                                        + releaseVersion
+                                        + folderName
                                         + '/'
                                         + seed
                                         + '/images')
 duringDayOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                                              'results/'
-                                             + releaseVersion
+                                             + folderName
                                              + '/'
                                              + seed
                                              + '/images/duringDayAverages')

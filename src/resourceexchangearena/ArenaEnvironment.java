@@ -19,7 +19,7 @@ public class ArenaEnvironment {
     /**
      * The arena is the environment in which all simulations take place.
      *
-     * @param releaseVersion String representing the current version of the simulation, used to organise output data.
+     * @param folderName String representing the output destination folder, used to organise output data.
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
      *                       exchange and at the end of each day.
@@ -38,7 +38,7 @@ public class ArenaEnvironment {
      * @see IOException
      */
     ArenaEnvironment(
-            String releaseVersion,
+            String folderName,
             int[] daysOfInterest,
             boolean additionalData,
             int simulationRuns,
@@ -54,9 +54,6 @@ public class ArenaEnvironment {
 
         System.out.println("Starting simulation...");
 
-        // The starting seed is copied to a string so that it can be tied to results for future replication.
-        String initialSeed = Long.toString(ResourceExchangeArena.seed);
-
         // Array of the unique agent types used in the simulation.
         ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
         for (int type : agentTypes) {
@@ -68,27 +65,20 @@ public class ArenaEnvironment {
         // Sort the agent types so that they are ordered correctly in the output csv files.
         Collections.sort(uniqueAgentTypes);
 
+        // The initial seed is used to differentiate runs and to allow easy repeatability.
+        String initialSeed = Long.toString(ResourceExchangeArena.seed);
+
         // Create a directory to store the data output by the simulation.
-        String dataOutputFolder =
-                "results/" + releaseVersion + "/" + initialSeed + "/data";
+        String dataOutputFolder = "results/" + folderName + "/" + initialSeed + "/data";
         Path dataOutputPath = Paths.get(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
-
-        // Create an identifying filename containing the seed and types of agents in the simulation to form
-        // the basis of the filenames for all data output by the simulation.
-        StringBuilder fileName = new StringBuilder();
-        for (Integer type : uniqueAgentTypes) {
-            fileName.append(Inflect.getHumanReadableAgentType(type));
-        }
-        fileName.append("_");
-        fileName.append(initialSeed);
 
         // Stores the average satisfaction of each Agent type at the end of each day, as well
         // as the optimum average satisfaction and the satisfaction if allocations remained random.
         // Values are averaged over multiple simulation runs rather than stored separately.
         File averageSatisfactionsFile = new File(
                 dataOutputFolder,
-                "endOfDayAverages_" + fileName + ".csv");
+                "endOfDayAverages.csv");
 
         FileWriter averageSatisfactionsCSVWriter = new FileWriter(averageSatisfactionsFile);
 
@@ -112,7 +102,7 @@ public class ArenaEnvironment {
         // Only stores data for days in the daysOfInterest array and averages data over multiple simulation runs.
         File individualsDataFile = new File(
                 dataOutputFolder,
-                "duringDayAverages_" + fileName + ".csv");
+                "duringDayAverages.csv");
 
         FileWriter individualsDataCSVWriter = new FileWriter(individualsDataFile);
 
@@ -128,7 +118,7 @@ public class ArenaEnvironment {
         // Shows how the population of each Agent type varies throughout the simulation, influenced by social learning.
         File populationDistributionsFile = new File(
                 dataOutputFolder,
-                "populationDistributions_" + fileName + ".csv");
+                "populationDistributions.csv");
 
 
         FileWriter populationDistributionsCSVWriter = new FileWriter(populationDistributionsFile);
@@ -143,7 +133,7 @@ public class ArenaEnvironment {
         // Shows how the population's satisfaction levels vary on days of interest..
         File endOfDaySatisfactionsFile = new File(
                 dataOutputFolder,
-                "endOfDaySatisfactions_" + fileName + ".csv");
+                "endOfDaySatisfactions.csv");
 
 
         FileWriter individualSatisfactionsCSVWriter = new FileWriter(endOfDaySatisfactionsFile);
@@ -166,7 +156,7 @@ public class ArenaEnvironment {
         if (additionalData) {
             // Create a directory to store the additional data output by the simulation.
             String additionalDataOutputFolder =
-                    "results/" + releaseVersion + "/" + initialSeed + "/additionalData";
+                    "results/" + folderName + "/" + initialSeed + "/additionalData";
             Path additionalDataOutputPath = Paths.get(additionalDataOutputFolder);
             Files.createDirectories(additionalDataOutputPath);
 
@@ -174,7 +164,7 @@ public class ArenaEnvironment {
             // as the optimum average satisfaction and the satisfaction if allocations remained random.
             File additionalAverageSatisfactionsFile = new File(
                     additionalDataOutputFolder,
-                    "endOfDayAverages_" + fileName + ".csv");
+                    "endOfDayAverages.csv");
 
             additionalAverageSatisfactionsCSVWriter = new FileWriter(additionalAverageSatisfactionsFile);
 
@@ -194,7 +184,7 @@ public class ArenaEnvironment {
             // Stores the satisfaction of each individual agent at the end of every round throughout the simulation.
             File additionalIndividualsDataFile = new File(
                     additionalDataOutputFolder,
-                    "duringDayAverages_" + fileName + ".csv");
+                    "duringDayAverages.csv");
 
             additionalIndividualsDataCSVWriter = new FileWriter(additionalIndividualsDataFile);
 
@@ -388,14 +378,12 @@ public class ArenaEnvironment {
         }
 
         // Stores the key data about the finished simulation.
-        File simulationData = new File(
-                "results/" + releaseVersion + "/" + initialSeed,
-                "simulationData_" + fileName + ".txt");
+        File simulationData = new File("results/" + folderName + "/" + initialSeed,"simulationData.txt");
 
         FileWriter simulationDataWriter = new FileWriter(simulationData);
 
         simulationDataWriter.append("Simulation Information: \n\n");
-        simulationDataWriter.append("Release version: ").append(releaseVersion).append("\n");
+        simulationDataWriter.append("Seed: ").append(String.valueOf(ResourceExchangeArena.seed)).append("\n");
         simulationDataWriter.append("Days of interest: ").append(Arrays.toString(daysOfInterest)).append("\n");
         simulationDataWriter.append("Additional data: ").append(String.valueOf(additionalData)).append("\n");
         simulationDataWriter.append("Simulation runs: ").append(String.valueOf(simulationRuns)).append("\n");
@@ -422,8 +410,7 @@ public class ArenaEnvironment {
         /*
          * The arena is the environment in which all simulations take place.
          *
-         * @param releaseVersion String representing the current version of the simulation, used to organise output
-         *                       data.
+         * @param folderName String representing the output destination folder, used to organise output data.
          * @param initialSeed String representing the seed of the first simulation run included in the results, this
          *                    string added to the results file names so that they can be easily replicated.
          * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
@@ -442,7 +429,7 @@ public class ArenaEnvironment {
          * @see IOException
          */
         new VisualiserInitiator(
-                releaseVersion,
+                folderName,
                 initialSeed,
                 daysOfInterest,
                 days,
