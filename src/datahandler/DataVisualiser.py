@@ -125,37 +125,78 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
 
     # Each agent type, including random and optimum allocation, is plotted separately.
     for i in range(len(fieldNames)):
-        endOfDayAverages: List[int] = []
-        dailyAverageSatisfactionLevels.seek(0)
-        for j in range(len(days)):
-            for row in reader:
-                if row[0] == days[j]:
-                    # Append the column + 1, to account for the 'Day' column.
-                    endOfDayAverages.append((row[i + 1]))
-                    break
+        if i < 4:
+            endOfDayAverages: List[int] = []
+            dailyAverageSatisfactionLevels.seek(0)
+            for j in range(len(days)):
+                for row in reader:
+                    if row[0] == days[j]:
+                        # Append the column + 1, to account for the 'Day' column.
+                        endOfDayAverages.append((row[i + 1]))
+                        break
 
-        # Get new line styling combination, calculated to match with graphs not including random or optimum allocations.
-        colour = i + (len(colours) - 2)
-        while colour >= len(colours):
-            colour -= len(colours)
-        if (i != 0) & (i % len(colours) == 0):
-            lineType += 1
-        while lineType >= len(lineTypes):
-            lineType -= len(lineTypes)
+            # Get new line styling combination, calculated to match with graphs not including random or optimum allocations.
+            colour = i + (len(colours) - 2)
+            while colour >= len(colours):
+                colour -= len(colours)
+            if (i != 0) & (i % len(colours) == 0):
+                lineType += 1
+            while lineType >= len(lineTypes):
+                lineType -= len(lineTypes)
 
-        # Add the agent types data plots to the graph data.
-        data.append(
-            py.graph_objs.Scatter(
-                x=days,
-                y=endOfDayAverages,
-                name=fieldNames[i],
-                line=dict(
-                    color=colours[colour],
-                    dash=lineTypes[lineType],
-                    width=1,
-                ),
+            # Add the agent types data plots to the graph data.
+            data.append(
+                py.graph_objs.Scatter(
+                    x=days,
+                    y=endOfDayAverages,
+                    name=fieldNames[i],
+                    line=dict(
+                        color=colours[colour],
+                        dash=lineTypes[lineType],
+                        width=1,
+                    ),
+                )
             )
-        )
+        else:
+            lineType = 1
+            k = 0
+            while k < 2:
+                colour = i + (len(colours) - 4)
+                while colour >= len(colours):
+                    colour -= len(colours)
+                endOfDayAverages: List[int] = []
+                dailyAverageSatisfactionLevels.seek(0)
+                for j in range(len(days)):
+                    for row in reader:
+                        if row[0] == days[j]:
+                            if k == 0:
+                                upperSD = float(row[i+1]) + float(row[i-1])
+                                if upperSD > 1:
+                                    upperSD = 1
+                                endOfDayAverages.append(upperSD)
+                                break
+                            else:
+                                lowerSD = float(row[i-1]) - float(row[i+1])
+                                if lowerSD < 0:
+                                    lowerSD = 0
+                                endOfDayAverages.append(lowerSD)
+                                break
+                # Add the agent types data plots to the graph data.
+                data.append(
+                    py.graph_objs.Scatter(
+                        x=days,
+                        y=endOfDayAverages,
+                        showlegend=False,
+                        line=dict(
+                            color=colours[colour],
+                            dash=lineTypes[lineType],
+                            width=1,
+                        ),
+                    )
+                )
+                k = k+1
+                colour = i + (len(colours) - 2)
+
 
     # Style the graph layout
     layout: any = dict(
