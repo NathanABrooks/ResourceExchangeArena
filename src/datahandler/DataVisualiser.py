@@ -170,13 +170,13 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
                     for row in reader:
                         if row[0] == days[j]:
                             if k == 0:
-                                upperSD = float(row[i+1]) + float(row[i-1])
+                                upperSD = float(row[i + 1]) + float(row[i - 1])
                                 if upperSD > 1:
                                     upperSD = 1
                                 endOfDayAverages.append(upperSD)
                                 break
                             else:
-                                lowerSD = float(row[i-1]) - float(row[i+1])
+                                lowerSD = float(row[i - 1]) - float(row[i + 1])
                                 if lowerSD < 0:
                                     lowerSD = 0
                                 endOfDayAverages.append(lowerSD)
@@ -194,9 +194,8 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
                         ),
                     )
                 )
-                k = k+1
+                k = k + 1
                 colour = i + (len(colours) - 2)
-
 
     # Style the graph layout
     layout: any = dict(
@@ -340,7 +339,6 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
         fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-
 # The population distribution for each day is visualised as a line graph.
 with open(populationDistributions) as populationData:
     # Store calculated graph data
@@ -427,8 +425,7 @@ with open(populationDistributions) as populationData:
     fullPath: str = os.path.join(baseOutputDirectory, fileName)
     py.io.write_image(fig, fullPath)
 
-# Average consumer satisfactions for each agent type at the end of each round day are visualised as a line graph.
-# Only pre-selected days are visualised to minimise compute time.
+# Violin plots show the distributions of individual satisfactions for individual agents at the end of key days
 with open(individualSatisfactions) as individualSatisfactionDeviations:
     reader = csv.reader(individualSatisfactionDeviations)
 
@@ -442,6 +439,7 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
         lineType: int = 0
 
         # Each agent type is plotted separately.
+        firstType = True
         for j in range(len(fieldNames) - 2):
             satisfactions: List[int] = []
             individualSatisfactionDeviations.seek(0)
@@ -463,19 +461,41 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
                 lineType -= len(lineTypes)
 
             # Add the agent types data plots to the graph data.
-            data.append(
-                py.graph_objs.Violin(
-                    y=satisfactions,
-                    name=fieldNames[j + 2],
-                    line=dict(
-                        color=colours[colour],
+            if firstType:
+                data.append(
+                    py.graph_objs.Violin(
+                        y=satisfactions,
+                        x0='',
                         width=1,
-                    ),
-                    meanline_visible=True,
-                    scalemode='count',
-                    spanmode='hard',
+                        name=fieldNames[j + 2],
+                        side='negative',
+                        line=dict(
+                            color=colours[colour],
+                        ),
+                        meanline_visible=True,
+                        scalemode='count',
+                        spanmode='hard',
+                        points=False,
+                    )
                 )
-            )
+                firstType = False
+            else:
+                data.append(
+                    py.graph_objs.Violin(
+                        y=satisfactions,
+                        x0='',
+                        width=1,
+                        name=fieldNames[j + 2],
+                        side='positive',
+                        line=dict(
+                            color=colours[colour],
+                        ),
+                        meanline_visible=True,
+                        scalemode='count',
+                        spanmode='hard',
+                        points=False,
+                    )
+                )
 
         # The day value is converted into the ordinal word form for styling.
         day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
@@ -486,7 +506,6 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
             title=title,
             violinmode='overlay',
             violingap=0,
-            violingroupgap=0,
             paper_bgcolor='rgb(243, 243, 243)',
             plot_bgcolor='rgb(243, 243, 243)',
         )
