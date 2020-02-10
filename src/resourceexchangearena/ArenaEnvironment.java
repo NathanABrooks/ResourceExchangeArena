@@ -34,6 +34,7 @@ public class ArenaEnvironment {
      *                               end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
      *                   can exist multiple times in the array where more agents of one type are required.
+     * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -49,7 +50,8 @@ public class ArenaEnvironment {
             int uniqueTimeSlots,
             int slotsPerAgent,
             int numberOfAgentsToEvolve,
-            int[] agentTypes
+            int[] agentTypes,
+            FileWriter comparingExchangesCSVWriter
     ) throws IOException {
 
         System.out.println("Starting simulation...");
@@ -279,6 +281,15 @@ public class ArenaEnvironment {
         int types = (uniqueAgentTypes.size() * 2) + 2;
         for (int day = 1; day <= days; day++) {
             averageSatisfactionsCSVWriter.append(String.valueOf(day));
+
+            for(int element: daysOfInterest) {
+                if (day == element) {
+                    comparingExchangesCSVWriter.append(String.valueOf(exchanges));
+                    comparingExchangesCSVWriter.append(",");
+                    comparingExchangesCSVWriter.append(String.valueOf(day));
+                }
+            }
+
             for (int agentType = 1; agentType <= types; agentType++) {
                 ArrayList<Double> allSatisfactions = new ArrayList<>();
                 for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
@@ -291,8 +302,23 @@ public class ArenaEnvironment {
                 double averageOverSims = allSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
                 averageSatisfactionsCSVWriter.append(",");
                 averageSatisfactionsCSVWriter.append(String.valueOf(averageOverSims));
+
+                // Data saved for comparing exchanges graph, except for random and optimum allocations.
+                if(agentType > 2) {
+                    for(int element: daysOfInterest) {
+                        if (day == element) {
+                            comparingExchangesCSVWriter.append(",");
+                            comparingExchangesCSVWriter.append(String.valueOf(averageOverSims));
+                        }
+                    }
+                }
             }
             averageSatisfactionsCSVWriter.append("\n");
+            for(int element: daysOfInterest) {
+                if (day == element) {
+                    comparingExchangesCSVWriter.append("\n");
+                }
+            }
         }
 
         // The average end of round satisfaction is stored for each Agent type for all rounds during the days in the

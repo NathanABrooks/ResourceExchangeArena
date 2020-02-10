@@ -17,10 +17,14 @@ public class ResourceExchangeArena {
     static final String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
     // Data visualiser location, most users will only need to change the username here.
     static final String pythonPath = "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
+    // Summary d visualiser location, most users will only need to change the username here.
+    static final String summaryPythonPath =
+            "/home/nathan/code/ResourceExchangeArena/src/datahandler/DataVisualiserSummaryGraphs.py";
 
     // Constants representing the available agent types for the simulation.
     static final int SELFISH = 1;
     static final int SOCIAL = 2;
+    static final int[] ALL_AGENT_TYPES = {SELFISH, SOCIAL};
 
     // Create a single Random object for generating random numerical data for the simulation.
     static Random random = new Random();
@@ -44,10 +48,10 @@ public class ResourceExchangeArena {
         // the following arrays. All possible combinations will be simulated.
 
         // Number of exchange rounds per day.
-        final int[] EXCHANGES_ARRAY = {50};
+        final int[] EXCHANGES_ARRAY = {25,50,100};
 
         // Number of agents that will evolve their strategy per day.
-        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {10,0};
+        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {10};
 
         // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
         // selfish agents for each social agent.
@@ -55,10 +59,10 @@ public class ResourceExchangeArena {
         //#############################################################################################################
 
         // Alter the length of time to be simulated.
-        final int DAYS = 365;
+        final int DAYS = 200;
 
         // Increase the number of simulation runs for more consistent results.
-        final int SIMULATION_RUNS = 5;
+        final int SIMULATION_RUNS = 10;
 
         // Alter the number of Agents and their requirements. Note that the simulation has not been designed in order
         // to support this and so some combinations may cause errors.
@@ -69,7 +73,7 @@ public class ResourceExchangeArena {
 
         // Days that will have the Agents average satisfaction over the course of the day,
         // and satisfaction distribution at the end of the day visualised.
-        final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200, 250, 300, 350, 365};
+        final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200};
 
         // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
         // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
@@ -102,6 +106,7 @@ public class ResourceExchangeArena {
          *                               the end of each day.
          * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
          *                   can exist multiple times in the array where more agents of one type are required.
+         * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
          * @exception IOException On input error.
          * @see IOException
          */
@@ -110,6 +115,11 @@ public class ResourceExchangeArena {
         String dataOutputFolder = "results/" + FOLDER_NAME;
         Path dataOutputPath = Paths.get(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
+
+        // Create a directory to store the data output by the summary graphs.
+        String summaryDataOutputFolder = dataOutputFolder + "/summaryGraphs/data";
+        Path summaryDataOutputPath = Paths.get(summaryDataOutputFolder);
+        Files.createDirectories(summaryDataOutputPath);
 
         // Stores the key data about the finished simulation.
         File allSimulationsData = new File(
@@ -130,8 +140,31 @@ public class ResourceExchangeArena {
         allSimulationsDataWriter.append("Simulation Information (specific run details): \n\n");
 
         int simVersionsCompleted = 0;
+        int summaryGraphsMade = 0;
         for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
             for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
+
+                File comparingExchangesFile = new File(
+                        summaryDataOutputFolder,
+                        "exchangesComparisonGraphData_" + summaryGraphsMade + ".csv");
+
+                FileWriter comparingExchangesCSVWriter = new FileWriter(comparingExchangesFile);
+
+                comparingExchangesCSVWriter.append("Exchanges");
+                comparingExchangesCSVWriter.append(",");
+                comparingExchangesCSVWriter.append("Day");
+                for (Integer type : ALL_AGENT_TYPES) {
+                    comparingExchangesCSVWriter.append(",");
+                    comparingExchangesCSVWriter.append(Inflect.getHumanReadableAgentType(type));
+                }
+                for (Integer type : ALL_AGENT_TYPES) {
+                    comparingExchangesCSVWriter.append(",");
+                    comparingExchangesCSVWriter.append(Inflect.getHumanReadableAgentType(type)).append(" Standard Deviation");
+                }
+                comparingExchangesCSVWriter.append("\n");
+
+                summaryGraphsMade++;
+
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
                     new ArenaEnvironment(
                             FOLDER_NAME,
@@ -145,7 +178,8 @@ public class ResourceExchangeArena {
                             UNIQUE_TIME_SLOTS,
                             SLOTS_PER_AGENT,
                             NUMBER_OF_AGENTS_TO_EVOLVE,
-                            AGENT_TYPES
+                            AGENT_TYPES,
+                            comparingExchangesCSVWriter
                     );
 
                     simVersionsCompleted++;
@@ -166,6 +200,39 @@ public class ResourceExchangeArena {
                     }
                     allSimulationsDataWriter.append("\n\n");
                 }
+                comparingExchangesCSVWriter.close();
+
+                // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+                List<String> pythonArgs = new ArrayList<>();
+
+                int maxExchanges = 0;
+                for (int EXCHANGES : EXCHANGES_ARRAY) {
+                    if (EXCHANGES > maxExchanges) {
+                        maxExchanges = EXCHANGES;
+                    }
+                }
+
+                pythonArgs.add(pythonExe);
+                pythonArgs.add(summaryPythonPath);
+                pythonArgs.add(FOLDER_NAME);
+                pythonArgs.add(String.valueOf(simVersionsCompleted));
+                pythonArgs.add(comparingExchangesFile.getAbsolutePath());
+                pythonArgs.add(String.valueOf(maxExchanges));
+                pythonArgs.add(Arrays.toString(DAYS_OF_INTEREST));
+
+                ProcessBuilder builder = new ProcessBuilder(pythonArgs);
+
+                // IO from the Python is shared with the same terminal as the Java code.
+                builder.inheritIO();
+                builder.redirectErrorStream(true);
+
+                Process process = builder.start();
+                try {
+                    process.waitFor();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
         allSimulationsDataWriter.close();
