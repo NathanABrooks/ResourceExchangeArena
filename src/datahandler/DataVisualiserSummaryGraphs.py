@@ -152,7 +152,7 @@ with open(file) as summaryData:
                         for row in reader:
                             if int(row[0]) == int(exchanges[l]) and int(row[1]) == int(daysToVisualise[i]):
                                 if k == 0:
-                                    upperSD = float(row[j + 2]) + float(row[j])
+                                    upperSD = float(row[j]) + (float(row[j + 2]) / 2)
                                     # The upper standard deviation line can be capped at the maximum possible value.
                                     if upperSD > 1:
                                         upperSD = 1
@@ -160,7 +160,7 @@ with open(file) as summaryData:
                                     dataFound = True
                                     break
                                 else:
-                                    lowerSD = float(row[j]) - float(row[j + 2])
+                                    lowerSD = float(row[j]) - (float(row[j + 2]) / 2)
                                     if lowerSD < 0:
                                         lowerSD = 0
                                     endOfDayAverages.append(lowerSD)

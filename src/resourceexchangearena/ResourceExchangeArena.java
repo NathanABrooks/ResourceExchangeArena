@@ -48,7 +48,7 @@ public class ResourceExchangeArena {
         // the following arrays. All possible combinations will be simulated.
 
         // Number of exchange rounds per day.
-        final int[] EXCHANGES_ARRAY = {0,25,50,75,100,150,200};
+        final int[] EXCHANGES_ARRAY = {1,25,50,75,100,150,200};
 
         // Number of agents that will evolve their strategy per day.
         final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,20};

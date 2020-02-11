@@ -159,6 +159,7 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
                 )
             )
         else:
+            # Standard deviation lines need to be handled differently to agent type averages.
             lineType = 1
             k = 0
             while k < 2:
@@ -171,13 +172,13 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
                     for row in reader:
                         if row[0] == days[j]:
                             if k == 0:
-                                upperSD = float(row[i + 1]) + float(row[i - 1])
+                                upperSD = float(row[i - 1]) + (float(row[i + 1]) / 2)
                                 if upperSD > 1:
                                     upperSD = 1
                                 endOfDayAverages.append(upperSD)
                                 break
                             else:
-                                lowerSD = float(row[i - 1]) - float(row[i + 1])
+                                lowerSD = float(row[i - 1]) - (float(row[i + 1]) / 2)
                                 if lowerSD < 0:
                                     lowerSD = 0
                                 endOfDayAverages.append(lowerSD)
