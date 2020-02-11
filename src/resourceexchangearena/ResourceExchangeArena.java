@@ -40,7 +40,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "newTest";
+        final String FOLDER_NAME = "dataForPaper_FirstDraft";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -48,10 +48,10 @@ public class ResourceExchangeArena {
         // the following arrays. All possible combinations will be simulated.
 
         // Number of exchange rounds per day.
-        final int[] EXCHANGES_ARRAY = {25,50,100};
+        final int[] EXCHANGES_ARRAY = {0,25,50,75,100,150,200};
 
         // Number of agents that will evolve their strategy per day.
-        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {10};
+        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,20};
 
         // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
         // selfish agents for each social agent.
@@ -62,7 +62,7 @@ public class ResourceExchangeArena {
         final int DAYS = 200;
 
         // Increase the number of simulation runs for more consistent results.
-        final int SIMULATION_RUNS = 10;
+        final int SIMULATION_RUNS = 500;
 
         // Alter the number of Agents and their requirements. Note that the simulation has not been designed in order
         // to support this and so some combinations may cause errors.
@@ -121,7 +121,7 @@ public class ResourceExchangeArena {
         Path summaryDataOutputPath = Paths.get(summaryDataOutputFolder);
         Files.createDirectories(summaryDataOutputPath);
 
-        // Stores the key data about the finished simulation.
+        // Stores the key data about all simulations for organisational purposes.
         File allSimulationsData = new File(
                 "results/" + FOLDER_NAME,"allSimulationsData.txt");
 
@@ -139,11 +139,14 @@ public class ResourceExchangeArena {
         allSimulationsDataWriter.append("Slots per agent: ").append(String.valueOf(SLOTS_PER_AGENT)).append("\n\n\n");
         allSimulationsDataWriter.append("Simulation Information (specific run details): \n\n");
 
+        // Perform a parameter sweep for the key parameters being tested.
         int simVersionsCompleted = 0;
         int summaryGraphsMade = 0;
         for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
             for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
 
+                // For differing numbers of exchange rounds per day, data is stored so that summary graphs can be made
+                // comparing the results of the simulation of the number of exchange rounds varies.
                 File comparingExchangesFile = new File(
                         summaryDataOutputFolder,
                         "exchangesComparisonGraphData_" + summaryGraphsMade + ".csv");
@@ -159,7 +162,8 @@ public class ResourceExchangeArena {
                 }
                 for (Integer type : ALL_AGENT_TYPES) {
                     comparingExchangesCSVWriter.append(",");
-                    comparingExchangesCSVWriter.append(Inflect.getHumanReadableAgentType(type)).append(" Standard Deviation");
+                    comparingExchangesCSVWriter.append(Inflect.getHumanReadableAgentType(type))
+                            .append(" Standard Deviation");
                 }
                 comparingExchangesCSVWriter.append("\n");
 
@@ -185,9 +189,12 @@ public class ResourceExchangeArena {
                     simVersionsCompleted++;
                     System.out.println("Simulation versions completed: " + simVersionsCompleted);
 
+                    // The parameters that have finished being tested are stored so that it is clear what they were
+                    // when looking at the results.
                     allSimulationsDataWriter.append("Seed: ").append(String.valueOf(seed)).append("\n");
                     allSimulationsDataWriter.append("Exchanges: ").append(String.valueOf(EXCHANGES)).append("\n");
-                    allSimulationsDataWriter.append("Number of agents to evolve: ").append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
+                    allSimulationsDataWriter.append("Number of agents to evolve: ")
+                            .append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
                             .append("\n");
                     allSimulationsDataWriter.append("Starting ratio of agent types: ");
                     int typesListed = 0;
@@ -202,7 +209,8 @@ public class ResourceExchangeArena {
                 }
                 comparingExchangesCSVWriter.close();
 
-                // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+                // Collect the required data and pass it to the Python data visualiser to produce summary graphs
+                // showing how a differing number of exchanges per day effects the simulation.
                 List<String> pythonArgs = new ArrayList<>();
 
                 int maxExchanges = 0;
@@ -214,10 +222,20 @@ public class ResourceExchangeArena {
 
                 pythonArgs.add(pythonExe);
                 pythonArgs.add(summaryPythonPath);
+
+                // The output destination folder, used to organise output data.
                 pythonArgs.add(FOLDER_NAME);
+
+                // A unique tag so that generated graphs can easily be associated with their corresponding data sets.
                 pythonArgs.add(String.valueOf(simVersionsCompleted));
+
+                // The absolute path of the data set required for generating the graphs.
                 pythonArgs.add(comparingExchangesFile.getAbsolutePath());
+
+                // The total number of exchanges that have been simulated, determines graphs axis dimensions.
                 pythonArgs.add(String.valueOf(maxExchanges));
+
+                // The specific days that will have a line graph showing the satisfaction of each agent type generated.
                 pythonArgs.add(Arrays.toString(DAYS_OF_INTEREST));
 
                 ProcessBuilder builder = new ProcessBuilder(pythonArgs);

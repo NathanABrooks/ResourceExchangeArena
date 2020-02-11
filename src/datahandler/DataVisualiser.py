@@ -135,7 +135,8 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
                         endOfDayAverages.append((row[i + 1]))
                         break
 
-            # Get new line styling combination, calculated to match with graphs not including random or optimum allocations.
+            # Get new line styling combination, calculated to match with graphs not including random or optimum
+            # allocations.
             colour = i + (len(colours) - 2)
             while colour >= len(colours):
                 colour -= len(colours)
