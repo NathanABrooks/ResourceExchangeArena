@@ -73,7 +73,7 @@ public class ResourceExchangeArena {
 
         // Days that will have the Agents average satisfaction over the course of the day,
         // and satisfaction distribution at the end of the day visualised.
-        final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200};
+        final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
 
         // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
         // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
