@@ -212,7 +212,7 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
             range=[days[0], days[-1]],
             tickmode='linear',
             tick0=0,
-            dtick=10,
+            dtick=20,
         ),
         yaxis=dict(
             title='Average consumer satisfaction',
@@ -310,7 +310,7 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
                 range=[exchanges[0], exchanges[-1]],
                 tickmode='linear',
                 tick0=0,
-                dtick=25,
+                dtick=10,
             ),
             yaxis=dict(
                 title='Average consumer satisfaction',
@@ -397,7 +397,7 @@ with open(populationDistributions) as populationData:
             range=[days[0], days[-1]],
             tickmode='linear',
             tick0=0,
-            dtick=5,
+            dtick=20,
         ),
         yaxis=dict(
             title='Population',
