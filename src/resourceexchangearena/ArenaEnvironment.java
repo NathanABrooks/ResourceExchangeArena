@@ -34,6 +34,10 @@ public class ArenaEnvironment {
      *                               end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
      *                   can exist multiple times in the array where more agents of one type are required.
+     * @param singleAgentType Boolean value specifying whether only a single agent type should exist,
+     *                        used for establishing baseline results.
+     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
+     *                                when singleAgentType is true.
      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
      * @exception IOException On input error.
      * @see IOException
@@ -51,6 +55,8 @@ public class ArenaEnvironment {
             int slotsPerAgent,
             int numberOfAgentsToEvolve,
             int[] agentTypes,
+            boolean singleAgentType,
+            int selectedSingleAgentType,
             FileWriter comparingExchangesCSVWriter
     ) throws IOException {
 
@@ -241,6 +247,10 @@ public class ArenaEnvironment {
              *                   type can exist multiple times in the array where more agents of one type are required.
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
+             * @param singleAgentType Boolean value specifying whether only a single agent type should exist, used for
+             *                        establishing baseline results.
+             * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
+             *                                singleAgentType is true.
              * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
@@ -266,6 +276,8 @@ public class ArenaEnvironment {
                     numberOfAgentsToEvolve,
                     agentTypes,
                     uniqueAgentTypes,
+                    singleAgentType,
+                    selectedSingleAgentType,
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,

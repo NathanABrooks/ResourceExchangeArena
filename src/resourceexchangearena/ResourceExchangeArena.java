@@ -51,7 +51,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "dataForPaper_changingStrategyBasedOnDifferenceLongRunTest";
+        final String FOLDER_NAME = "all_selfish";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -62,12 +62,19 @@ public class ResourceExchangeArena {
         final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
 
         // Number of agents that will evolve their strategy per day.
-        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
+        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0};
 
         // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
         // selfish agents for each social agent.
+        // Note that both types of agents need to exist, for testing with a single agent type set 'SINGLE_AGENT_TYPE'
+        // to 'true' and set the 'SELECTED_SINGLE_AGENT_TYPE' as required.
         final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
         //#############################################################################################################
+
+        // Specify whether only a single agent type should exist in the simulation, used for establishing baseline
+        // results.
+        final boolean SINGLE_AGENT_TYPE = false;
+        final int SELECTED_SINGLE_AGENT_TYPE = SELFISH;
 
         // Alter the length of time to be simulated.
         final int DAYS = 500;
@@ -96,31 +103,6 @@ public class ResourceExchangeArena {
 
         // Set the simulations initial random seed.
         random.setSeed(seed);
-
-        /*
-         * The arena is the environment in which all simulations take place.
-         *
-         * @param folderName String representing the output destination folder, used to organise output data.
-         * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-         * @param additionalData Boolean value that configures the simulation to output the state of each agent after
-         *                       each exchange and at the end of each day.
-         * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
-         * @param days Integer value representing the number of days to be simulated.
-         * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per
-         *                  day.
-         * @param populationSize Integer value representing the size of the initial agent population.
-         * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
-         * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
-         *                        simulation.
-         * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-         * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at
-         *                               the end of each day.
-         * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
-         *                   can exist multiple times in the array where more agents of one type are required.
-         * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
-         * @exception IOException On input error.
-         * @see IOException
-         */
 
         // Create a directory to store the data output by all simulations being run.
         String dataOutputFolder = "results/" + FOLDER_NAME;
@@ -181,6 +163,39 @@ public class ResourceExchangeArena {
                 summaryGraphsMade++;
 
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
+                    /*
+                     * The arena is the environment in which all simulations take place.
+                     *
+                     * @param folderName String representing the output destination folder, used to organise output
+                     *                   data.
+                     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the
+                     *                       simulation.
+                     * @param additionalData Boolean value that configures the simulation to output the state of each
+                     *                       agent after each exchange and at the end of each day.
+                     * @param simulationRuns Integer value representing the number of simulations to be ran and
+                     *                       averaged.
+                     * @param days Integer value representing the number of days to be simulated.
+                     * @param exchanges Integer value representing the number of times all agents perform pairwise
+                     *                  exchanges per day.
+                     * @param populationSize Integer value representing the size of the initial agent population.
+                     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to
+                     *                               each time slot.
+                     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in
+                     *                        the simulation.
+                     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+                     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy
+                     *                               will change at the end of each day.
+                     * @param agentTypes Integer array containing the agent types that the simulation will begin with.
+                     *                   The same type can exist multiple times in the array where more agents of one
+                     *                   type are required.
+                     * @param singleAgentType Boolean value specifying whether only a single agent type should exist,
+                     *                        used for establishing baseline results.
+                     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
+                     *                                when singleAgentType is true.
+                     * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
+                     * @exception IOException On input error.
+                     * @see IOException
+                     */
                     new ArenaEnvironment(
                             FOLDER_NAME,
                             DAYS_OF_INTEREST,
@@ -194,6 +209,8 @@ public class ResourceExchangeArena {
                             SLOTS_PER_AGENT,
                             NUMBER_OF_AGENTS_TO_EVOLVE,
                             AGENT_TYPES,
+                            SINGLE_AGENT_TYPE,
+                            SELECTED_SINGLE_AGENT_TYPE,
                             comparingExchangesCSVWriter
                     );
 

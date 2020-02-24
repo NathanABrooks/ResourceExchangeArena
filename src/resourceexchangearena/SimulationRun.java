@@ -25,6 +25,10 @@ class SimulationRun {
      *                   can exist multiple times in the array where more agents of one type are required.
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
+     * @param singleAgentType Boolean value specifying whether only a single agent type should exist, used for
+     *                        establishing baseline results.
+     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
+     *                                singleAgentType is true.
      * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
@@ -49,6 +53,8 @@ class SimulationRun {
             int numberOfAgentsToEvolve,
             int[] agentTypes,
             ArrayList<Integer> uniqueAgentTypes,
+            boolean singleAgentType,
+            int selectedSingleAgentType,
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
@@ -92,6 +98,13 @@ class SimulationRun {
                 numberOfEachAgentType = 1;
             }
         }
+
+        // Set all agents to a single type, used for establishing baseline performance.
+        if (singleAgentType)
+        for (Agent a: agents) {
+            a.setType(selectedSingleAgentType);
+        }
+
 
         // Increment the simulations seed each run.
         ResourceExchangeArena.seed++;
