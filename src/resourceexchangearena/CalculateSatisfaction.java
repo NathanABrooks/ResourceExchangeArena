@@ -90,7 +90,7 @@ class CalculateSatisfaction  {
                 satisfiedSlots++;
 
                 // Remove the slot from the list of all allocated slots so no slots can be allocated twice.
-                allAllocatedSlots.remove(Integer.valueOf(slot));
+                allAllocatedSlots.remove(slot);
             }
         }
         return satisfiedSlots / totalSlots;

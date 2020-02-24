@@ -51,7 +51,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "all_selfish";
+        final String FOLDER_NAME = "results1";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -62,7 +62,7 @@ public class ResourceExchangeArena {
         final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
 
         // Number of agents that will evolve their strategy per day.
-        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0};
+        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
 
         // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
         // selfish agents for each social agent.
@@ -73,8 +73,9 @@ public class ResourceExchangeArena {
 
         // Specify whether only a single agent type should exist in the simulation, used for establishing baseline
         // results.
-        final boolean SINGLE_AGENT_TYPE = false;
-        final int SELECTED_SINGLE_AGENT_TYPE = SELFISH;
+        final boolean SINGLE_AGENT_TYPE = true;
+        final int SELECTED_SINGLE_AGENT_TYPE;
+        SELECTED_SINGLE_AGENT_TYPE = SELFISH;
 
         // Alter the length of time to be simulated.
         final int DAYS = 500;
@@ -163,6 +164,25 @@ public class ResourceExchangeArena {
                 summaryGraphsMade++;
 
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
+
+                    // The parameters about to be tested are stored so that it is clear what they were when looking at
+                    // the results.
+                    allSimulationsDataWriter.append("Seed: ").append(String.valueOf(seed)).append("\n");
+                    allSimulationsDataWriter.append("Exchanges: ").append(String.valueOf(EXCHANGES)).append("\n");
+                    allSimulationsDataWriter.append("Number of agents to evolve: ")
+                            .append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
+                            .append("\n");
+                    allSimulationsDataWriter.append("Starting ratio of agent types: ");
+                    int typesListed = 0;
+                    for (int type : AGENT_TYPES) {
+                        if(typesListed != 0){
+                            allSimulationsDataWriter.append(" : ");
+                        }
+                        typesListed++;
+                        allSimulationsDataWriter.append(Inflect.getHumanReadableAgentType(type));
+                    }
+                    allSimulationsDataWriter.append("\n\n");
+
                     /*
                      * The arena is the environment in which all simulations take place.
                      *
@@ -216,24 +236,6 @@ public class ResourceExchangeArena {
 
                     simVersionsCompleted++;
                     System.out.println("Simulation versions completed: " + simVersionsCompleted);
-
-                    // The parameters that have finished being tested are stored so that it is clear what they were
-                    // when looking at the results.
-                    allSimulationsDataWriter.append("Seed: ").append(String.valueOf(seed)).append("\n");
-                    allSimulationsDataWriter.append("Exchanges: ").append(String.valueOf(EXCHANGES)).append("\n");
-                    allSimulationsDataWriter.append("Number of agents to evolve: ")
-                            .append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
-                            .append("\n");
-                    allSimulationsDataWriter.append("Starting ratio of agent types: ");
-                    int typesListed = 0;
-                    for (int type : AGENT_TYPES) {
-                        if(typesListed != 0){
-                            allSimulationsDataWriter.append(" : ");
-                        }
-                        typesListed++;
-                        allSimulationsDataWriter.append(Inflect.getHumanReadableAgentType(type));
-                    }
-                    allSimulationsDataWriter.append("\n\n");
                 }
                 comparingExchangesCSVWriter.close();
 
