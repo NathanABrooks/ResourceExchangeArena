@@ -100,7 +100,7 @@ class SimulationRun {
         }
 
         // Set all agents to a single type, used for establishing baseline performance.
-        if (singleAgentType)
+        if (singleAgentType && selectedSingleAgentType != 0)
         for (Agent a: agents) {
             a.setType(selectedSingleAgentType);
         }

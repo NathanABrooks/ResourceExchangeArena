@@ -1,5 +1,6 @@
 package resourceexchangearena;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -425,15 +426,18 @@ class Agent {
             allocatedTimeSlots = this.allocatedTimeSlots;
         }
 
+        ArrayList<Integer> tempRequestedTimeSlots = new ArrayList<>(requestedTimeSlots);
+
         // Count the number of the given time slots that match the Agents requested time slots.
-        int satisfiedSlots = 0;
-        for(int i = 1; i <= allocatedTimeSlots.size(); i++){
-            int timeSlot = allocatedTimeSlots.get(i - 1);
-            if (requestedTimeSlots.contains(timeSlot)) {
+        double satisfiedSlots = 0;
+        for(int i = 0; i < allocatedTimeSlots.size(); i++){
+            int timeSlot = allocatedTimeSlots.get(i);
+            if (tempRequestedTimeSlots.contains(timeSlot)) {
+                tempRequestedTimeSlots.remove(Integer.valueOf(timeSlot));
                 satisfiedSlots++;
             }
         }
         // Return the Agents satisfaction with the given time slots, between 1 and 0.
-        return ((double)satisfiedSlots) / numberOfTimeSlotsWanted;
+        return satisfiedSlots / numberOfTimeSlotsWanted;
     }
 }

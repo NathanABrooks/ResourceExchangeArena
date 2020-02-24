@@ -79,10 +79,10 @@ class CalculateSatisfaction  {
         }
 
         // Stores the number of slots that could potentially be fulfilled with perfect trading.
-        int satisfiedSlots = 0;
+        double satisfiedSlots = 0;
 
         // Stores the total number of slots requested by all Agents.
-        int totalSlots = allRequestedSlots.size();
+        double totalSlots = allRequestedSlots.size();
 
         for (Integer slot : allRequestedSlots) {
             if (allAllocatedSlots.contains(slot)) {
@@ -90,9 +90,9 @@ class CalculateSatisfaction  {
                 satisfiedSlots++;
 
                 // Remove the slot from the list of all allocated slots so no slots can be allocated twice.
-                allAllocatedSlots.remove(slot);
+                allAllocatedSlots.remove(Integer.valueOf(slot));
             }
         }
-        return ((double)satisfiedSlots) / totalSlots;
+        return satisfiedSlots / totalSlots;
     }
 }
