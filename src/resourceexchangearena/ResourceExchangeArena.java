@@ -51,7 +51,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "dataForPaper_changingStrategyBasedOnDifference";
+        final String FOLDER_NAME = "dataForPaper_changingStrategyBasedOnDifferenceLongRunTest";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -59,7 +59,7 @@ public class ResourceExchangeArena {
         // the following arrays. All possible combinations will be simulated.
 
         // Number of exchange rounds per day.
-        final int[] EXCHANGES_ARRAY = {10,25,50,75,100,150,175,200};
+        final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
 
         // Number of agents that will evolve their strategy per day.
         final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
