@@ -41,11 +41,12 @@ class SocialLearning {
             double agentSatisfaction = agent.calculateSatisfaction(null);
             double observedSatisfaction = (double) agentToCopy[1] / 4;
             if (agentSatisfaction < observedSatisfaction) {
-                double difference = observedSatisfaction - agentSatisfaction;
-                double threshold = ResourceExchangeArena.random.nextDouble();
-                if (difference > threshold) {
-                    agent.setType(agentToCopy[2]);
-                }
+//                double difference = observedSatisfaction - agentSatisfaction;
+//                double threshold = ResourceExchangeArena.random.nextDouble();
+//                if (difference > threshold) {
+//                    agent.setType(agentToCopy[2]);
+//                }
+                agent.setType(agentToCopy[2]);
             }
             unselectedAgents.remove(Integer.valueOf(agent.agentID));
         }
