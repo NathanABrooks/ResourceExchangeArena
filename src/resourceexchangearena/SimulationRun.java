@@ -67,17 +67,7 @@ class SimulationRun {
         ArrayList<Agent> agents = new ArrayList<>();
 
         // Create the Agents for the simulation.
-        int numberOfEachAgentType = populationSize / agentTypes.length;
-        int agentType = 0;
-        int agentsOfThisType = 0;
-
         for (int agentNumber = 1; agentNumber <= populationSize; agentNumber++) {
-            if (agentsOfThisType >= numberOfEachAgentType) {
-                agentType++;
-                agentsOfThisType = 0;
-            }
-            if (agentType < agentTypes.length) {
-
                 /*
                  * This is the constructor for Agent objects.
                  *
@@ -87,16 +77,7 @@ class SimulationRun {
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
                  * @param agents Array List of all the agents that exist in the current simulation.
                  */
-                new Agent(agentNumber, agentTypes[agentType], slotsPerAgent, agents);
-                agentsOfThisType++;
-            } else {
-                // When there can't be an equal number of each agent type, each type gets an additional agent until all
-                // agents have been assigned.
-                agentNumber--;
-                agentType = 0;
-                agentsOfThisType = 0;
-                numberOfEachAgentType = 1;
-            }
+                new Agent(agentNumber, agentTypes[agentNumber % agentTypes.length], slotsPerAgent, agents);
         }
 
         // Set all agents to a single type, used for establishing baseline performance.
