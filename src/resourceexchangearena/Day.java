@@ -60,9 +60,6 @@ public class Day {
             FileWriter individualCSVWriter
     ) throws IOException{
 
-        // Create a copy of the Agents list that can be shuffled so Agents act in a random order.
-        ArrayList<Agent> shuffledAgents = new ArrayList<>(agents);
-
         // Fill the available time slots with all the slots that exist each day.
         for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
             for (int unit = 1; unit <= maximumPeakConsumption; unit++) {
@@ -71,8 +68,8 @@ public class Day {
         }
 
         // Agents start the day by requesting and receiving an allocation of time slots.
-        Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
-        for (Agent a : shuffledAgents) {
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
             ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(uniqueTimeSlots);
             ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
             a.receiveAllocatedTimeSlots(allocatedTimeSlots);
@@ -108,9 +105,6 @@ public class Day {
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
              * @param agents Array List of all the agents that exist in the current simulation.
-             * @param shuffledAgents Array List of all the agents that exist in the current simulation that has been
-             *                       randomly shuffled for fairness when determining the order in which agents are able
-             *                       to request trades.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
              * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
@@ -125,7 +119,6 @@ public class Day {
                     exchange,
                     uniqueAgentTypes,
                     agents,
-                    shuffledAgents,
                     endOfRoundAverageSatisfactions,
                     individualCSVWriter
             );

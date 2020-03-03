@@ -51,7 +51,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "always_copy_higher_satisfaction";
+        final String FOLDER_NAME = "test2";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -59,10 +59,10 @@ public class ResourceExchangeArena {
         // the following arrays. All possible combinations will be simulated.
 
         // Number of exchange rounds per day.
-        final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
+        final int[] EXCHANGES_ARRAY = {1,25,50,200};
 
         // Number of agents that will evolve their strategy per day.
-        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
+        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0};
 
         // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
         // selfish agents for each social agent.
@@ -73,15 +73,15 @@ public class ResourceExchangeArena {
 
         // Specify whether only a single agent type should exist in the simulation, used for establishing baseline
         // results.
-        final boolean SINGLE_AGENT_TYPE = false;
+        final boolean SINGLE_AGENT_TYPE = true;
         final int SELECTED_SINGLE_AGENT_TYPE;
-        SELECTED_SINGLE_AGENT_TYPE = 0;
+        SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
 
         // Alter the length of time to be simulated.
         final int DAYS = 500;
 
         // Increase the number of simulation runs for more consistent results.
-        final int SIMULATION_RUNS = 50;
+        final int SIMULATION_RUNS = 10;
 
         // Alter the number of Agents and their requirements. Note that the simulation has not been designed in order
         // to support this and so some combinations may cause errors.
@@ -101,6 +101,7 @@ public class ResourceExchangeArena {
 
         // The seed can be set to replicate previous simulations.
         seed = System.currentTimeMillis();
+        String initialSeed;
 
         // Set the simulations initial random seed.
         random.setSeed(seed);
@@ -165,9 +166,11 @@ public class ResourceExchangeArena {
 
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
 
+                    initialSeed = String.valueOf(seed);
+
                     // The parameters about to be tested are stored so that it is clear what they were when looking at
                     // the results.
-                    allSimulationsDataWriter.append("Seed: ").append(String.valueOf(seed)).append("\n");
+                    allSimulationsDataWriter.append("Seed: ").append(initialSeed).append("\n");
                     allSimulationsDataWriter.append("Exchanges: ").append(String.valueOf(EXCHANGES)).append("\n");
                     allSimulationsDataWriter.append("Number of agents to evolve: ")
                             .append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
@@ -188,6 +191,8 @@ public class ResourceExchangeArena {
                      *
                      * @param folderName String representing the output destination folder, used to organise output
                      *                   data.
+                     * @param initialSeed String representing the seed of the first simulation run included in the
+                     *                    results, added to the results file names so that they can be replicated.
                      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the
                      *                       simulation.
                      * @param additionalData Boolean value that configures the simulation to output the state of each
@@ -218,6 +223,7 @@ public class ResourceExchangeArena {
                      */
                     new ArenaEnvironment(
                             FOLDER_NAME,
+                            initialSeed,
                             DAYS_OF_INTEREST,
                             ADDITIONAL_DATA,
                             SIMULATION_RUNS,

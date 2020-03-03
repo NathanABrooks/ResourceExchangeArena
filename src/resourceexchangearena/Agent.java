@@ -208,15 +208,8 @@ class Agent {
      */
     ArrayList<Integer> publishUnlockedTimeSlots() {
         ArrayList<Integer> unlockedTimeSlots;
-        switch(agentType) {
-            case ResourceExchangeArena.SOCIAL:
-            case ResourceExchangeArena.SELFISH:
-                unlockedTimeSlots = new ArrayList<>(nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots));
-                break;
-            default:
-                // If no type specific behavior can be found, the agent will be willing to trade all time slots.
-                unlockedTimeSlots = allocatedTimeSlots;
-        }
+        unlockedTimeSlots = new ArrayList<>(nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots));
+
         return unlockedTimeSlots;
     }
 
@@ -339,6 +332,8 @@ class Agent {
                     if (favoursOwedToRequester > favoursGivenToRequester) {
                         exchangeRequestApproved = true;
                     }
+                    // Used when testing social agents that don't require social capital.
+                   // exchangeRequestApproved = true;
                 }
             } else {
                 // Selfish Agents and Agents with no known type use the default selfish approach.
@@ -376,7 +371,7 @@ class Agent {
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (Double.compare(newSatisfaction, previousSatisfaction) > 0 ) {
+        if (Double.compare(newSatisfaction, previousSatisfaction) > 0 && agentType == ResourceExchangeArena.SOCIAL) {
             for (ArrayList<Integer> favours : favoursOwed) {
                 if (favours.get(0).equals(agentID)) {
                     int currentFavour = favours.get(1);
@@ -402,7 +397,7 @@ class Agent {
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (Double.compare(newSatisfaction,previousSatisfaction) <= 0) {
+        if (Double.compare(newSatisfaction,previousSatisfaction) <= 0 && agentType == ResourceExchangeArena.SOCIAL) {
             for (ArrayList<Integer> favours : favoursGiven) {
                 if (favours.get(0).equals(offer.get(0))) {
                     int currentFavour = favours.get(1);

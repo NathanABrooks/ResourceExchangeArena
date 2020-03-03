@@ -3,6 +3,7 @@ package resourceexchangearena;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 class SimulationRun {
 
@@ -79,6 +80,7 @@ class SimulationRun {
                  */
                 new Agent(agentNumber, agentTypes[agentNumber % agentTypes.length], slotsPerAgent, agents);
         }
+        Collections.shuffle(agents, ResourceExchangeArena.random);
 
         // Set all agents to a single type, used for establishing baseline performance.
         if (singleAgentType && selectedSingleAgentType != 0)

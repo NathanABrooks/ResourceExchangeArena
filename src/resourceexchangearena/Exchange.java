@@ -20,9 +20,6 @@ class Exchange {
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
      * @param agents Array List of all the agents that exist in the current simulation.
-     * @param shuffledAgents Array List of all the agents that exist in the current simulation that has been randomly
-     *                       shuffled for fairness when determining the order in which agents are able to request
-     *                       trades.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
      * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each exchange when
@@ -37,7 +34,6 @@ class Exchange {
             int exchange,
             ArrayList<Integer> uniqueAgentTypes,
             ArrayList<Agent> agents,
-            ArrayList<Agent> shuffledAgents,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             FileWriter individualCSVWriter
     ) throws IOException {
@@ -50,8 +46,8 @@ class Exchange {
         }
 
         // Exchanges start by Agents advertising time slots they may be willing to exchange.
-        Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
-        for (Agent a : shuffledAgents) {
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
             ArrayList<Integer> unlockedTimeSlots = a.publishUnlockedTimeSlots();
             if (!unlockedTimeSlots.isEmpty()) {
                 ArrayList<Integer> advert = new ArrayList<>();
@@ -62,8 +58,8 @@ class Exchange {
         }
 
         // Each Agent has the opportunity to make exchange requests for advertised time slots.
-        Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
-        for (Agent a : shuffledAgents) {
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
             if (a.canMakeInteraction()) {
                 ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
                 a.setMadeInteraction(true);
@@ -91,8 +87,8 @@ class Exchange {
         }
 
         // Agents who have received a request consider it.
-        Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
-        for (Agent a : shuffledAgents) {
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
             if (!a.getExchangeRequestReceived().isEmpty()) {
                 a.considerRequest();
             }
@@ -100,8 +96,8 @@ class Exchange {
 
         // Agents confirm and complete approved requests if they are able to do so, and update
         // their relations with other Agents accordingly.
-        Collections.shuffle(shuffledAgents, ResourceExchangeArena.random);
-        for (Agent a : shuffledAgents) {
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
             if (a.getExchangeRequestApproved()) {
                 ArrayList<Integer> offer = a.getExchangeRequestReceived();
                 if (a.finalCheck(offer.get(1))) {

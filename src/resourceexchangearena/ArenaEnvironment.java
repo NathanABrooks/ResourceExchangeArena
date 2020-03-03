@@ -20,6 +20,8 @@ public class ArenaEnvironment {
      * The arena is the environment in which all simulations take place.
      *
      * @param folderName String representing the output destination folder, used to organise output data.
+     * @param initialSeed String representing the seed of the first simulation run included in the results, added to
+     *                    the results file names so that they can be replicated.
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
      *                       exchange and at the end of each day.
@@ -44,6 +46,7 @@ public class ArenaEnvironment {
      */
     ArenaEnvironment(
             String folderName,
+            String initialSeed,
             int[] daysOfInterest,
             boolean additionalData,
             int simulationRuns,
@@ -72,9 +75,6 @@ public class ArenaEnvironment {
 
         // Sort the agent types so that they are ordered correctly in the output csv files.
         Collections.sort(uniqueAgentTypes);
-
-        // The initial seed is used to differentiate runs and to allow easy repeatability.
-        String initialSeed = Long.toString(ResourceExchangeArena.seed);
 
         // Create a directory to store the data output by the simulation.
         String dataOutputFolder = "results/" + folderName + "/" + initialSeed + "/data";
@@ -449,8 +449,8 @@ public class ArenaEnvironment {
          * The arena is the environment in which all simulations take place.
          *
          * @param folderName String representing the output destination folder, used to organise output data.
-         * @param initialSeed String representing the seed of the first simulation run included in the results, this
-         *                    string added to the results file names so that they can be easily replicated.
+         * @param initialSeed String representing the seed of the first simulation run included in the results, added
+         *                    to the results file names so that they can be replicated.
          * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
          * @param days Integer value representing the number of days to be simulated.
          * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per
