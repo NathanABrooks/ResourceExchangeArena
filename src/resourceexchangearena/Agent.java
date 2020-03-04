@@ -333,7 +333,7 @@ class Agent {
                         exchangeRequestApproved = true;
                     }
                     // Used when testing social agents that don't require social capital.
-                   // exchangeRequestApproved = true;
+                    // exchangeRequestApproved = true;
                 }
             } else {
                 // Selfish Agents and Agents with no known type use the default selfish approach.

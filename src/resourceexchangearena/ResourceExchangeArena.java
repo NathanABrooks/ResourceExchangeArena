@@ -51,7 +51,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "normal_run";
+        final String FOLDER_NAME = "social_agents_always_exchange_unwanted";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -73,9 +73,9 @@ public class ResourceExchangeArena {
 
         // Specify whether only a single agent type should exist in the simulation, used for establishing baseline
         // results.
-        final boolean SINGLE_AGENT_TYPE = true;
+        final boolean SINGLE_AGENT_TYPE = false;
         final int SELECTED_SINGLE_AGENT_TYPE;
-        SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
+        SELECTED_SINGLE_AGENT_TYPE = 0;
 
         // Alter the length of time to be simulated.
         final int DAYS = 500;
