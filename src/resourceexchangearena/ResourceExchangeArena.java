@@ -283,8 +283,11 @@ public class ResourceExchangeArena {
                 // A unique tag so that generated graphs can easily be associated with their corresponding data sets.
                 pythonArgs.add(String.valueOf(simVersionsCompleted));
 
-                // The absolute path of the data set required for generating the graphs.
+                // The absolute path of the data set required for generating the performance graphs.
                 pythonArgs.add(comparingExchangesFile.getAbsolutePath());
+
+                // The absolute path of the data set required for generating the population distribution graphs.
+                pythonArgs.add(comparingPopulationDistributionsFile.getAbsolutePath());
 
                 // The total number of exchanges that have been simulated, determines graphs axis dimensions.
                 pythonArgs.add(String.valueOf(maxExchanges));
