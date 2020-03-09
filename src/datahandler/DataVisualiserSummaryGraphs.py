@@ -17,8 +17,10 @@ folderName : str
     The output destination folder, used to organise output data.
 identityNumber : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-file:  str
-    The absolute path of the data set required for generating the graphs.
+exchangesFile:  str
+    The absolute path of the data set required for generating the graphs comparing exchanges and performance.
+populationDistributionsFile:  str
+    The absolute path of the data set required for generating the graphs showing the average population distributions.
 totalExchangesSimulated: int
     The total number of exchanges that have been simulated, determines graphs axis dimensions.
 daysToVisualise: str
@@ -34,13 +36,14 @@ folderName: str = sys.argv[1]
 identityNumber: str = sys.argv[2]
 
 # Get the location of the raw data that requires visualising from command line arguments.
-file: str = sys.argv[3]
+exchangesFile: str = sys.argv[3]
+populationDistributionsFile: str = sys.argv[4]
 
 # Get the scope of the data to be visualised.
-totalExchangesSimulated: int = int(sys.argv[4])
+totalExchangesSimulated: int = int(sys.argv[5])
 
 # Get the specific days to be visualised.
-daysToVisualise: List[int] = ast.literal_eval(sys.argv[5])
+daysToVisualise: List[int] = ast.literal_eval(sys.argv[6])
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -56,8 +59,8 @@ if not os.path.exists(baseOutputDirectory):
     os.makedirs(baseOutputDirectory)
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
-baseFileName: str = file.split('/')[-1]
-convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
+baseFileName: str = exchangesFile.split('/')[-1]
+convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Graph', '')
 
 # Store the scope of the data, which will be the same for each graph, as global lists.
 exchanges: List[str] = []
@@ -75,9 +78,7 @@ lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
 
 # Average consumer satisfactions for each agent type at the end of each day given the number of exchanges are
 # visualised as a line graph. Only pre-selected days are visualised to minimise compute time.
-with open(file) as summaryData:
-    reader = csv.reader(summaryData)
-
+with open(exchangesFile) as summaryData:
     # Before visualising the full data set, pull data that can be reused for later visualisations.
     setupReader = csv.DictReader(summaryData)
 
@@ -228,6 +229,104 @@ with open(file) as summaryData:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
+            '.pdf', '_' + str(daysToVisualise[i]) + '.pdf')
+        fullPath: str = os.path.join(baseOutputDirectory, fileName)
+        py.io.write_image(fig, fullPath)
+
+# Average population sizes for each agent type at the end of each day given the number of exchanges are
+# visualised as a line graph. Only pre-selected days are visualised to minimise compute time.
+with open(populationDistributionsFile) as summaryData:
+    # Each pre-selected day is visualised in its own graph.
+    for i in range(len(daysToVisualise)):
+        # Store calculated graph data
+        data: Any = []
+
+        reader = csv.reader(summaryData)
+        # Standard deviations are not shown here and so only half the fieldNames are used.
+        for j in range(int(len(fieldNames) / 2)):
+            # Used to distinguish results when many agent types present.
+            lineType: int = 0
+
+            endOfDayAverages: List[int] = []
+            for k in range(len(exchanges)):
+                summaryData.seek(0)
+
+                # The first line contains only headers and so can be skipped.
+                next(reader)
+                dataFound: bool = False
+                for row in reader:
+                    if int(row[1]) == int(daysToVisualise[i]) and int(row[0]) == int(exchanges[k]):
+                        endOfDayAverages.append(row[j + 2])
+                        dataFound = True
+                        break
+                if not dataFound:
+                    endOfDayAverages.append(None)
+
+            # Get new line styling combination,
+            # calculated to match with graphs not including random or optimum allocations.
+            colour: int = j + (len(colours))
+            while colour >= len(colours):
+                colour -= len(colours)
+
+            # Add the agent types data plots to the graph data.
+            data.append(
+                py.graph_objs.Scatter(
+                    x=exchanges,
+                    y=endOfDayAverages,
+                    name=fieldNames[j],
+                    line=dict(
+                        color=colours[colour],
+                        dash=lineTypes[lineType],
+                        width=1,
+                    ),
+                    connectgaps=True,
+                )
+            )
+
+        # The day value is converted into the ordinal word form for styling.
+        day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
+
+        # Style the graph layout
+        layout: any = dict(
+            title='Average population distribution at the end of the ' + day + ' day',
+            xaxis=dict(
+                title='Exchanges per day',
+                showline=True,
+                linecolor='black',
+                linewidth=2,
+                gridcolor='rgb(255, 255, 255)',
+                gridwidth=2,
+                range=[exchanges[0], exchanges[-1]],
+                tickmode='linear',
+                tick0=0,
+                dtick=10,
+            ),
+            yaxis=dict(
+                title='Average population size',
+                showline=True,
+                linecolor='black',
+                linewidth=2,
+                gridcolor='rgb(255, 255, 255)',
+                gridwidth=2,
+                range=[0, 96],
+                tickmode='linear',
+                tick0=0,
+                dtick=5,
+            ),
+            margin=dict(
+                l=40,
+                r=30,
+                b=80,
+                t=100,
+            ),
+            paper_bgcolor='rgb(243, 243, 243)',
+            plot_bgcolor='rgb(243, 243, 243)',
+        )
+
+        # Create the graph and save the file
+        fig: Dict[any, any] = dict(data=data, layout=layout)
+        adjustedFileName: str = convertedBaseFileName.replace('exchanges', 'populationDistributions')
+        fileName: str = adjustedFileName.replace(
             '.pdf', '_' + str(daysToVisualise[i]) + '.pdf')
         fullPath: str = os.path.join(baseOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)

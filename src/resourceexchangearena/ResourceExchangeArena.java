@@ -49,7 +49,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "test";
+        final String FOLDER_NAME = "normal_run";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
