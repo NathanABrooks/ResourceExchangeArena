@@ -41,6 +41,8 @@ public class ArenaEnvironment {
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
      *                                when singleAgentType is true.
      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
+     * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population distributions summary
+     *                                                  file.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -60,7 +62,8 @@ public class ArenaEnvironment {
             int[] agentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
-            FileWriter comparingExchangesCSVWriter
+            FileWriter comparingExchangesCSVWriter,
+            FileWriter comparingPopulationDistributionsCSVWriter
     ) throws IOException {
 
         System.out.println("Starting simulation...");
@@ -414,6 +417,15 @@ public class ArenaEnvironment {
         // distributions csv file.
         for (int day = 1; day <= days; day++) {
             ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(day - 1);
+            boolean dayOfInterest = false;
+            for(int element: daysOfInterest) {
+                if (day == element) {
+                    dayOfInterest = true;
+                    comparingPopulationDistributionsCSVWriter.append(String.valueOf(exchanges));
+                    comparingPopulationDistributionsCSVWriter.append(",");
+                    comparingPopulationDistributionsCSVWriter.append(String.valueOf(day));
+                }
+            }
             for (int agentType = 0; agentType < uniqueAgentTypes.size(); agentType++) {
                 populationDistributionsCSVWriter.append(String.valueOf(day));
                 populationDistributionsCSVWriter.append(",");
@@ -429,6 +441,13 @@ public class ArenaEnvironment {
 
                 populationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
                 populationDistributionsCSVWriter.append("\n");
+                if (dayOfInterest) {
+                    comparingPopulationDistributionsCSVWriter.append(",");
+                    comparingPopulationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
+                }
+            }
+            if (dayOfInterest) {
+                comparingPopulationDistributionsCSVWriter.append("\n");
             }
         }
 

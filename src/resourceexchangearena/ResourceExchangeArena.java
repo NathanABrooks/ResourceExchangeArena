@@ -8,14 +8,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-
 //
 // Planned changes:
-// chance of changing based on difference
-// run for 500 for direct comparison
 // Add graph of total social capital in social, + average + median + standard deviation (overall and split for types)
 // then run for 2k days to allow time to flatten
 // Finally param sweep starting ratio changes
+// Alter the way selfish agents handle social capital, forgetting all when becoming selfish + keep building history
 //
 
 
@@ -51,7 +49,7 @@ public class ResourceExchangeArena {
     public static void main(String[] args) throws IOException {
 
         // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "social_agents_always_exchange_unwanted";
+        final String FOLDER_NAME = "test";
 
         //#############################################################################################################
         // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
@@ -162,6 +160,22 @@ public class ResourceExchangeArena {
                 }
                 comparingExchangesCSVWriter.append("\n");
 
+                File comparingPopulationDistributionsFile = new File(
+                        summaryDataOutputFolder,
+                        "exchangesPopulationDistributionsGraphData_" + summaryGraphsMade + ".csv");
+
+                FileWriter comparingPopulationDistributionsCSVWriter =
+                        new FileWriter(comparingPopulationDistributionsFile);
+
+                comparingPopulationDistributionsCSVWriter.append("Exchanges");
+                comparingPopulationDistributionsCSVWriter.append(",");
+                comparingPopulationDistributionsCSVWriter.append("Day");
+                for (Integer type : ALL_AGENT_TYPES) {
+                    comparingPopulationDistributionsCSVWriter.append(",");
+                    comparingPopulationDistributionsCSVWriter.append(Inflect.getHumanReadableAgentType(type));
+                }
+                comparingPopulationDistributionsCSVWriter.append("\n");
+
                 summaryGraphsMade++;
 
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
@@ -217,7 +231,9 @@ public class ResourceExchangeArena {
                      *                        used for establishing baseline results.
                      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
                      *                                when singleAgentType is true.
-                     * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
+                     * @param comparingExchangesCSVWriter FileWriter used to add data to satisfactions summary file.
+                     * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population
+                     *                                                  distributions summary file.
                      * @exception IOException On input error.
                      * @see IOException
                      */
@@ -237,13 +253,15 @@ public class ResourceExchangeArena {
                             AGENT_TYPES,
                             SINGLE_AGENT_TYPE,
                             SELECTED_SINGLE_AGENT_TYPE,
-                            comparingExchangesCSVWriter
+                            comparingExchangesCSVWriter,
+                            comparingPopulationDistributionsCSVWriter
                     );
 
                     simVersionsCompleted++;
                     System.out.println("Simulation versions completed: " + simVersionsCompleted);
                 }
                 comparingExchangesCSVWriter.close();
+                comparingPopulationDistributionsCSVWriter.close();
 
                 // Collect the required data and pass it to the Python data visualiser to produce summary graphs
                 // showing how a differing number of exchanges per day effects the simulation.
@@ -286,7 +304,6 @@ public class ResourceExchangeArena {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
         }
         allSimulationsDataWriter.close();
