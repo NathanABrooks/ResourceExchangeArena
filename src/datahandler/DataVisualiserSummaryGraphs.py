@@ -60,7 +60,7 @@ if not os.path.exists(baseOutputDirectory):
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
 baseFileName: str = exchangesFile.split('/')[-1]
-convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Graph', '')
+convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Data', '')
 
 # Store the scope of the data, which will be the same for each graph, as global lists.
 exchanges: List[str] = []
