@@ -173,12 +173,15 @@ public class Day {
         }
 
         /*
-         * Here is where social learning occurs. The approach uses roulette wheel selection to allow each agent in the
-         * population to adapt its strategy based on the success of it's peers.
+         * To facilitate social learning, for the number of the agents who are able to consider changing their strategy,
+         * an Agent is selected at random, and then a second agent is selected to be observed. The first agent selected
+         * checks whether their performance was weaker than the agent observed, if so they have a chance to copy the
+         * strategy used by the observed agent in the previous day, with the likelihood of copying their strategy
+         * proportional to the difference between their individual satisfactions.
          *
          * @param agents Array List of all the agents that exist in the current simulation.
          * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-         * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at
+         * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at
          *                               the end of each day.
          */
         new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve);

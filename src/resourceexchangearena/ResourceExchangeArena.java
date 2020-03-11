@@ -8,15 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-//
-// Planned changes:
-// Add graph of total social capital in social, + average + median + standard deviation (overall and split for types)
-// then run for 2k days to allow time to flatten
-// Finally param sweep starting ratio changes
-// Alter the way selfish agents handle social capital, forgetting all when becoming selfish + keep building history
-//
-
-
 /**
  * Overarching parent class containing parameters that alter the scope of the simulation.
  */
@@ -139,7 +130,8 @@ public class ResourceExchangeArena {
             for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
 
                 // For differing numbers of exchange rounds per day, data is stored so that summary graphs can be made
-                // comparing the results of the simulation of the number of exchange rounds varies.
+                // comparing the results of the simulation of the number of exchange rounds varies, as well as how
+                // the population distribution changes.
                 File comparingExchangesFile = new File(
                         summaryDataOutputFolder,
                         "exchangesComparisonGraphData_" + summaryGraphsMade + ".csv");

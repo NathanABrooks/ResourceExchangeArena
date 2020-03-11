@@ -9,7 +9,8 @@ from typing import Any, Dict, List
 
 """ Takes pre-prepared data from the ResourceExchangeArena.java method and produces a series of graphs 
 visualising the data. These graphs show how the results of the simulation varies as the number of exchange rounds
-taking place each day increases. All graphs use data that has been averaged over a series of simulations.
+taking place each day increases. They also show how the population distribution varies in the same scenario.
+ All graphs use data that has been averaged over a series of simulations.
 
 Parameters
 ---------
@@ -35,7 +36,7 @@ folderName: str = sys.argv[1]
 # Unique identifier to identify which run the produced graphs are associated with.
 identityNumber: str = sys.argv[2]
 
-# Get the location of the raw data that requires visualising from command line arguments.
+# Get the locations of the raw data that requires visualising from command line arguments.
 exchangesFile: str = sys.argv[3]
 populationDistributionsFile: str = sys.argv[4]
 
