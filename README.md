@@ -22,4 +22,5 @@ Exchanges begin once each agent has received their initial allocation and decide
 At the end of each day, a percentage of the agents are able to alter their strategy between being selfish and social. These agents observe a randomly selected second agent. If the observed agent outperforms the agent in question, the first agent has a chance to copy the strategy of the observed agent, with the likelihood being proportionate to the difference between the two agents individual levels of satisfaction.
 
 The simulation results are averaged over 50 runs for each variation of simulation parameters, those being the number of exchange rounds per day and the number of agents evolving their strategy at the end of each day.
+
 ![Pseudo-code](/pseudocode/EnergyExchangeSimulation.png)
