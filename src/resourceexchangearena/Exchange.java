@@ -119,8 +119,9 @@ class Exchange {
             }
         }
         
-        // TODO: The previous two steps ought to be merged into one. This would make no functional
-        // difference and was looked over when updating the old code.
+        // TODO: The previous two steps ought to be simplified into an exchange loop and
+        // an updating social capital loop. This would make no functional difference to the code
+        // but would be clearer and was overlooked when previously updating the code.
 
         if (additionalData) {
             for (Agent a : agents) {
