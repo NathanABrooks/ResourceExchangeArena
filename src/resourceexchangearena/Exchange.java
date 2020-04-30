@@ -118,6 +118,9 @@ class Exchange {
                 a.setExchangeRequestReceived();
             }
         }
+        
+        // TODO: The previous two steps ought to be merged into one. This would make no functional
+        // difference and was looked over when updating the old code.
 
         if (additionalData) {
             for (Agent a : agents) {
