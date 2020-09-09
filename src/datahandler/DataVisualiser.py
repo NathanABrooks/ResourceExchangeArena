@@ -100,11 +100,8 @@ for exchange in range(1, totalExchangesSimulated + 1):
     exchanges.append(str(exchange))
 
 # Options for graph styling.
-colours: List[str] = [
-    'rgba(93, 164, 214, 0.8)', 'rgba(255, 144, 14, 0.8)', 'rgba(44, 160, 101, 0.8)',
-    'rgba(255, 65, 54, 0.8)', 'rgba(207, 114, 255, 0.8)', 'rgba(127, 96, 0, 0.8)',
-]
-lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
+colours: List[str] = ['red', 'blue', 'purple', 'green']
+lineTypes: List[str] = ['15px', '5px', '1px', 'solid']
 
 # Average consumer satisfactions for each agent type for each day are visualised as a line graph.
 # Hypothetical random and optimum allocations are also visualised.
@@ -114,6 +111,10 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
 
     # Used to distinguish results when many agent types present.
     lineType: int = 0
+    colour: int = 0
+
+    # Should error bars be offset?
+    offset: bool = False
 
     # Before visualising the full data set, pull data that can be reused for later visualisations.
     setupReader = csv.DictReader(dailyAverageSatisfactionLevels)
@@ -126,79 +127,81 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
     # Each agent type, including random and optimum allocation, is plotted separately.
     for i in range(len(fieldNames)):
         if i < 4:
-            endOfDayAverages: List[int] = []
+            endOfDayAverages: List[str] = []
+            errorBarValuesPlus: List[str] = []
+            errorBarValuesMinus: List[str] = []
             dailyAverageSatisfactionLevels.seek(0)
             for j in range(len(days)):
                 for row in reader:
                     if row[0] == days[j]:
                         # Append the column + 1, to account for the 'Day' column.
-                        endOfDayAverages.append((row[i + 1]))
-                        break
-
-            # Get new line styling combination, calculated to match with graphs not including random or optimum
-            # allocations.
-            colour = i + (len(colours) - 2)
-            while colour >= len(colours):
-                colour -= len(colours)
-            if (i != 0) & (i % len(colours) == 0):
-                lineType += 1
-            while lineType >= len(lineTypes):
-                lineType -= len(lineTypes)
-
-            # Add the agent types data plots to the graph data.
-            data.append(
-                py.graph_objs.Scatter(
-                    x=days,
-                    y=endOfDayAverages,
-                    name=fieldNames[i],
-                    line=dict(
-                        color=colours[colour],
-                        dash=lineTypes[lineType],
-                        width=1,
-                    ),
-                )
-            )
-        else:
-            # Standard deviation lines need to be handled differently to agent type averages.
-            lineType = 1
-            k = 0
-            while k < 2:
-                colour = i + (len(colours) - 4)
-                while colour >= len(colours):
-                    colour -= len(colours)
-                endOfDayAverages: List[int] = []
-                dailyAverageSatisfactionLevels.seek(0)
-                for j in range(len(days)):
-                    for row in reader:
-                        if row[0] == days[j]:
-                            if k == 0:
-                                upperSD = float(row[i - 1]) + (float(row[i + 1]) / 2)
-                                if upperSD > 1:
-                                    upperSD = 1
-                                endOfDayAverages.append(upperSD)
-                                break
+                        endOfDayAverages.append(row[i + 1])
+                        if offset:
+                            if int(row[0]) > 5 \
+                                    and ((int(row[0]) % 50 == 5 and i == 2) or (int(row[0]) % 50 == 45 and i == 3)):
+                                positiveError: str = row[i + 3]
+                                negativeError: str = row[i + 3]
+                                if float(row[i + 1]) + float(row[i + 3]) >= 1.0:
+                                    positiveError = str(1 - float(row[i + 1]))
+                                if float(row[i + 1]) - float(row[i + 3]) <= 0.0:
+                                    negativeError = row[i + 1]
+                                errorBarValuesPlus.append(positiveError)
+                                errorBarValuesMinus.append(negativeError)
                             else:
-                                lowerSD = float(row[i - 1]) - (float(row[i + 1]) / 2)
-                                if lowerSD < 0:
-                                    lowerSD = 0
-                                endOfDayAverages.append(lowerSD)
-                                break
-                # Add the agent types data plots to the graph data.
+                                errorBarValuesPlus.append('null')
+                                errorBarValuesMinus.append('null')
+                        else:
+                            if int(row[0]) % 50 == 0:
+                                positiveError: str = row[i + 3]
+                                negativeError: str = row[i + 3]
+                                if float(row[i + 1]) + float(row[i + 3]) >= 1.0:
+                                    positiveError = str(1 - float(row[i + 1]))
+                                if float(row[i + 1]) - float(row[i + 3]) <= 0.0:
+                                    negativeError = row[i + 1]
+                                errorBarValuesPlus.append(positiveError)
+                                errorBarValuesMinus.append(negativeError)
+                            else:
+                                errorBarValuesPlus.append('null')
+                                errorBarValuesMinus.append('null')
+                        break
+            # Add the agent types data plots to the graph data.
+            if i > 1:
                 data.append(
                     py.graph_objs.Scatter(
                         x=days,
                         y=endOfDayAverages,
-                        showlegend=False,
+                        error_y=dict(
+                            type='data',
+                            symmetric=False,
+                            array=errorBarValuesPlus,
+                            arrayminus=errorBarValuesMinus,
+                            thickness=2,
+                            visible=True),
+                        name=fieldNames[i],
                         line=dict(
                             color=colours[colour],
                             dash=lineTypes[lineType],
                             width=1,
+                            shape='spline',
                         ),
                     )
                 )
-                k = k + 1
-                colour = i + (len(colours) - 2)
-
+            else:
+                data.append(
+                    py.graph_objs.Scatter(
+                        x=days,
+                        y=endOfDayAverages,
+                        name=fieldNames[i],
+                        line=dict(
+                            color=colours[colour],
+                            dash=lineTypes[lineType],
+                            width=1,
+                            shape='spline',
+                        ),
+                    )
+                )
+            lineType += 1
+            colour += 1
     # Style the graph layout
     layout: any = dict(
         title='Average consumer satisfaction at the end of each day',
@@ -206,25 +209,25 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
             title='Day',
             showline=True,
             linecolor='black',
-            linewidth=2,
-            gridcolor='rgb(255, 255, 255)',
-            gridwidth=2,
+            linewidth=1,
+            gridcolor='rgb(225, 225, 225)',
+            gridwidth=1,
             range=[days[0], days[-1]],
             tickmode='linear',
             tick0=0,
-            dtick=20,
+            dtick=100,
         ),
         yaxis=dict(
             title='Average consumer satisfaction',
             showline=True,
             linecolor='black',
-            linewidth=2,
-            gridcolor='rgb(255, 255, 255)',
-            gridwidth=2,
+            linewidth=1,
+            gridcolor='rgb(225, 225, 225)',
+            gridwidth=1,
             range=[0, 1],
             tickmode='linear',
             tick0=0,
-            dtick=0.1,
+            dtick=0.2,
         ),
         margin=dict(
             l=40,
@@ -232,8 +235,11 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
             b=80,
             t=100,
         ),
-        paper_bgcolor='rgb(243, 243, 243)',
-        plot_bgcolor='rgb(243, 243, 243)',
+        paper_bgcolor='rgb(255, 255, 255)',
+        plot_bgcolor='rgb(255, 255, 255)',
+        font=dict(
+            size=19
+        ),
     )
 
     # Create the graph and save the file
@@ -257,7 +263,7 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
 
         # Each agent type is plotted separately.
         for j in range(len(fieldNames) - 2):
-            endOfRoundAverages: List[int] = []
+            endOfRoundAverages: List[str] = []
             for k in range(len(exchanges)):
                 duringKeyDaysSatisfactionLevels.seek(0)
 
@@ -353,7 +359,7 @@ with open(populationDistributions) as populationData:
 
     # Each agent type is plotted separately.
     for i in range(len(fieldNames) - 2):
-        endOfDayPopulations: List[int] = []
+        endOfDayPopulations: List[str] = []
         for j in range(len(days)):
             populationData.seek(0)
             for row in reader:
@@ -443,7 +449,7 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
         # Each agent type is plotted separately.
         firstType = True
         for j in range(len(fieldNames) - 2):
-            satisfactions: List[int] = []
+            satisfactions: List[str] = []
             individualSatisfactionDeviations.seek(0)
 
             # The first line contains only headers and so can be skipped.

@@ -1,7 +1,0 @@
-These are suggestions that have been recieved for future work
-
--show standard deviation or some other measure of distribution rather than just mean (which could be high in a really uneven distribution).
--make some time slots more in demand (don’t distribute agent preferences uniformly). This lets you really look at fairness.
--add some slack in the system (i.e. not a fully packed problem).
--look at changing maximum capacity (the 16 KWh per slot) between days. Should favour more flexible agents (i.e. social agents that do more exchanges)
--look at adding small random probability of accepting exchanges to increase privacy, by making it harder to work out an agent’s preferences. Look at the tradeoff between privacy and optimisation performance.
