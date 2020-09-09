@@ -10,7 +10,6 @@ import java.util.*;
 
 /**
  * Overarching parent class containing parameters that alter the scope of the simulation.
- * test 2
  */
 public class ResourceExchangeArena {
     // REQUIRED SYSTEM PATHS, SET THESE BEFORE RUNNING THE SIMULATION.
