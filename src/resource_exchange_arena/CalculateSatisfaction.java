@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import static java.lang.Math.sqrt;
 
-class CalculateSatisfaction  {
+class CalculateSatisfaction {
     /**
      * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents
      * in the simulation.
@@ -58,13 +58,13 @@ class CalculateSatisfaction  {
                 groupSize++;
             }
         }
-        double populationVariance = sumDiffsSquared  / (double)(groupSize);
+        double populationVariance = sumDiffsSquared / (double)(groupSize);
         return sqrt(populationVariance);
     }
 
     /**
-     * Returns the optimum average satisfaction possible for all agents given the current requests and allocations
-     * in the simulation.
+     * Returns the optimum average satisfaction possible for all agents given the current requests and allocations in
+     * the simulation.
      *
      * @param agents Array List of all the agents that exist in the current simulation.
      * @return Double Returns the highest possible average satisfaction between 0 and 1 of all agents in the simulation.

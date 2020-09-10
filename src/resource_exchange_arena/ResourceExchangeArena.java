@@ -69,10 +69,10 @@ public class ResourceExchangeArena {
         SELECTED_SINGLE_AGENT_TYPE = 0;
 
         // Alter the length of time to be simulated.
-        final int DAYS = 50;
+        final int DAYS = 500;
 
         // Increase the number of simulation runs for more consistent results.
-        final int SIMULATION_RUNS = 5;
+        final int SIMULATION_RUNS = 50;
 
         // Alter the number of Agents and their requirements. Note that the simulation has not been designed in order
         // to support this and so some combinations may cause errors.
@@ -108,8 +108,7 @@ public class ResourceExchangeArena {
         Files.createDirectories(summaryDataOutputPath);
 
         // Stores the key data about all simulations for organisational purposes.
-        File allSimulationsData = new File(
-                "results/" + FOLDER_NAME,"allSimulationsData.txt");
+        File allSimulationsData = new File("results/" + FOLDER_NAME,"allSimulationsData.txt");
 
         FileWriter allSimulationsDataWriter = new FileWriter(allSimulationsData);
 

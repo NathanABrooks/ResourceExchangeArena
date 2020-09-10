@@ -30,10 +30,10 @@ class SimulationRun {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
-     * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
+     * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
-     * @param endOfDayAverageSatisfactions  Stores the average satisfaction for each agent type at the end of each day.
+     * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
      * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
      * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of each day
      *                         when additional data is requested.
@@ -121,7 +121,7 @@ class SimulationRun {
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
              * @param agents Array List of all the agents that exist in the current simulation.
-             * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
+             * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
              * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of

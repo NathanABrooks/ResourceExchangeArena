@@ -17,7 +17,7 @@ class VisualiserInitiator {
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
-     * @param endOfDaySatisfactionsFile  Stores the satisfaction of each agent at the end of days of interest.
+     * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
      * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day, as
      *                                 well as the optimum average satisfaction and the satisfaction if allocations
      *                                 remained random.

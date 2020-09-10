@@ -13,24 +13,24 @@ class Agent {
     // Instance variables to store the agents state, relations and ongoing exchanges.
     private int agentType;
     private boolean madeInteraction;
-    private int numberOfTimeSlotsWanted;
-    private ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
+    private final int numberOfTimeSlotsWanted;
+    private final ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
-    private ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
-    private ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
+    private final ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
+    private final ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
     private ArrayList<Integer> exchangeRequestReceived = new ArrayList<>();
     private boolean exchangeRequestApproved;
 
     /**
      * This is the constructor for Agent objects.
      *
-     * @param agentID This is an integer value that is unique to the individual agent and
-     *  used to identify it to others in the ExchangeArena.
+     * @param agentID This is an integer value that is unique to the individual agent and used to identify it to others
+     *                in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param agents Array List of all the agents that exist in the current simulation.
      */
-    Agent(int agentID, int agentType, int slotsPerAgent,  ArrayList<Agent> agents){
+    Agent(int agentID, int agentType, int slotsPerAgent, ArrayList<Agent> agents){
         this.agentID = agentID;
         this.agentType = agentType;
 
@@ -102,8 +102,8 @@ class Agent {
     }
 
     /**
-     * Identifies all other Agents in the ExchangeArena and initialises counts of favours given to
-     * and received from each other Agent.
+     * Identifies all other Agents in the ExchangeArena and initialises counts of favours given to and received from
+     * each other Agent.
      *
      * @param agents Array List of all the agents that exist in the current simulation.
      */
@@ -229,7 +229,7 @@ class Agent {
      * @param potentialTimeSlots the time slots that may be returned if not present in the second array.
      * @param timeSlotsToAvoid the time slots that shouldn't be returned..
      * @return ArrayList<Integer> Returns the time slots from the potentialTimeSlots array that are not present in the
-     *  timeSlotsToAvoid array.
+     *                            timeSlotsToAvoid array.
      */
     private ArrayList<Integer> nonExistingTimeSlots(
             ArrayList<Integer> potentialTimeSlots,
@@ -255,8 +255,8 @@ class Agent {
      * that this Agent wants but has not currently been allocated.
      *
      * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
-     * @return ArrayList<Integer>|null A time slot owned by the other agent that this Agent is requesting
-     *  an exchange for.
+     * @return ArrayList<Integer>|null A time slot owned by the other agent that this Agent is requesting an exchange
+     *                                 for.
      */
     ArrayList<Integer> requestExchange(ArrayList<ArrayList<Integer>> advertisingBoard) {
         ArrayList<Integer> targetTimeSlots = nonExistingTimeSlots(requestedTimeSlots, allocatedTimeSlots);
@@ -285,8 +285,7 @@ class Agent {
     /**
      * Stores a request for an exchange received from another Agent.
      *
-     * @param request An Agent's agentID, the time slot that it wants and the time slot that it
-     *  is willing to exchange.
+     * @param request An Agent's agentID, the time slot that it wants and the time slot that it is willing to exchange.
      */
     void receiveExchangeRequest(ArrayList<Integer> request) {
         exchangeRequestReceived = request;
@@ -356,8 +355,8 @@ class Agent {
     }
 
     /**
-     * Completes an exchange that was originally requested by this Agent, making the exchange and updating
-     * this Agents relationship with the other Agent involved.
+     * Completes an exchange that was originally requested by this Agent, making the exchange and updating this Agents
+     * relationship with the other Agent involved.
      *
      * @param offer The exchange that is to be completed.
      * @param agentID The agentID of the agent that has fulfilled the exchange request.

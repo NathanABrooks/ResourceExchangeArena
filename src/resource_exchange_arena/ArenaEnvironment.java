@@ -156,7 +156,7 @@ public class ArenaEnvironment {
         individualSatisfactionsCSVWriter.append("Satisfaction");
         individualSatisfactionsCSVWriter.append("\n");
 
-        // Temporary file that is  deleted prior to graph generation. Used as a placeholder for when additional data
+        // Temporary file that is deleted prior to graph generation. Used as a placeholder for when additional data
         // has not been requested.
         File tempFile = new File(
                 dataOutputFolder,
@@ -284,16 +284,16 @@ public class ArenaEnvironment {
              *                        establishing baseline results.
              * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
              *                                singleAgentType is true.
-             * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
+             * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
-             * @param endOfDayAverageSatisfactions  Stores the average satisfaction for each agent type at the end of
+             * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                      each day.
              * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
              * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of
              *                         each day when additional data is requested.
              * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
-             *                            exchange when  additional data is requested.
+             *                            exchange when additional data is requested.
              * @exception IOException On input error.
              * @see IOException
              */
@@ -474,7 +474,7 @@ public class ArenaEnvironment {
          * @param days Integer value representing the number of days to be simulated.
          * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per
          *                  day.
-         * @param endOfDaySatisfactionsFile  Stores the satisfaction of each agent at the end of days of interest.
+         * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
          * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day,
          *                                 as well as the optimum average satisfaction and the satisfaction if
          *                                 allocations remained random.

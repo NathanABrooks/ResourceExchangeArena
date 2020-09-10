@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 public class Day {
 
     // List of all the possible allocations that exist in the current simulation.
-    private List<Integer> availableTimeSlots = new ArrayList<>();
+    private final List<Integer> availableTimeSlots = new ArrayList<>();
 
     /**
      * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
@@ -29,7 +29,7 @@ public class Day {
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
      * @param agents Array List of all the agents that exist in the current simulation.
-     * @param endOfDaySatisfactions  Stores the satisfaction of each agent at the end of days of interest.
+     * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
      * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
