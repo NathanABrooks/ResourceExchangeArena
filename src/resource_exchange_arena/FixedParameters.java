@@ -1,5 +1,9 @@
 package resource_exchange_arena;
 
+/**
+ * Contains all system parameters that can't be changed by the user, including agent types simulated and parameters of
+ * note to anyone working with or referencing this system.
+ */
 abstract class FixedParameters {
     // Constants representing the available agent types for the simulation.
     static final int SELFISH = 1;

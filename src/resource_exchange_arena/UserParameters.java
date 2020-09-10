@@ -1,5 +1,8 @@
 package resource_exchange_arena;
 
+/**
+ * Contains all system parameters that can be changed by the user in order to experiment with various scenarios.
+ */
 abstract class UserParameters extends FixedParameters{
 
     // Name of the folder that will contain the set of simulations currently being ran.

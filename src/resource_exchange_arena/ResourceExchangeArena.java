@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Overarching parent class containing parameters that alter the scope of the simulation.
+ * Overarching parent class that allows for various environments being tested to be compared.
  */
 public class ResourceExchangeArena extends UserParameters {
 
