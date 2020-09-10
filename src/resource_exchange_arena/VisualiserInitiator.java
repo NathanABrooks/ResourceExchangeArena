@@ -43,8 +43,8 @@ class VisualiserInitiator {
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         List<String> pythonArgs = new ArrayList<>();
 
-        pythonArgs.add(ResourceExchangeArena.pythonExe);
-        pythonArgs.add(ResourceExchangeArena.pythonPath);
+        pythonArgs.add(ResourceExchangeArena.PYTHON_EXE);
+        pythonArgs.add(ResourceExchangeArena.PYTHON_PATH);
         pythonArgs.add(folderName);
         pythonArgs.add(initialSeed);
         pythonArgs.add(averageSatisfactionsFile.getAbsolutePath());

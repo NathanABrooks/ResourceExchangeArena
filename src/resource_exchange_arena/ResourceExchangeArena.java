@@ -11,24 +11,11 @@ import java.util.*;
 /**
  * Overarching parent class containing parameters that alter the scope of the simulation.
  */
-public class ResourceExchangeArena {
-    // REQUIRED SYSTEM PATHS, SET THESE BEFORE RUNNING THE SIMULATION.
-    // Conda env. location.
-    static final String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
-    // Data visualiser location, most users will only need to change the username here.
-    static final String pythonPath = "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/DataVisualiser.py";
-    // Summary d visualiser location, most users will only need to change the username here.
-    static final String summaryPythonPath =
-            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/DataVisualiserSummaryGraphs.py";
+public class ResourceExchangeArena extends UserParameters {
 
-    // Constants representing the available agent types for the simulation.
-    static final int SELFISH = 1;
-    static final int SOCIAL = 2;
-    static final int[] ALL_AGENT_TYPES = {SELFISH, SOCIAL};
-
-    // Create a single Random object for generating random numerical data for the simulation.
+    // Create a single Random object for generating random numerical data for the simulation, a single object exists to
+    // allow for result replication given a specific user seed.
     static Random random = new Random();
-    static long seed;
 
     /**
      * This is the main method which runs the entire ResourceExchangeArena simulation.
@@ -38,61 +25,6 @@ public class ResourceExchangeArena {
      * @see IOException
      */
     public static void main(String[] args) throws IOException {
-
-        // Name of the folder that will contain all of the simulations currently being ran.
-        final String FOLDER_NAME = "test_run";
-
-        //#############################################################################################################
-        // ALTER THESE PARAMETERS IN ORDER TO SIMULATE VARIOUS SCENARIOS.
-        // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
-        // the following arrays. All possible combinations will be simulated.
-
-        // Number of exchange rounds per day.
-        final int[] EXCHANGES_ARRAY = {100};
-        // final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
-
-        // Number of agents that will evolve their strategy per day.
-        final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {48};
-        // final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
-
-        // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
-        // selfish agents for each social agent.
-        // Note that both types of agents need to exist, for testing with a single agent type set 'SINGLE_AGENT_TYPE'
-        // to 'true' and set the 'SELECTED_SINGLE_AGENT_TYPE' as required.
-        final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
-        //#############################################################################################################
-
-        // Specify whether only a single agent type should exist in the simulation, used for establishing baseline
-        // results.
-        final boolean SINGLE_AGENT_TYPE = false;
-        final int SELECTED_SINGLE_AGENT_TYPE;
-        SELECTED_SINGLE_AGENT_TYPE = 0;
-
-        // Alter the length of time to be simulated.
-        final int DAYS = 500;
-
-        // Increase the number of simulation runs for more consistent results.
-        final int SIMULATION_RUNS = 50;
-
-        // Alter the number of Agents and their requirements. Note that the simulation has not been designed in order
-        // to support this and so some combinations may cause errors.
-        final int POPULATION_SIZE = 96;
-        final int MAXIMUM_PEAK_CONSUMPTION = 16;
-        final int UNIQUE_TIME_SLOTS = 24;
-        final int SLOTS_PER_AGENT = 4;
-
-        // Days that will have the Agents average satisfaction over the course of the day,
-        // and satisfaction distribution at the end of the day visualised.
-        final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
-
-        // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
-        // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
-        // 'false' OUTSIDE OF STATISTICAL TESTING OR WHERE OTHERWISE REQUIRED.
-        final boolean ADDITIONAL_DATA = false;
-
-        // The seed can be set to replicate previous simulations.
-        seed = System.currentTimeMillis();
-        String initialSeed;
 
         // Set the simulations initial random seed.
         random.setSeed(seed);
@@ -173,7 +105,7 @@ public class ResourceExchangeArena {
 
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
 
-                    initialSeed = String.valueOf(seed);
+                    String initialSeed = seed + "L";
 
                     // The parameters about to be tested are stored so that it is clear what they were when looking at
                     // the results.
@@ -267,8 +199,8 @@ public class ResourceExchangeArena {
                     }
                 }
 
-                pythonArgs.add(pythonExe);
-                pythonArgs.add(summaryPythonPath);
+                pythonArgs.add(PYTHON_EXE);
+                pythonArgs.add(SUMMARY_PYTHON_PATH);
 
                 // The output destination folder, used to organise output data.
                 pythonArgs.add(FOLDER_NAME);
