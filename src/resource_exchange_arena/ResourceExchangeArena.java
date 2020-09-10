@@ -159,6 +159,8 @@ public class ResourceExchangeArena extends UserParameters {
                      * @param comparingExchangesCSVWriter FileWriter used to add data to satisfactions summary file.
                      * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population
                      *                                                  distributions summary file.
+                     * @param pythonExe String representing the system path to python environment executable.
+                     * @param pythonPath String representing the system path to the python data visualiser.
                      * @exception IOException On input error.
                      * @see IOException
                      */
@@ -179,7 +181,9 @@ public class ResourceExchangeArena extends UserParameters {
                             SINGLE_AGENT_TYPE,
                             SELECTED_SINGLE_AGENT_TYPE,
                             comparingExchangesCSVWriter,
-                            comparingPopulationDistributionsCSVWriter
+                            comparingPopulationDistributionsCSVWriter,
+                            PYTHON_EXE,
+                            PYTHON_PATH
                     );
 
                     simVersionsCompleted++;

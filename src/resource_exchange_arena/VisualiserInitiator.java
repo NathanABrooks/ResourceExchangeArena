@@ -9,7 +9,7 @@ import java.util.List;
 class VisualiserInitiator {
 
     /**
-     * The arena is the environment in which all simulations take place.
+     * Begins python code that visualises the gathered data from the current environment being simulated.
      *
      * @param folderName String representing the output destination folder, used to organise output data.
      * @param initialSeed String representing the seed of the first simulation run included in the results, this string
@@ -25,6 +25,8 @@ class VisualiserInitiator {
      *                            the simulation.
      * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the simulation,
      *                                    influenced by social learning.
+     * @param pythonExe String representing the system path to python environment executable.
+     * @param pythonPath String representing the system path to the python data visualiser.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -37,14 +39,16 @@ class VisualiserInitiator {
             File endOfDaySatisfactionsFile,
             File averageSatisfactionsFile,
             File individualsDataFile,
-            File populationDistributionsFile
+            File populationDistributionsFile,
+            String pythonExe,
+            String pythonPath
     ) throws IOException {
 
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
         List<String> pythonArgs = new ArrayList<>();
 
-        pythonArgs.add(ResourceExchangeArena.PYTHON_EXE);
-        pythonArgs.add(ResourceExchangeArena.PYTHON_PATH);
+        pythonArgs.add(pythonExe);
+        pythonArgs.add(pythonPath);
         pythonArgs.add(folderName);
         pythonArgs.add(initialSeed);
         pythonArgs.add(averageSatisfactionsFile.getAbsolutePath());

@@ -3,16 +3,16 @@ package resource_exchange_arena;
 /**
  * Contains all system parameters that can be changed by the user in order to experiment with various scenarios.
  */
-abstract class UserParameters extends FixedParameters{
-
-    // Name of the folder that will contain the set of simulations currently being ran.
-    static final String FOLDER_NAME = "Simulation_Set:" + System.currentTimeMillis();
+abstract class UserParameters extends FixedParameters {
 
     // The seed can be set to replicate previous simulations.
     static long seed = System.currentTimeMillis();
     // Example: "1599767866160L"
     // Alternatively if no specific seed is required...
     // Example: "System.currentTimeMillis()"
+
+    // Name of the folder that will contain the set of simulations currently being ran.
+    static final String FOLDER_NAME = "Simulation_Set:" + System.currentTimeMillis();
 
     // Conda env. location.
     static final String PYTHON_EXE =

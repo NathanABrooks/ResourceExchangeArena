@@ -43,6 +43,8 @@ public class ArenaEnvironment {
      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
      * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population distributions summary
      *                                                  file.
+     * @param pythonExe String representing the system path to python environment executable.
+     * @param pythonPath String representing the system path to the python data visualiser.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -63,7 +65,9 @@ public class ArenaEnvironment {
             boolean singleAgentType,
             int selectedSingleAgentType,
             FileWriter comparingExchangesCSVWriter,
-            FileWriter comparingPopulationDistributionsCSVWriter
+            FileWriter comparingPopulationDistributionsCSVWriter,
+            String pythonExe,
+            String pythonPath
     ) throws IOException {
 
         System.out.println("Starting simulation...");
@@ -482,6 +486,8 @@ public class ArenaEnvironment {
          *                            throughout the simulation.
          * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the
          *                                    simulation, influenced by social learning.
+         * @param pythonExe String representing the system path to python environment executable.
+         * @param pythonPath String representing the system path to the python data visualiser.
          * @exception IOException On input error.
          * @see IOException
          */
@@ -494,7 +500,9 @@ public class ArenaEnvironment {
                 endOfDaySatisfactionsFile,
                 averageSatisfactionsFile,
                 individualsDataFile,
-                populationDistributionsFile
+                populationDistributionsFile,
+                pythonExe,
+                pythonPath
         );
     }
 }
