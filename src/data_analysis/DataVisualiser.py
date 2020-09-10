@@ -7,8 +7,8 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the VisualiserInitiator.java method and produces a series of graphs 
-visualising the data. The types of graphs are as follows:
+""" Takes pre-prepared data from the VisualiserInitiator.java method and produces a series of graphs visualising the 
+    data. The types of graphs are as follows:
  - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
     satisfaction of all agents if time slots were allocated randomly or optimally.
  - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
@@ -36,8 +36,8 @@ totalDaysSimulated : int
 totalExchangesSimulated : int
     The total number of exchanges that have been simulated, determines graphs axis dimensions.
 daysToVisualise : str
-    The specific days that will have a line graph of the agent satisfactions at the end of each round throughout the day
-    generated. Note that this is immediately converted to type List[int].
+    The specific days that will have a line graph of the agent satisfactions at the end of each round throughout the 
+    day generated. Note that this is immediately converted to type List[int].
 """
 
 print('Starting data visualisation...', flush=True)

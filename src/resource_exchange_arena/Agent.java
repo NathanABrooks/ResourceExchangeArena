@@ -3,9 +3,6 @@ package resource_exchange_arena;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * Agents represent the individual consumers in the simulation.
- */
 class Agent {
     // Unique identifier for the agent.
     int agentID;
@@ -22,7 +19,7 @@ class Agent {
     private boolean exchangeRequestApproved;
 
     /**
-     * This is the constructor for Agent objects.
+     * Agents represent the individual consumers in the simulation.
      *
      * @param agentID This is an integer value that is unique to the individual agent and used to identify it to others
      *                in the ExchangeArena.
@@ -159,7 +156,7 @@ class Agent {
             // Get the simulations seeded Random object.
             Random random = ResourceExchangeArena.random;
 
-            // Selects a random integer representing the time slot between 1 and the total number of available slots.
+            // Selects a random integer representing the time slot between 1 and the total number of available slots
             // that exist in the simulation.
             int timeSlot = random.nextInt(uniqueTimeSlots) + 1;
 
@@ -251,12 +248,11 @@ class Agent {
     }
 
     /**
-     * Make an exchange request for a time slot that another Agent has published as a possible exchange,
-     * that this Agent wants but has not currently been allocated.
+     * Make an exchange request for a time slot that another Agent has published as a possible exchange, and that this
+     * Agent wants but has not currently been allocated.
      *
      * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
-     * @return ArrayList<Integer>|null A time slot owned by the other agent that this Agent is requesting an exchange
-     *                                 for.
+     * @return ArrayList<Integer>|null A time slot owned by another agent that this Agent is requesting an exchange for.
      */
     ArrayList<Integer> requestExchange(ArrayList<ArrayList<Integer>> advertisingBoard) {
         ArrayList<Integer> targetTimeSlots = nonExistingTimeSlots(requestedTimeSlots, allocatedTimeSlots);
@@ -297,8 +293,8 @@ class Agent {
      */
     void considerRequest() {
         double currentSatisfaction = calculateSatisfaction(null);
-        // Create a new local list of time slots in order to test how the Agents satisfaction would
-        // change after the potential exchange.
+        // Create a new local list of time slots in order to test how the Agents satisfaction would change after the
+        // potential exchange.
         ArrayList<Integer> potentialAllocatedTimeSlots = new ArrayList<>(allocatedTimeSlots);
         // Check this Agent still has the time slot requested.
         if (potentialAllocatedTimeSlots.contains(exchangeRequestReceived.get(1))) {
@@ -309,8 +305,8 @@ class Agent {
 
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
             if (agentType == ResourceExchangeArena.SOCIAL) {
-                // Social Agents accept offers that improve their satisfaction or if they have negative
-                // social capital with the Agent who made the request.
+                // Social Agents accept offers that improve their satisfaction or if they have negative social capital
+                // with the Agent who made the request.
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0){
                     exchangeRequestApproved = true;
                 } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
@@ -331,8 +327,6 @@ class Agent {
                     if (favoursOwedToRequester > favoursGivenToRequester) {
                         exchangeRequestApproved = true;
                     }
-                    // Used when testing social agents that don't require social capital.
-                    // exchangeRequestApproved = true;
                 }
             } else {
                 // Selfish Agents and Agents with no known type use the default selfish approach.
@@ -382,8 +376,8 @@ class Agent {
     }
 
     /**
-     * Completes an exchange that was originally requested by another Agent, making the exchange and updating
-     * this Agents relationship with the other Agent involved.
+     * Completes an exchange that was originally requested by another Agent, making the exchange and updating this
+     * Agents relationship with the other Agent involved.
      *
      * @param offer The exchange that is to be completed.
      */
@@ -408,8 +402,8 @@ class Agent {
     }
 
     /**
-     * Calculates the Agents satisfaction with a given list of time slots by comparing the list
-     * with the time slots requested by this Agent.
+     * Calculates the Agents satisfaction with a given list of time slots by comparing the list with the time slots
+     * requested by this Agent.
      *
      * @param allocatedTimeSlots The set of time slots to consider.
      * @return Double The Agents satisfaction with the time slots given.

@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class ArenaEnvironment {
-
     // Data that is collected over simulation runs is held within the arenaEnvironment.
     ArrayList<ArrayList<Double>> endOfDaySatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
@@ -36,10 +35,10 @@ public class ArenaEnvironment {
      *                               end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
      *                   can exist multiple times in the array where more agents of one type are required.
-     * @param singleAgentType Boolean value specifying whether only a single agent type should exist,
-     *                        used for establishing baseline results.
-     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
-     *                                when singleAgentType is true.
+     * @param singleAgentType Boolean value specifying whether only a single agent type should exist, used for
+     *                        establishing baseline results.
+     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
+     *                                singleAgentType is true.
      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
      * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population distributions summary
      *                                                  file.
@@ -88,12 +87,10 @@ public class ArenaEnvironment {
         Path dataOutputPath = Paths.get(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
 
-        // Stores the average satisfaction of each Agent type at the end of each day, as well
-        // as the optimum average satisfaction and the satisfaction if allocations remained random.
-        // Values are averaged over multiple simulation runs rather than stored separately.
-        File averageSatisfactionsFile = new File(
-                dataOutputFolder,
-                "endOfDayAverages.csv");
+        // Stores the average satisfaction of each Agent type at the end of each day, as well as the optimum average
+        // satisfaction and the satisfaction if allocations remained random. Values are averaged over multiple
+        // simulation runs rather than stored separately.
+        File averageSatisfactionsFile = new File(dataOutputFolder,"endOfDayAverages.csv");
 
         FileWriter averageSatisfactionsCSVWriter = new FileWriter(averageSatisfactionsFile);
 
@@ -115,9 +112,7 @@ public class ArenaEnvironment {
 
         // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
         // Only stores data for days in the daysOfInterest array and averages data over multiple simulation runs.
-        File individualsDataFile = new File(
-                dataOutputFolder,
-                "duringDayAverages.csv");
+        File individualsDataFile = new File(dataOutputFolder,"duringDayAverages.csv");
 
         FileWriter individualsDataCSVWriter = new FileWriter(individualsDataFile);
 
@@ -131,10 +126,7 @@ public class ArenaEnvironment {
         individualsDataCSVWriter.append("\n");
 
         // Shows how the population of each Agent type varies throughout the simulation, influenced by social learning.
-        File populationDistributionsFile = new File(
-                dataOutputFolder,
-                "populationDistributions.csv");
-
+        File populationDistributionsFile = new File(dataOutputFolder,"populationDistributions.csv");
 
         FileWriter populationDistributionsCSVWriter = new FileWriter(populationDistributionsFile);
 
@@ -146,10 +138,7 @@ public class ArenaEnvironment {
         populationDistributionsCSVWriter.append("\n");
 
         // Shows how the population's satisfaction levels vary on days of interest..
-        File endOfDaySatisfactionsFile = new File(
-                dataOutputFolder,
-                "endOfDaySatisfactions.csv");
-
+        File endOfDaySatisfactionsFile = new File(dataOutputFolder,"endOfDaySatisfactions.csv");
 
         FileWriter individualSatisfactionsCSVWriter = new FileWriter(endOfDaySatisfactionsFile);
 
@@ -162,9 +151,8 @@ public class ArenaEnvironment {
 
         // Temporary file that is deleted prior to graph generation. Used as a placeholder for when additional data
         // has not been requested.
-        File tempFile = new File(
-                dataOutputFolder,
-                "temp" + ".csv");
+        File tempFile = new File(dataOutputFolder,"temp" + ".csv");
+
         FileWriter additionalAverageSatisfactionsCSVWriter = new FileWriter(tempFile);
         FileWriter additionalIndividualsDataCSVWriter = new FileWriter(tempFile);
 
@@ -175,11 +163,9 @@ public class ArenaEnvironment {
             Path additionalDataOutputPath = Paths.get(additionalDataOutputFolder);
             Files.createDirectories(additionalDataOutputPath);
 
-            // Stores the average satisfaction of each agent type at the end of each day, as well
-            // as the optimum average satisfaction and the satisfaction if allocations remained random.
-            File additionalAverageSatisfactionsFile = new File(
-                    additionalDataOutputFolder,
-                    "endOfDayAverages.csv");
+            // Stores the average satisfaction of each agent type at the end of each day, as well as the optimum
+            // average satisfaction and the satisfaction if allocations remained random.
+            File additionalAverageSatisfactionsFile = new File(additionalDataOutputFolder,"endOfDayAverages.csv");
 
             additionalAverageSatisfactionsCSVWriter = new FileWriter(additionalAverageSatisfactionsFile);
 
@@ -197,9 +183,7 @@ public class ArenaEnvironment {
             additionalAverageSatisfactionsCSVWriter.append("\n");
 
             // Stores the satisfaction of each individual agent at the end of every round throughout the simulation.
-            File additionalIndividualsDataFile = new File(
-                    additionalDataOutputFolder,
-                    "duringDayAverages.csv");
+            File additionalIndividualsDataFile = new File(additionalDataOutputFolder,"duringDayAverages.csv");
 
             additionalIndividualsDataCSVWriter = new FileWriter(additionalIndividualsDataFile);
 
@@ -469,7 +453,7 @@ public class ArenaEnvironment {
         }
 
         /*
-         * The arena is the environment in which all simulations take place.
+         * Begins python code that visualises the gathered data from the current environment being simulated.
          *
          * @param folderName String representing the output destination folder, used to organise output data.
          * @param initialSeed String representing the seed of the first simulation run included in the results, added

@@ -234,8 +234,8 @@ with open(exchangesFile) as summaryData:
         fullPath: str = os.path.join(baseOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
 
-# Average population sizes for each agent type at the end of each day given the number of exchanges are
-# visualised as a line graph. Only pre-selected days are visualised to minimise compute time.
+# Average population sizes for each agent type at the end of each day given the number of exchanges are visualised as a
+# line graph. Only pre-selected days are visualised to minimise compute time.
 with open(populationDistributionsFile) as summaryData:
     # Each pre-selected day is visualised in its own graph.
     for i in range(len(daysToVisualise)):

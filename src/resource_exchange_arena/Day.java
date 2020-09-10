@@ -123,7 +123,6 @@ public class Day {
                     individualCSVWriter
             );
         }
-
         // The average end of day satisfaction is stored for each agent type to later be averaged and analysed.
         ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
         endOfDayAverageSatisfaction.add((double) day);
@@ -188,8 +187,8 @@ public class Day {
     }
 
     /**
-     * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and
-     * the time slots that are currently available.
+     * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and the
+     * time slots that are currently available.
      *
      * @param requestedTimeSlots The time slots that the Agent has requested.
      * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.

@@ -1,9 +1,9 @@
 package resource_exchange_arena;
 
-/**
- * Contains all system parameters that can be changed by the user in order to experiment with various scenarios.
- */
 abstract class UserParameters extends FixedParameters {
+    /**
+     * Contains all system parameters that can be changed by the user in order to experiment with various scenarios.
+     */
 
     // The seed can be set to replicate previous simulations.
     static long seed = System.currentTimeMillis();

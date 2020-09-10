@@ -13,8 +13,8 @@ class SocialLearning {
      *
      * @param agents Array List of all the agents that exist in the current simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at
-     *                               the end of each day.
+     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at the
+     *                               end of each day.
      */
     SocialLearning(ArrayList<Agent> agents, int slotsPerAgent, int numberOfAgentsToEvolve) {
         // Generate array containing each agents ID, current satisfaction, and type.
@@ -23,6 +23,7 @@ class SocialLearning {
         // List of all agents that haven't yet been selected for social learning.
         ArrayList<Integer> unselectedAgents = new ArrayList<>();
 
+        // Collect identifying data for each agent and the strategy that they used.
         for (Agent a : agents) {
             previousResults[a.agentID - 1][0] = a.agentID;
             previousResults[a.agentID - 1][1] =
@@ -32,6 +33,7 @@ class SocialLearning {
         }
 
         for (int i = 0; i < numberOfAgentsToEvolve; i++) {
+            // Assign the selected agent another agent to 'retrospectively' observe.
             Agent agent = agents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size()));
             int[] agentToCopy = previousResults[ResourceExchangeArena.random.nextInt(agents.size())];
 

@@ -94,8 +94,8 @@ class Exchange {
             }
         }
 
-        // Agents confirm and complete approved requests if they are able to do so, and update
-        // their relations with other Agents accordingly.
+        // Agents confirm and complete approved requests if they are able to do so, and update their relations with
+        // other Agents accordingly.
         Collections.shuffle(agents, ResourceExchangeArena.random);
         for (Agent a : agents) {
             if (a.getExchangeRequestApproved()) {
@@ -118,11 +118,8 @@ class Exchange {
                 a.setExchangeRequestReceived();
             }
         }
-        
-        // TODO: The previous two steps ought to be simplified into an exchange loop and
-        // an updating social capital loop. This would make no functional difference to the code
-        // but would be clearer and was overlooked when previously updating the code.
 
+        // Record individual agent data if additional data has been requested by the user.
         if (additionalData) {
             for (Agent a : agents) {
                 individualCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
@@ -140,9 +137,9 @@ class Exchange {
             }
         }
 
-        // The average end of round satisfaction is stored for each Agent type if the current day exists in
-        // the daysOfInterest array. This data can later be averaged over simulation runs and added to
-        // the individual data file.
+        // The average end of round satisfaction is stored for each Agent type if the current day exists in the
+        // daysOfInterest array. This data can later be averaged over simulation runs and added to the individual
+        // data file.
         if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
             for (int uniqueAgentType : uniqueAgentTypes) {
                 double averageSatisfactionForType =

@@ -8,11 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-/**
- * Overarching parent class that allows for various environments being tested to be compared.
- */
 public class ResourceExchangeArena extends UserParameters {
-
     // Create a single Random object for generating random numerical data for the simulation, a single object exists to
     // allow for result replication given a specific user seed.
     static Random random = new Random();

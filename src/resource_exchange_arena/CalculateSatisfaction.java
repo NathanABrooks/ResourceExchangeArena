@@ -6,8 +6,8 @@ import static java.lang.Math.sqrt;
 
 class CalculateSatisfaction {
     /**
-     * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents
-     * in the simulation.
+     * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents in the
+     * simulation.
      *
      * @param agents Array List of all the agents that exist in the current simulation.
      * @return Double Returns the average satisfaction between 0 and 1 of all agents in the simulation.
@@ -21,8 +21,8 @@ class CalculateSatisfaction {
     }
 
     /**
-     * Takes all Agents of a given types individual satisfactions and calculates the average satisfaction
-     * of the Agents of that type.
+     * Takes all Agents of a given types individual satisfactions and calculates the average satisfaction of the Agents
+     * of that type.
      *
      * @param agents Array List of all the agents that exist in the current simulation.
      * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.

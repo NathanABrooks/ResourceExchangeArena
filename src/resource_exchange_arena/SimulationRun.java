@@ -20,8 +20,8 @@ class SimulationRun {
      * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change
-     *                               at the end of each day.
+     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
+     *                               end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
      *                   can exist multiple times in the array where more agents of one type are required.
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
@@ -72,8 +72,8 @@ class SimulationRun {
                 /*
                  * This is the constructor for Agent objects.
                  *
-                 * @param agentID This is an integer value that is unique to the individual agent and
-                 *                used to identify it to others in the ExchangeArena.
+                 * @param agentID This is an integer value that is unique to the individual agent and used to identify
+                 *                it to others in the ExchangeArena.
                  * @param agentType Integer value denoting the agent type, and thus how it will behave.
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
                  * @param agents Array List of all the agents that exist in the current simulation.
@@ -87,8 +87,7 @@ class SimulationRun {
         for (Agent a: agents) {
             a.setType(selectedSingleAgentType);
         }
-
-
+        
         // Increment the simulations seed each run.
         ResourceExchangeArena.seed++;
         ResourceExchangeArena.random.setSeed(ResourceExchangeArena.seed);
