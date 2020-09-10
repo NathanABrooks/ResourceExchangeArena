@@ -1,4 +1,4 @@
-package resourceexchangearena;
+package resource_exchange_arena;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,10 +16,10 @@ public class ResourceExchangeArena {
     // Conda env. location.
     static final String pythonExe = "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
     // Data visualiser location, most users will only need to change the username here.
-    static final String pythonPath = "/home/nathan/IdeaProjects/ResourceExchangeArena/src/datahandler/DataVisualiser.py";
+    static final String pythonPath = "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/DataVisualiser.py";
     // Summary d visualiser location, most users will only need to change the username here.
     static final String summaryPythonPath =
-            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/datahandler/DataVisualiserSummaryGraphs.py";
+            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/DataVisualiserSummaryGraphs.py";
 
     // Constants representing the available agent types for the simulation.
     static final int SELFISH = 1;

@@ -1,4 +1,4 @@
-package resourceexchangearena;
+package resource_exchange_arena;
 
 class Inflect {
     /**

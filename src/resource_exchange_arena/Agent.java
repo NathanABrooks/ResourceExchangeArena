@@ -1,4 +1,4 @@
-package resourceexchangearena;
+package resource_exchange_arena;
 
 import java.util.ArrayList;
 import java.util.Random;

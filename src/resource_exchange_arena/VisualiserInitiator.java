@@ -1,4 +1,4 @@
-package resourceexchangearena;
+package resource_exchange_arena;
 
 import java.io.File;
 import java.io.IOException;
