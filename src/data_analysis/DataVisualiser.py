@@ -22,20 +22,20 @@ folderName : str
     The output destination folder, used to organise output data.
 seed : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-averageSatisfactionLevels: str
+averageSatisfactionLevels : str
     The absolute path of the data set required for generating the line graph showing the average satisfaction of each
     agent type at the end of each day.
-keyDaysSatisfactionLevels: str
+keyDaysSatisfactionLevels : str
     The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
     agent type at the end of each round of trading.
-populationDistributions: str
+populationDistributions : str
     The absolute path of the data set required for generating the line graph showing the average population
     distributions at the end of each day.
-totalDaysSimulated: int
-    The total number of days that have been simulated, determines graphs axis dimensions.    
-totalExchangesSimulated: int
-    The total number of exchanges that have been simulated, determines graphs axis dimensions.    
-daysToVisualise: str
+totalDaysSimulated : int
+    The total number of days that have been simulated, determines graphs axis dimensions.
+totalExchangesSimulated : int
+    The total number of exchanges that have been simulated, determines graphs axis dimensions.
+daysToVisualise : str
     The specific days that will have a line graph of the agent satisfactions at the end of each round throughout the day
     generated. Note that this is immediately converted to type List[int].
 """

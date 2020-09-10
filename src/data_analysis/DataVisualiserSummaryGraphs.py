@@ -18,13 +18,13 @@ folderName : str
     The output destination folder, used to organise output data.
 identityNumber : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-exchangesFile:  str
+exchangesFile : str
     The absolute path of the data set required for generating the graphs comparing exchanges and performance.
-populationDistributionsFile:  str
+populationDistributionsFile : str
     The absolute path of the data set required for generating the graphs showing the average population distributions.
-totalExchangesSimulated: int
+totalExchangesSimulated : int
     The total number of exchanges that have been simulated, determines graphs axis dimensions.
-daysToVisualise: str
+daysToVisualise : str
     The specific days that will have a line graph showing the satisfaction of each agent type generated.
 """
 
