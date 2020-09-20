@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.stream.IntStream;
 
 class Exchange {
-
     /**
      * With each exchange all agents form pairwise exchanges and are able to consider a trade with their partner for
      * one time slot.

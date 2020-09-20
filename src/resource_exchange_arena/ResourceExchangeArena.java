@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class ResourceExchangeArena extends UserParameters {
@@ -127,41 +125,22 @@ public class ResourceExchangeArena extends UserParameters {
                     allSimulationsDataWriter.append("\n\n");
 
                     /*
-                     * The arena is the environment in which all simulations take place.
+                     * Begins python code that visualises comparisons of the various environments being simulated.
                      *
-                     * @param folderName String representing the output destination folder, used to organise output
-                     *                   data.
-                     * @param initialSeed String representing the seed of the first simulation run included in the
-                     *                    results, added to the results file names so that they can be replicated.
-                     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the
-                     *                       simulation.
-                     * @param additionalData Boolean value that configures the simulation to output the state of each
-                     *                       agent after each exchange and at the end of each day.
-                     * @param simulationRuns Integer value representing the number of simulations to be ran and
-                     *                       averaged.
-                     * @param days Integer value representing the number of days to be simulated.
-                     * @param exchanges Integer value representing the number of times all agents perform pairwise
-                     *                  exchanges per day.
-                     * @param populationSize Integer value representing the size of the initial agent population.
-                     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to
-                     *                               each time slot.
-                     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in
-                     *                        the simulation.
-                     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-                     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy
-                     *                               will change at the end of each day.
-                     * @param agentTypes Integer array containing the agent types that the simulation will begin with.
-                     *                   The same type can exist multiple times in the array where more agents of one
-                     *                   type are required.
-                     * @param singleAgentType Boolean value specifying whether only a single agent type should exist,
-                     *                        used for establishing baseline results.
-                     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
-                     *                                when singleAgentType is true.
-                     * @param comparingExchangesCSVWriter FileWriter used to add data to satisfactions summary file.
-                     * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population
-                     *                                                  distributions summary file.
                      * @param pythonExe String representing the system path to python environment executable.
                      * @param pythonPath String representing the system path to the python data visualiser.
+                     * @param folderName String representing the output destination folder, used to organise
+                     *                   output data.
+                     * @param identityNumber Integer unique tag so that generated graphs can easily be associated with
+                     *                       their corresponding data sets.
+                     * @param exchangesFile The data set required for generating the graphs comparing exchanges and
+                     *                      performance.
+                     * @param populationDistributionsFile The data set required for generating the graphs showing the
+                     *                                    average population distributions.
+                     * @param maximumExchangesSimulated Integer representing the total number of exchanges that have
+                     *                                  been simulated, determines graphs axis dimensions.
+                     * @param daysToVisualise Integer array containing the days be shown in graphs produced after the
+                     *                        simulation.
                      * @exception IOException On input error.
                      * @see IOException
                      */
@@ -193,10 +172,6 @@ public class ResourceExchangeArena extends UserParameters {
                 comparingExchangesCSVWriter.close();
                 comparingPopulationDistributionsCSVWriter.close();
 
-                // Collect the required data and pass it to the Python data visualiser to produce summary graphs
-                // showing how a differing number of exchanges per day effects the simulation.
-                List<String> pythonArgs = new ArrayList<>();
-
                 int maxExchanges = 0;
                 for (int EXCHANGES : EXCHANGES_ARRAY) {
                     if (EXCHANGES > maxExchanges) {
@@ -204,39 +179,38 @@ public class ResourceExchangeArena extends UserParameters {
                     }
                 }
 
-                pythonArgs.add(PYTHON_EXE);
-                pythonArgs.add(SUMMARY_PYTHON_PATH);
-
-                // The output destination folder, used to organise output data.
-                pythonArgs.add(FOLDER_NAME);
-
-                // A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-                pythonArgs.add(String.valueOf(simVersionsCompleted));
-
-                // The absolute path of the data set required for generating the performance graphs.
-                pythonArgs.add(comparingExchangesFile.getAbsolutePath());
-
-                // The absolute path of the data set required for generating the population distribution graphs.
-                pythonArgs.add(comparingPopulationDistributionsFile.getAbsolutePath());
-
-                // The total number of exchanges that have been simulated, determines graphs axis dimensions.
-                pythonArgs.add(String.valueOf(maxExchanges));
-
-                // The specific days that will have a line graph showing the satisfaction of each agent type generated.
-                pythonArgs.add(Arrays.toString(DAYS_OF_INTEREST));
-
-                ProcessBuilder builder = new ProcessBuilder(pythonArgs);
-
-                // IO from the Python is shared with the same terminal as the Java code.
-                builder.inheritIO();
-                builder.redirectErrorStream(true);
-
-                Process process = builder.start();
-                try {
-                    process.waitFor();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                /*
+                 * Begins python code that visualises the gathered data from the current environment being simulated.
+                 *
+                 * @param pythonExe String representing the system path to python environment executable.
+                 * @param pythonPath String representing the system path to the python data visualiser.
+                 * @param folderName String representing the output destination folder, used to organise output data.
+                 * @param initialSeed String representing the seed of the first simulation run included in the results, this string
+                 *                    added to the results file names so that they can be easily replicated.
+                 * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day, as
+                 *                                 well as the optimum average satisfaction and the satisfaction if allocations
+                 *                                 remained random.
+                 * @param individualsDataFile Stores the satisfaction of each individual Agent at the end of every round throughout
+                 *                            the simulation.
+                 * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the simulation,
+                 *                                    influenced by social learning.
+                 * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
+                 * @param days Integer value representing the number of days to be simulated.
+                 * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
+                 * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+                 * @exception IOException On input error.
+                 * @see IOException
+                 */
+                new ComparativeVisualiserInitiator(
+                        PYTHON_EXE,
+                        SUMMARY_PYTHON_PATH,
+                        FOLDER_NAME,
+                        simVersionsCompleted,
+                        comparingExchangesFile,
+                        comparingPopulationDistributionsFile,
+                        maxExchanges,
+                        DAYS_OF_INTEREST
+                );
             }
         }
         allSimulationsDataWriter.close();

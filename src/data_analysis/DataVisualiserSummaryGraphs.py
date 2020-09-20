@@ -22,8 +22,8 @@ exchangesFile : str
     The absolute path of the data set required for generating the graphs comparing exchanges and performance.
 populationDistributionsFile : str
     The absolute path of the data set required for generating the graphs showing the average population distributions.
-totalExchangesSimulated : int
-    The total number of exchanges that have been simulated, determines graphs axis dimensions.
+maximumExchangesSimulated : int
+    The maximum number of exchanges that have been simulated, determines graphs axis dimensions.
 daysToVisualise : str
     The specific days that will have a line graph showing the satisfaction of each agent type generated.
 """
@@ -41,7 +41,7 @@ exchangesFile: str = sys.argv[3]
 populationDistributionsFile: str = sys.argv[4]
 
 # Get the scope of the data to be visualised.
-totalExchangesSimulated: int = int(sys.argv[5])
+maxExchangesSimulated: int = int(sys.argv[5])
 
 # Get the specific days to be visualised.
 daysToVisualise: List[int] = ast.literal_eval(sys.argv[6])
@@ -67,7 +67,7 @@ convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Data
 exchanges: List[str] = []
 fieldNames: List[str] = []
 
-for exchange in range(1, totalExchangesSimulated + 1):
+for exchange in range(1, maxExchangesSimulated + 1):
     exchanges.append(str(exchange))
 
 # Options for graph styling.

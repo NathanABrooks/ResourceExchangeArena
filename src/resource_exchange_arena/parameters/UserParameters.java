@@ -12,7 +12,7 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "System.currentTimeMillis()"
 
     // Name of the folder that will contain the set of simulations currently being ran.
-    public static final String FOLDER_NAME = "Simulation_Set:" + System.currentTimeMillis();
+    public static final String FOLDER_NAME = "Simulation_Set:" + seed;
 
     // Conda env. location.
     public static final String PYTHON_EXE =
@@ -33,13 +33,16 @@ public abstract class UserParameters extends FixedParameters {
 
     // Alter the length of time to be simulated.
     public static final int DAYS = 500;
+    // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
     public static final int SIMULATION_RUNS = 50;
+    // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
     // the end of the day visualised.
     public static final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
+    // Example: "{1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500}"
 
     // Specify whether only a single agent type should exist in the simulation, used for establishing baseline results.
     public static final boolean SINGLE_AGENT_TYPE = false;
@@ -52,14 +55,17 @@ public abstract class UserParameters extends FixedParameters {
     // ################################################################################################################
     // Number of exchange rounds per day.
     public static final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
+    // Example: "1{1,25,50,75,100,125,150,175,200}"
 
     // Number of agents that will evolve their strategy per day.
     public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
+    // Example: "{0,10,19,29,38,48,58,67,77,86,96}"
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
     // selfish agents for each social agent.
     // Note that both types of agents need to exist, for testing with a single agent type set 'SINGLE_AGENT_TYPE'
     // to 'true' and set the 'SELECTED_SINGLE_AGENT_TYPE' as required.
     public static final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
+    // Example: "{{SELFISH, SOCIAL}}"
     // ################################################################################################################
 }

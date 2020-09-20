@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class Day {
-
     // List of all the possible allocations that exist in the current simulation.
     private final List<Integer> availableTimeSlots = new ArrayList<>();
 

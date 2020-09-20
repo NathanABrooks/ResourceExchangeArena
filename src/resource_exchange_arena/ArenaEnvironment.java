@@ -455,14 +455,11 @@ public class ArenaEnvironment {
         /*
          * Begins python code that visualises the gathered data from the current environment being simulated.
          *
+         * @param pythonExe String representing the system path to python environment executable.
+         * @param pythonPath String representing the system path to the python data visualiser.
          * @param folderName String representing the output destination folder, used to organise output data.
-         * @param initialSeed String representing the seed of the first simulation run included in the results, added
-         *                    to the results file names so that they can be replicated.
-         * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-         * @param days Integer value representing the number of days to be simulated.
-         * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per
-         *                  day.
-         * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
+         * @param initialSeed String representing the seed of the first simulation run included in the results,
+         *                    this string added to the results file names so that they can be easily replicated.
          * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day,
          *                                 as well as the optimum average satisfaction and the satisfaction if
          *                                 allocations remained random.
@@ -470,23 +467,26 @@ public class ArenaEnvironment {
          *                            throughout the simulation.
          * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the
          *                                    simulation, influenced by social learning.
-         * @param pythonExe String representing the system path to python environment executable.
-         * @param pythonPath String representing the system path to the python data visualiser.
+         * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
+         * @param days Integer value representing the number of days to be simulated.
+         * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
+         *                  per day.
+         * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
          * @exception IOException On input error.
          * @see IOException
          */
-        new VisualiserInitiator(
+        new SimulationVisualiserInitiator(
+                pythonExe,
+                pythonPath,
                 folderName,
                 initialSeed,
-                daysOfInterest,
-                days,
-                exchanges,
-                endOfDaySatisfactionsFile,
                 averageSatisfactionsFile,
                 individualsDataFile,
                 populationDistributionsFile,
-                pythonExe,
-                pythonPath
+                endOfDaySatisfactionsFile,
+                days,
+                exchanges,
+                daysOfInterest
         );
     }
 }

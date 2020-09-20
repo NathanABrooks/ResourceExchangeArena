@@ -3,7 +3,6 @@ package resource_exchange_arena;
 import java.util.ArrayList;
 
 class SocialLearning {
-
     /**
      * To facilitate social learning, for the number of the agents who are able to consider changing their strategy,
      * an Agent is selected at random, and then a second agent is selected to be observed. The first agent selected

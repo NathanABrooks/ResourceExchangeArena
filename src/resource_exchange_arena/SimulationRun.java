@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class SimulationRun {
-
     /**
      * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in a single
      * location.

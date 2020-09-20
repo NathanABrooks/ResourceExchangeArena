@@ -6,18 +6,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class VisualiserInitiator {
-
+class SimulationVisualiserInitiator {
     /**
      * Begins python code that visualises the gathered data from the current environment being simulated.
      *
+     * @param pythonExe String representing the system path to python environment executable.
+     * @param pythonPath String representing the system path to the python data visualiser.
      * @param folderName String representing the output destination folder, used to organise output data.
      * @param initialSeed String representing the seed of the first simulation run included in the results, this string
      *                    added to the results file names so that they can be easily replicated.
-     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-     * @param days Integer value representing the number of days to be simulated.
-     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
-     * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
      * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day, as
      *                                 well as the optimum average satisfaction and the satisfaction if allocations
      *                                 remained random.
@@ -25,23 +22,25 @@ class VisualiserInitiator {
      *                            the simulation.
      * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the simulation,
      *                                    influenced by social learning.
-     * @param pythonExe String representing the system path to python environment executable.
-     * @param pythonPath String representing the system path to the python data visualiser.
+     * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
+     * @param days Integer value representing the number of days to be simulated.
+     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
+     * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
      * @exception IOException On input error.
      * @see IOException
      */
-    VisualiserInitiator(
+    SimulationVisualiserInitiator(
+            String pythonExe,
+            String pythonPath,
             String folderName,
             String initialSeed,
-            int[] daysOfInterest,
-            int days,
-            int exchanges,
-            File endOfDaySatisfactionsFile,
             File averageSatisfactionsFile,
             File individualsDataFile,
             File populationDistributionsFile,
-            String pythonExe,
-            String pythonPath
+            File endOfDaySatisfactionsFile,
+            int days,
+            int exchanges,
+            int[] daysToVisualise
     ) throws IOException {
 
         // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
@@ -57,7 +56,7 @@ class VisualiserInitiator {
         pythonArgs.add(endOfDaySatisfactionsFile.getAbsolutePath());
         pythonArgs.add(Integer.toString(days));
         pythonArgs.add(Integer.toString(exchanges));
-        pythonArgs.add(Arrays.toString(daysOfInterest));
+        pythonArgs.add(Arrays.toString(daysToVisualise));
 
         ProcessBuilder builder = new ProcessBuilder(pythonArgs);
 
