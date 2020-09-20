@@ -1,12 +1,17 @@
 package resource_exchange_arena;
 
+import resource_exchange_arena.parameters.UserParameters;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public class ResourceExchangeArena extends UserParameters {
     // Create a single Random object for generating random numerical data for the simulation, a single object exists to
