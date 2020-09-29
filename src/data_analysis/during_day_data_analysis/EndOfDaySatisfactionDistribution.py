@@ -131,7 +131,7 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
                 data.append(
                     py.graph_objs.Violin(
                         y=satisfactions,
-                        x0='',
+                        x0=' ',
                         width=1,
                         name=fieldNames[j],
                         side='negative',
@@ -149,7 +149,7 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
                 data.append(
                     py.graph_objs.Violin(
                         y=satisfactions,
-                        x0='',
+                        x0=' ',
                         width=1,
                         name=fieldNames[j],
                         side='positive',
