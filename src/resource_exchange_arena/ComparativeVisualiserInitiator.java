@@ -34,30 +34,64 @@ class ComparativeVisualiserInitiator {
             int maximumExchangesSimulated,
             int[] daysToVisualise
     ) throws IOException {
+        System.out.println("Starting comparative data visualisation...");
 
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
-        List<String> pythonArgs = new ArrayList<>();
+        pythonPath += "comparative_data_analysis/";
 
-        pythonArgs.add(pythonExe);
-        pythonArgs.add(pythonPath);
-        pythonArgs.add(folderName);
-        pythonArgs.add(String.valueOf(identityNumber));
-        pythonArgs.add(exchangesFile.getAbsolutePath());
-        pythonArgs.add(populationDistributionsFile.getAbsolutePath());
-        pythonArgs.add(String.valueOf(maximumExchangesSimulated));
-        pythonArgs.add(Arrays.toString(daysToVisualise));
+        // Pass comparative population distribution data to python to be visualised.
+        List<String> popDistPythonArgs = new ArrayList<>();
 
-        ProcessBuilder builder = new ProcessBuilder(pythonArgs);
+        String PopDistPath = pythonPath + "PopulationDistributionAgainstExchanges.py";
+
+        popDistPythonArgs.add(pythonExe);
+        popDistPythonArgs.add(PopDistPath);
+        popDistPythonArgs.add(folderName);
+        popDistPythonArgs.add(String.valueOf(identityNumber));
+        popDistPythonArgs.add(populationDistributionsFile.getAbsolutePath());
+        popDistPythonArgs.add(String.valueOf(maximumExchangesSimulated));
+        popDistPythonArgs.add(Arrays.toString(daysToVisualise));
+
+        ProcessBuilder popDistBuilder = new ProcessBuilder(popDistPythonArgs);
 
         // IO from the Python is shared with the same terminal as the Java code.
-        builder.inheritIO();
-        builder.redirectErrorStream(true);
+        popDistBuilder.inheritIO();
+        popDistBuilder.redirectErrorStream(true);
 
-        Process process = builder.start();
+        Process popDistProcess = popDistBuilder.start();
         try {
-            process.waitFor();
+            popDistProcess.waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println("Comparative population distribution data visualisation complete.");
+
+        // Pass comparative satisfaction data to python to be visualised.
+        List<String> satisfactionPythonArgs = new ArrayList<>();
+
+        String satisfactionPath = pythonPath + "SatisfactionAgainstExchanges.py";
+
+        satisfactionPythonArgs.add(pythonExe);
+        satisfactionPythonArgs.add(satisfactionPath);
+        satisfactionPythonArgs.add(folderName);
+        satisfactionPythonArgs.add(String.valueOf(identityNumber));
+        satisfactionPythonArgs.add(exchangesFile.getAbsolutePath());
+        satisfactionPythonArgs.add(String.valueOf(maximumExchangesSimulated));
+        satisfactionPythonArgs.add(Arrays.toString(daysToVisualise));
+
+        ProcessBuilder satisfactionBuilder = new ProcessBuilder(satisfactionPythonArgs);
+
+        // IO from the Python is shared with the same terminal as the Java code.
+        satisfactionBuilder.inheritIO();
+        satisfactionBuilder.redirectErrorStream(true);
+
+        Process satisfactionProcess = satisfactionBuilder.start();
+        try {
+            satisfactionProcess.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Comparative satisfaction data visualisation complete.");
+
+        System.out.println("Comparative data visualisation complete.");
     }
 }

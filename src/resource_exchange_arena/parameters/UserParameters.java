@@ -18,13 +18,10 @@ public abstract class UserParameters extends FixedParameters {
     public static final String PYTHON_EXE =
             "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
 
-    // Data visualiser location, most users will only need to change the username here.
+    // Location of data visualiser python scripts on your machine.
     public static final String PYTHON_PATH =
-            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/DataVisualiser.py";
-
-    // Summary data visualiser location, most users will only need to change the username here.
-    public static final String SUMMARY_PYTHON_PATH =
-            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/DataVisualiserSummaryGraphs.py";
+            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/";
+    // Example: "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/"
 
     // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
     // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
@@ -36,12 +33,12 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 50;
+    public static final int SIMULATION_RUNS = 10;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
     // the end of the day visualised.
-    public static final int[] DAYS_OF_INTEREST = {1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500};
+    public static final int[] DAYS_OF_INTEREST = {1, 100, 200, 300, 400, 500};
     // Example: "{1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500}"
 
     // Specify whether only a single agent type should exist in the simulation, used for establishing baseline results.
@@ -54,11 +51,11 @@ public abstract class UserParameters extends FixedParameters {
     // the following arrays. All possible combinations will be simulated.
     // ################################################################################################################
     // Number of exchange rounds per day.
-    public static final int[] EXCHANGES_ARRAY = {1,25,50,75,100,125,150,175,200};
+    public static final int[] EXCHANGES_ARRAY = {1,50,100,150,200};
     // Example: "1{1,25,50,75,100,125,150,175,200}"
 
     // Number of agents that will evolve their strategy per day.
-    public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,10,19,29,38,48,58,67,77,86,96};
+    public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,48,96};
     // Example: "{0,10,19,29,38,48,58,67,77,86,96}"
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two

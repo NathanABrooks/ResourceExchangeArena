@@ -34,7 +34,7 @@ public class ResourceExchangeArena extends UserParameters {
         Files.createDirectories(dataOutputPath);
 
         // Create a directory to store the data output by the summary graphs.
-        String summaryDataOutputFolder = dataOutputFolder + "/summaryGraphs/data";
+        String summaryDataOutputFolder = dataOutputFolder + "/comparativeGraphs/data";
         Path summaryDataOutputPath = Paths.get(summaryDataOutputFolder);
         Files.createDirectories(summaryDataOutputPath);
 
@@ -203,7 +203,7 @@ public class ResourceExchangeArena extends UserParameters {
                  */
                 new ComparativeVisualiserInitiator(
                         PYTHON_EXE,
-                        SUMMARY_PYTHON_PATH,
+                        PYTHON_PATH,
                         FOLDER_NAME,
                         simVersionsCompleted,
                         comparingExchangesFile,
