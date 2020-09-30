@@ -7,10 +7,10 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the ComparativeVisualiserInitiator class and produces a series of graphs 
-visualising the data. These graphs show how the results of the simulation varies as the number of exchange rounds
-taking place each day increases. They also show how the population distribution varies in the same scenario.
- All graphs use data that has been averaged over a series of simulations.
+""" Takes pre-prepared data from the ComparativeVisualiserInitiator class and produces a series of line graphs
+comparing how the number of exchange rounds taking place influences the population distribution between the different
+agent types at the end of a series of specified key days.
+Data is averaged over all simulation runs.
 
 Parameters
 ---------
@@ -18,8 +18,6 @@ folderName : str
     The output destination folder, used to organise output data.
 identityNumber : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-exchangesFile : str
-    The absolute path of the data set required for generating the graphs comparing exchanges and performance.
 populationDistributionsFile : str
     The absolute path of the data set required for generating the graphs showing the average population distributions.
 maximumExchangesSimulated : int
@@ -60,7 +58,7 @@ if not os.path.exists(baseOutputDirectory):
 baseFileName: str = populationDistributionsFile.split('/')[-1]
 convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Data', '')
 
-# Store the scope of the data, which will be the same for each graph, as global lists.
+# Store the scope of the data.
 exchanges: List[str] = []
 fieldNames: List[str] = []
 
@@ -68,11 +66,8 @@ for exchange in range(1, maxExchangesSimulated + 1):
     exchanges.append(str(exchange))
 
 # Options for graph styling.
-colours: List[str] = [
-    'rgba(93, 164, 214, 0.8)', 'rgba(255, 144, 14, 0.8)', 'rgba(44, 160, 101, 0.8)',
-    'rgba(255, 65, 54, 0.8)', 'rgba(207, 114, 255, 0.8)', 'rgba(127, 96, 0, 0.8)',
-]
-lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
+colours: List[str] = ['purple', 'green', 'red', 'blue']
+lineTypes: List[str] = ['1px', 'solid', '15px', '5px']
 
 # Average population sizes for each agent type at the end of each day given the number of exchanges are visualised as a
 # line graph. Only pre-selected days are visualised to minimise compute time.
@@ -89,10 +84,12 @@ with open(populationDistributionsFile) as summaryData:
         data: Any = []
 
         reader = csv.reader(summaryData)
-        # Standard deviations are not shown here and so only half the fieldNames are used.
+
+        # Used to distinguish results when many agent types present.
+        lineType: int = 0
+        colour: int = 0
+
         for j in range(int(len(fieldNames))):
-            # Used to distinguish results when many agent types present.
-            lineType: int = 0
 
             endOfDayAverages: List = []
             for k in range(len(exchanges)):
@@ -109,12 +106,6 @@ with open(populationDistributionsFile) as summaryData:
                 if not dataFound:
                     endOfDayAverages.append(None)
 
-            # Get new line styling combination,
-            # calculated to match with graphs not including random or optimum allocations.
-            colour: int = j + (len(colours))
-            while colour >= len(colours):
-                colour -= len(colours)
-
             # Add the agent types data plots to the graph data.
             data.append(
                 py.graph_objs.Scatter(
@@ -129,36 +120,42 @@ with open(populationDistributionsFile) as summaryData:
                     connectgaps=True,
                 )
             )
+            lineType += 1
+            colour += 1
 
         # The day value is converted into the ordinal word form for styling.
         day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
 
         # Style the graph layout
         layout: any = dict(
-            title='Average population distribution at the end of the ' + day + ' day',
+            title=dict(
+                text='Average population distribution at the end of the<br>' + day + ' day',
+                xanchor='center',
+                x=0.5,
+            ),
             xaxis=dict(
                 title='Exchanges per day',
                 showline=True,
                 linecolor='black',
-                linewidth=2,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
+                linewidth=1,
+                gridcolor='rgb(225, 225, 225)',
+                gridwidth=1,
                 range=[exchanges[0], exchanges[-1]],
                 tickmode='linear',
                 tick0=0,
-                dtick=10,
+                dtick=50,
             ),
             yaxis=dict(
                 title='Average population size',
                 showline=True,
                 linecolor='black',
-                linewidth=2,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
+                linewidth=1,
+                gridcolor='rgb(225, 225, 225)',
+                gridwidth=1,
                 range=[0, 96],
                 tickmode='linear',
                 tick0=0,
-                dtick=5,
+                dtick=16,
             ),
             margin=dict(
                 l=40,
@@ -166,8 +163,11 @@ with open(populationDistributionsFile) as summaryData:
                 b=80,
                 t=100,
             ),
-            paper_bgcolor='rgb(243, 243, 243)',
-            plot_bgcolor='rgb(243, 243, 243)',
+            paper_bgcolor='rgb(255, 255, 255)',
+            plot_bgcolor='rgb(255, 255, 255)',
+            font=dict(
+                size=19
+            ),
         )
 
         # Create the graph and save the file

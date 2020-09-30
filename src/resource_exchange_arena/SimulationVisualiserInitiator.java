@@ -47,7 +47,7 @@ class SimulationVisualiserInitiator {
         String simulationPythonPath = pythonPath + "simulation_data_analysis/";
         String duringDayPythonPath = pythonPath + "during_day_data_analysis/";
 
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+        // Pass average satisfaction levels data to python to be visualised.
         List<String> satisfactionPythonArgs = new ArrayList<>();
 
         String satisfactionPythonPath = simulationPythonPath + "AverageSatisfactionLevels.py";
@@ -75,7 +75,7 @@ class SimulationVisualiserInitiator {
         }
         System.out.println("Average satisfaction levels data visualisation complete.");
 
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+        // Pass population distribution data to python to be visualised.
         List<String> popDistPythonArgs = new ArrayList<>();
 
         String popDistsPythonPath = simulationPythonPath + "PopulationDistribution.py";
@@ -101,9 +101,9 @@ class SimulationVisualiserInitiator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Average satisfaction levels data visualisation complete.");
+        System.out.println("Population distribution data visualisation complete.");
 
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+        // Pass daily satisfaction levels data to python to be visualised.
         List<String> dailySatisfactionPythonArgs = new ArrayList<>();
 
         String dailySatisfactionPythonPath = duringDayPythonPath + "DuringDayAverageSatisfactionLevels.py";
@@ -129,9 +129,9 @@ class SimulationVisualiserInitiator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Average satisfaction levels data visualisation complete.");
+        System.out.println("Daily satisfaction levels data visualisation complete.");
 
-        // Collect the required data and pass it to the Python data visualiser to produce graphs of the data.
+        // Pass end of day satisfaction distributions data to python to be visualised.
         List<String> dailyDistributionPythonArgs = new ArrayList<>();
 
         String dailyDistributionPythonPath = duringDayPythonPath + "EndOfDaySatisfactionDistribution.py";
@@ -157,8 +157,6 @@ class SimulationVisualiserInitiator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Average satisfaction levels data visualisation complete.");
-
-        System.out.println("Simulation data visualisation complete.");
+        System.out.println("End of day satisfaction distributions data visualisation complete.");
     }
 }

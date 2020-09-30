@@ -7,14 +7,10 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the VisualiserInitiator.java method and produces a series of graphs visualising the 
-    data. The types of graphs are as follows:
- - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
-    satisfaction of all agents if time slots were allocated randomly or optimally.
- - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
-    generated for each of a series of days passed as a parameter.
- - A line graph showing how the population distribution alters over the course of the simulation.
-All graphs use data that has been averaged over a series of simulations.
+""" Takes pre-prepared data from the SimulationVisualiserInitiator class and produces a line graphs comparing the
+average satisfaction of each agent type at the end of each day, as well as the average satisfaction of all agents if 
+time slots were allocated randomly or optimally.
+Data is averaged over all simulation runs.
 
 Parameters
 ---------
@@ -25,12 +21,6 @@ seed : str
 averageSatisfactionLevels : str
     The absolute path of the data set required for generating the line graph showing the average satisfaction of each
     agent type at the end of each day.
-keyDaysSatisfactionLevels : str
-    The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
-    agent type at the end of each round of trading.
-populationDistributions : str
-    The absolute path of the data set required for generating the line graph showing the average population
-    distributions at the end of each day.
 totalDaysSimulated : int
     The total number of days that have been simulated, determines graphs axis dimensions.
 totalExchangesSimulated : int
@@ -76,7 +66,7 @@ if not os.path.exists(baseOutputDirectory):
 baseFileName: str = averageSatisfactionLevels.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
-# Store the scope of the data, which will be the same for each graph, as global lists.
+# Store the scope of the data.
 days: List[str] = []
 exchanges: List[str] = []
 fieldNames: List[str] = []
@@ -192,7 +182,11 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
             colour += 1
     # Style the graph layout
     layout: any = dict(
-        title='Average consumer satisfaction at the end of each day',
+        title=dict(
+            text='Average consumer satisfaction at the end of each day',
+            xanchor='center',
+            x=0.5,
+        ),
         xaxis=dict(
             title='Day',
             showline=True,

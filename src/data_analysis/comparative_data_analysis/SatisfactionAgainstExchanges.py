@@ -7,10 +7,10 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the ComparativeVisualiserInitiator class and produces a series of graphs 
-visualising the data. These graphs show how the results of the simulation varies as the number of exchange rounds
-taking place each day increases. They also show how the population distribution varies in the same scenario.
- All graphs use data that has been averaged over a series of simulations.
+""" Takes pre-prepared data from the ComparativeVisualiserInitiator class and produces a series of line graphs
+comparing how the number of exchange rounds taking place influences the average satisfaction levels of the different
+agent types at the end of a series of specified key days.
+Data is averaged over all simulation runs.
 
 Parameters
 ---------
@@ -20,8 +20,6 @@ identityNumber : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
 exchangesFile : str
     The absolute path of the data set required for generating the graphs comparing exchanges and performance.
-populationDistributionsFile : str
-    The absolute path of the data set required for generating the graphs showing the average population distributions.
 maximumExchangesSimulated : int
     The maximum number of exchanges that have been simulated, determines graphs axis dimensions.
 daysToVisualise : str
@@ -60,7 +58,7 @@ if not os.path.exists(baseOutputDirectory):
 baseFileName: str = exchangesFile.split('/')[-1]
 convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Data', '')
 
-# Store the scope of the data, which will be the same for each graph, as global lists.
+# Store the scope of the data.
 exchanges: List[str] = []
 fieldNames: List[str] = []
 
@@ -68,11 +66,8 @@ for exchange in range(1, maxExchangesSimulated + 1):
     exchanges.append(str(exchange))
 
 # Options for graph styling.
-colours: List[str] = [
-    'rgba(93, 164, 214, 0.8)', 'rgba(255, 144, 14, 0.8)', 'rgba(44, 160, 101, 0.8)',
-    'rgba(255, 65, 54, 0.8)', 'rgba(207, 114, 255, 0.8)', 'rgba(127, 96, 0, 0.8)',
-]
-lineTypes: List[str] = ['solid', 'dot', 'dash', 'dashdot', 'longdashdot']
+colours: List[str] = ['purple', 'green', 'red', 'blue']
+lineTypes: List[str] = ['1px', 'solid', '15px']
 
 # Average consumer satisfactions for each agent type at the end of each day given the number of exchanges are
 # visualised as a line graph. Only pre-selected days are visualised to minimise compute time.
@@ -93,9 +88,6 @@ with open(exchangesFile) as summaryData:
         for j in range(len(fieldNames)):
             # If the data is for standard deviations, (j >= 2), then it needs to be handled differently.
             if j < 2:
-                # Used to distinguish results when many agent types present.
-                lineType: int = 0
-
                 endOfDayAverages: List = []
                 for k in range(len(exchanges)):
                     summaryData.seek(0)
@@ -116,6 +108,9 @@ with open(exchangesFile) as summaryData:
                 colour: int = j + (len(colours))
                 while colour >= len(colours):
                     colour -= len(colours)
+                lineType: int = j + (len(lineTypes))
+                while lineType >= len(lineTypes):
+                    lineType -= len(lineTypes)
 
                 # Add the agent types data plots to the graph data.
                 data.append(
@@ -132,8 +127,6 @@ with open(exchangesFile) as summaryData:
                     )
                 )
             else:
-                lineType: int = 1
-
                 k = 0
                 while k < 2:
                     colour = j + (len(colours) - 2)
@@ -175,7 +168,7 @@ with open(exchangesFile) as summaryData:
                             showlegend=False,
                             line=dict(
                                 color=colours[colour],
-                                dash=lineTypes[lineType],
+                                dash='5px',
                                 width=1,
                             ),
                             connectgaps=True,
@@ -189,30 +182,34 @@ with open(exchangesFile) as summaryData:
 
         # Style the graph layout
         layout: any = dict(
-            title='Average consumer satisfaction at the end of the ' + day + ' day',
+            title=dict(
+                text='Average consumer satisfaction at the end of the<br>' + day + ' day',
+                xanchor='center',
+                x=0.5,
+            ),
             xaxis=dict(
                 title='Exchanges per day',
                 showline=True,
                 linecolor='black',
-                linewidth=2,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
+                linewidth=1,
+                gridcolor='rgb(225, 225, 225)',
+                gridwidth=1,
                 range=[exchanges[0], exchanges[-1]],
                 tickmode='linear',
                 tick0=0,
-                dtick=10,
+                dtick=50,
             ),
             yaxis=dict(
                 title='Average consumer satisfaction',
                 showline=True,
                 linecolor='black',
-                linewidth=2,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
+                linewidth=1,
+                gridcolor='rgb(225, 225, 225)',
+                gridwidth=1,
                 range=[0, 1],
                 tickmode='linear',
                 tick0=0,
-                dtick=0.1,
+                dtick=0.2,
             ),
             margin=dict(
                 l=40,
@@ -220,8 +217,11 @@ with open(exchangesFile) as summaryData:
                 b=80,
                 t=100,
             ),
-            paper_bgcolor='rgb(243, 243, 243)',
-            plot_bgcolor='rgb(243, 243, 243)',
+            paper_bgcolor='rgb(255, 255, 255)',
+            plot_bgcolor='rgb(255, 255, 255)',
+            font=dict(
+                size=19
+            ),
         )
 
         # Create the graph and save the file

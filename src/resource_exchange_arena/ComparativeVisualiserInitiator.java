@@ -91,7 +91,5 @@ class ComparativeVisualiserInitiator {
             e.printStackTrace();
         }
         System.out.println("Comparative satisfaction data visualisation complete.");
-
-        System.out.println("Comparative data visualisation complete.");
     }
 }

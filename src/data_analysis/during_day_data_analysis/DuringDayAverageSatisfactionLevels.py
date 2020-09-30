@@ -7,14 +7,10 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the VisualiserInitiator.java method and produces a series of graphs visualising the 
-    data. The types of graphs are as follows:
- - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
-    satisfaction of all agents if time slots were allocated randomly or optimally.
- - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
-    generated for each of a series of days passed as a parameter.
- - A line graph showing how the population distribution alters over the course of the simulation.
-All graphs use data that has been averaged over a series of simulations.
+""" Takes pre-prepared data from the SimulationVisualiserInitiator class and produces a series of line graphs
+comparing how the number of exchange rounds taking place influences the average satisfaction levels of the different
+agent types throughout a series of specified key days.
+Data is averaged over all simulation runs.
 
 Parameters
 ---------
@@ -22,15 +18,9 @@ folderName : str
     The output destination folder, used to organise output data.
 seed : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-averageSatisfactionLevels : str
-    The absolute path of the data set required for generating the line graph showing the average satisfaction of each
-    agent type at the end of each day.
 keyDaysSatisfactionLevels : str
     The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
     agent type at the end of each round of trading.
-populationDistributions : str
-    The absolute path of the data set required for generating the line graph showing the average population
-    distributions at the end of each day.
 totalDaysSimulated : int
     The total number of days that have been simulated, determines graphs axis dimensions.
 totalExchangesSimulated : int
@@ -76,7 +66,7 @@ if not os.path.exists(duringDayOutputDirectory):
 baseFileName: str = keyDaysSatisfactionLevels.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
-# Store the scope of the data, which will be the same for each graph, as global lists.
+# Store the scope of the data.
 days: List[str] = []
 exchanges: List[str] = []
 fieldNames: List[str] = ["Selfish", "Social"]
@@ -88,8 +78,8 @@ for exchange in range(1, totalExchangesSimulated + 1):
     exchanges.append(str(exchange))
 
 # Options for graph styling.
-colours: List[str] = ['red', 'blue', 'purple', 'green']
-lineTypes: List[str] = ['15px', '5px', '1px', 'solid']
+colours: List[str] = ['purple', 'green', 'red', 'blue']
+lineTypes: List[str] = ['1px', 'solid', '15px', '5px']
 
 # Average consumer satisfactions for each agent type at the end of each round day are visualised as a line graph.
 # Only pre-selected days are visualised to minimise compute time.
@@ -103,6 +93,7 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
 
         # Used to distinguish results when many agent types present.
         lineType: int = 0
+        colour: int = 0
 
         # Each agent type is plotted separately.
         for j in range(len(fieldNames)):
@@ -120,14 +111,6 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
                         endOfRoundAverages.append(row[3])
                         break
 
-            # Get new line styling combination.
-            colour: int = j
-            while colour >= len(colours):
-                colour -= len(colours)
-                lineType += 1
-            while lineType >= len(lineTypes):
-                lineType -= len(lineTypes)
-
             # Add the agent types data plots to the graph data.
             data.append(
                 py.graph_objs.Scatter(
@@ -141,37 +124,42 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
                     ),
                 )
             )
+            lineType += 1
+            colour += 1
 
         # The day value is converted into the ordinal word form for styling.
         day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
-        title: str = 'Average consumer satisfaction during the ' + day + ' day'
 
         # Style the graph layout
         layout: any = dict(
-            title=title,
+            title=dict(
+                text='Average consumer satisfaction during the<br>' + day + ' day',
+                xanchor='center',
+                x=0.5,
+            ),
             xaxis=dict(
                 title='Rounds',
                 showline=True,
                 linecolor='black',
-                linewidth=2,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
+                linewidth=1,
+                gridcolor='rgb(225, 225, 225)',
+                gridwidth=1,
                 range=[exchanges[0], exchanges[-1]],
                 tickmode='linear',
                 tick0=0,
-                dtick=10,
+                dtick=50,
             ),
             yaxis=dict(
                 title='Average consumer satisfaction',
                 showline=True,
                 linecolor='black',
-                linewidth=2,
-                gridcolor='rgb(255, 255, 255)',
-                gridwidth=2,
+                linewidth=1,
+                gridcolor='rgb(225, 225, 225)',
+                gridwidth=1,
                 range=[0, 1],
                 tickmode='linear',
                 tick0=0,
-                dtick=0.1,
+                dtick=0.2,
             ),
             margin=dict(
                 l=40,
@@ -179,8 +167,11 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
                 b=80,
                 t=100,
             ),
-            paper_bgcolor='rgb(243, 243, 243)',
-            plot_bgcolor='rgb(243, 243, 243)',
+            paper_bgcolor='rgb(255, 255, 255)',
+            plot_bgcolor='rgb(255, 255, 255)',
+            font=dict(
+                size=19
+            ),
         )
 
         # Create the graph and save the file

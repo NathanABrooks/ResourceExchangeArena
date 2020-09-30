@@ -7,14 +7,9 @@ import sys
 
 from typing import Any, Dict, List
 
-""" Takes pre-prepared data from the VisualiserInitiator.java method and produces a series of graphs visualising the 
-    data. The types of graphs are as follows:
- - A line graph showing the average satisfaction of each agent type at the end of each day, as well as the average
-    satisfaction of all agents if time slots were allocated randomly or optimally.
- - Line graphs showing the average satisfaction of each agent type at the end of each round of trading, a graph is
-    generated for each of a series of days passed as a parameter.
- - A line graph showing how the population distribution alters over the course of the simulation.
-All graphs use data that has been averaged over a series of simulations.
+""" Takes pre-prepared data from the SimulationVisualiserInitiator class and produces a line graphs showing the
+population distribution of each agent type at the end of each day.
+Data is averaged over all simulation runs.
 
 Parameters
 ---------
@@ -22,12 +17,6 @@ folderName : str
     The output destination folder, used to organise output data.
 seed : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
-averageSatisfactionLevels : str
-    The absolute path of the data set required for generating the line graph showing the average satisfaction of each
-    agent type at the end of each day.
-keyDaysSatisfactionLevels : str
-    The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
-    agent type at the end of each round of trading.
 populationDistributions : str
     The absolute path of the data set required for generating the line graph showing the average population
     distributions at the end of each day.
@@ -76,7 +65,7 @@ if not os.path.exists(baseOutputDirectory):
 baseFileName: str = populationDistributions.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
-# Store the scope of the data, which will be the same for each graph, as global lists.
+# Store the scope of the data.
 days: List[str] = []
 exchanges: List[str] = []
 fieldNames: List[str] = ["Selfish", "Social"]
@@ -88,8 +77,8 @@ for exchange in range(1, totalExchangesSimulated + 1):
     exchanges.append(str(exchange))
 
 # Options for graph styling.
-colours: List[str] = ['red', 'blue', 'purple', 'green']
-lineTypes: List[str] = ['15px', '5px', '1px', 'solid']
+colours: List[str] = ['purple', 'green', 'red', 'blue']
+lineTypes: List[str] = ['1px', 'solid', '15px', '5px']
 
 # The population distribution for each day is visualised as a line graph.
 with open(populationDistributions) as populationData:
@@ -98,6 +87,7 @@ with open(populationDistributions) as populationData:
 
     # Used to distinguish results when many agent types present.
     lineType: int = 0
+    colour: int = 0
 
     reader = csv.reader(populationData)
 
@@ -112,14 +102,6 @@ with open(populationDistributions) as populationData:
                     endOfDayPopulations.append((row[2]))
                     break
 
-        # Get new line styling combination.
-        colour: int = i
-        while colour >= len(colours):
-            colour -= len(colours)
-            lineType += 1
-        while lineType >= len(lineTypes):
-            lineType -= len(lineTypes)
-
         # Add the agent types data plots to the graph data.
         data.append(
             py.graph_objs.Scatter(
@@ -133,33 +115,39 @@ with open(populationDistributions) as populationData:
                 ),
             )
         )
+        lineType += 1
+        colour += 1
 
     # Style the graph layout
     layout: any = dict(
-        title='Population of each Agent type at the end of each day',
+        title=dict(
+            text='Population of each Agent type at the end of each day',
+            xanchor='center',
+            x=0.5,
+        ),
         xaxis=dict(
             title='Day',
             showline=True,
             linecolor='black',
-            linewidth=2,
-            gridcolor='rgb(255, 255, 255)',
-            gridwidth=2,
+            linewidth=1,
+            gridcolor='rgb(225, 225, 225)',
+            gridwidth=1,
             range=[days[0], days[-1]],
             tickmode='linear',
             tick0=0,
-            dtick=20,
+            dtick=100,
         ),
         yaxis=dict(
             title='Population',
             showline=True,
             linecolor='black',
-            linewidth=2,
-            gridcolor='rgb(255, 255, 255)',
-            gridwidth=2,
+            linewidth=1,
+            gridcolor='rgb(225, 225, 225)',
+            gridwidth=1,
             range=[0, 96],
             tickmode='linear',
             tick0=0,
-            dtick=8,
+            dtick=16,
         ),
         margin=dict(
             l=40,
@@ -167,8 +155,11 @@ with open(populationDistributions) as populationData:
             b=80,
             t=100,
         ),
-        paper_bgcolor='rgb(243, 243, 243)',
-        plot_bgcolor='rgb(243, 243, 243)',
+        paper_bgcolor='rgb(255, 255, 255)',
+        plot_bgcolor='rgb(255, 255, 255)',
+        font=dict(
+            size=19
+        ),
     )
 
     # Create the graph and save the file
