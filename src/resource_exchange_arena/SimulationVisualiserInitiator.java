@@ -13,8 +13,7 @@ class SimulationVisualiserInitiator {
      * @param pythonExe String representing the system path to python environment executable.
      * @param pythonPath String representing the system path to the python data visualiser.
      * @param folderName String representing the output destination folder, used to organise output data.
-     * @param initialSeed String representing the seed of the first simulation run included in the results, this string
-     *                    added to the results file names so that they can be easily replicated.
+     * @param environmentTag String detailing specifics about the simulation environment.
      * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day, as
      *                                 well as the optimum average satisfaction and the satisfaction if allocations
      *                                 remained random.
@@ -33,7 +32,7 @@ class SimulationVisualiserInitiator {
             String pythonExe,
             String pythonPath,
             String folderName,
-            String initialSeed,
+            String environmentTag,
             File averageSatisfactionsFile,
             File individualsDataFile,
             File populationDistributionsFile,
@@ -55,7 +54,7 @@ class SimulationVisualiserInitiator {
         satisfactionPythonArgs.add(pythonExe);
         satisfactionPythonArgs.add(satisfactionPythonPath);
         satisfactionPythonArgs.add(folderName);
-        satisfactionPythonArgs.add(initialSeed);
+        satisfactionPythonArgs.add(environmentTag);
         satisfactionPythonArgs.add(averageSatisfactionsFile.getAbsolutePath());
         satisfactionPythonArgs.add(Integer.toString(days));
         satisfactionPythonArgs.add(Integer.toString(exchanges));
@@ -83,7 +82,7 @@ class SimulationVisualiserInitiator {
         popDistPythonArgs.add(pythonExe);
         popDistPythonArgs.add(popDistsPythonPath);
         popDistPythonArgs.add(folderName);
-        popDistPythonArgs.add(initialSeed);
+        popDistPythonArgs.add(environmentTag);
         popDistPythonArgs.add(populationDistributionsFile.getAbsolutePath());
         popDistPythonArgs.add(Integer.toString(days));
         popDistPythonArgs.add(Integer.toString(exchanges));
@@ -111,7 +110,7 @@ class SimulationVisualiserInitiator {
         dailySatisfactionPythonArgs.add(pythonExe);
         dailySatisfactionPythonArgs.add(dailySatisfactionPythonPath);
         dailySatisfactionPythonArgs.add(folderName);
-        dailySatisfactionPythonArgs.add(initialSeed);
+        dailySatisfactionPythonArgs.add(environmentTag);
         dailySatisfactionPythonArgs.add(individualsDataFile.getAbsolutePath());
         dailySatisfactionPythonArgs.add(Integer.toString(days));
         dailySatisfactionPythonArgs.add(Integer.toString(exchanges));
@@ -139,7 +138,7 @@ class SimulationVisualiserInitiator {
         dailyDistributionPythonArgs.add(pythonExe);
         dailyDistributionPythonArgs.add(dailyDistributionPythonPath);
         dailyDistributionPythonArgs.add(folderName);
-        dailyDistributionPythonArgs.add(initialSeed);
+        dailyDistributionPythonArgs.add(environmentTag);
         dailyDistributionPythonArgs.add(endOfDaySatisfactionsFile.getAbsolutePath());
         dailyDistributionPythonArgs.add(Integer.toString(days));
         dailyDistributionPythonArgs.add(Integer.toString(exchanges));

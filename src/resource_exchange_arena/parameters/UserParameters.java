@@ -33,19 +33,22 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 10;
+    public static final int SIMULATION_RUNS = 5;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
     // the end of the day visualised.
     public static final int[] DAYS_OF_INTEREST = {1, 100, 200, 300, 400, 500};
-    // Example: "{1, 25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500}"
+    // Example: "{1, 100, 200, 300, 400, 500}"
 
     // Specify whether only a single agent type should exist in the simulation, used for establishing baseline results.
-    public static final boolean SINGLE_AGENT_TYPE = false;
+    public static boolean SINGLE_AGENT_TYPE = false;
 
     // Specify the single agent type to be simulated when 'SINGLE_AGENT_TYPE = true', e.g. 'SELFISH' or 'SOCIAL'.
-    public static final int SELECTED_SINGLE_AGENT_TYPE = SELFISH;
+    public static int SELECTED_SINGLE_AGENT_TYPE = SELFISH;
+
+    // Specify whether social capital should be used by the social agents.
+    public static boolean USE_SOCIAL_CAPITAL = true;
 
     // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
     // the following arrays. All possible combinations will be simulated.
@@ -65,4 +68,13 @@ public abstract class UserParameters extends FixedParameters {
     public static final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
     // Example: "{{SELFISH, SOCIAL}}"
     // ################################################################################################################
+
+    // Sets the level of comparisons that will be made:
+    // Note that this overrides some of the previously set parameters and can result in much longer compute times.
+    // 0 = Only the parameter combinations set will be made.
+    // 1 = The above combinations will be ran both with and without social capital enabled so that the results can
+    //     be compared.
+    // 2 = The above combinations will be ran both with and without social capital enabled and with only selfish agents
+    //     and with only social agents so that a baseline comparison can be made between the agents types.
+    public static int COMPARISON_LEVEL = 0;
 }

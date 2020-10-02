@@ -16,7 +16,7 @@ Parameters
 ---------
 folderName : str
     The output destination folder, used to organise output data.
-seed : str
+tag : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
 keyDaysSatisfactionLevels : str
     The absolute path of the data set required for generating the line graphs showing the average satisfaction of each
@@ -34,7 +34,7 @@ daysToVisualise : str
 folderName: str = sys.argv[1]
 
 # Unique identifier to identify which run the produced graphs are associated with.
-seed: str = sys.argv[2]
+tag: str = sys.argv[2]
 
 # Get the location of the raw data that requires visualising from command line arguments.
 keyDaysSatisfactionLevels: str = sys.argv[3]
@@ -52,11 +52,10 @@ inflect = inflect.engine()
 # Get the directory in which the generated graphs will be stored.
 duringDayOutputDirectory: str = \
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
-                 'results/'
-                 + folderName
+                 folderName
                  + '/'
-                 + seed
-                 + '/images/duringDayAverages')
+                 + tag
+                 + '/images/duringDayDataAnalysis/duringDayAverageSatisfactionLevels')
 
 # Create the output directory if it does not already exist.
 if not os.path.exists(duringDayOutputDirectory):
@@ -177,6 +176,6 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            '.pdf', '_' + str(daysToVisualise[i]) + '.pdf')
+            '.pdf', '_day_' + str(daysToVisualise[i]) + '.pdf')
         fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)

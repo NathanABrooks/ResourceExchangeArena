@@ -19,11 +19,11 @@ public class ArenaEnvironment {
      * The arena is the environment in which all simulations take place.
      *
      * @param folderName String representing the output destination folder, used to organise output data.
-     * @param initialSeed String representing the seed of the first simulation run included in the results, added to
-     *                    the results file names so that they can be replicated.
+     * @param environmentTag String detailing specifics about the simulation environment.
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
      *                       exchange and at the end of each day.
+     * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
@@ -49,9 +49,10 @@ public class ArenaEnvironment {
      */
     ArenaEnvironment(
             String folderName,
-            String initialSeed,
+            String environmentTag,
             int[] daysOfInterest,
             boolean additionalData,
+            boolean socialCapital,
             int simulationRuns,
             int days,
             int exchanges,
@@ -83,7 +84,7 @@ public class ArenaEnvironment {
         Collections.sort(uniqueAgentTypes);
 
         // Create a directory to store the data output by the simulation.
-        String dataOutputFolder = "results/" + folderName + "/" + initialSeed + "/data";
+        String dataOutputFolder = folderName + "/" + environmentTag + "/data";
         Path dataOutputPath = Paths.get(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
 
@@ -158,8 +159,7 @@ public class ArenaEnvironment {
 
         if (additionalData) {
             // Create a directory to store the additional data output by the simulation.
-            String additionalDataOutputFolder =
-                    "results/" + folderName + "/" + initialSeed + "/additionalData";
+            String additionalDataOutputFolder = folderName + "/" + environmentTag + "/additionalData";
             Path additionalDataOutputPath = Paths.get(additionalDataOutputFolder);
             Files.createDirectories(additionalDataOutputPath);
 
@@ -202,22 +202,28 @@ public class ArenaEnvironment {
         }
 
         // Stores the key data about the simulation about to begin in the data output location.
-        File simulationData = new File("results/" + folderName + "/" + initialSeed,"simulationData.txt");
+        File simulationData = new File(folderName + "/" + environmentTag,"simulationData.txt");
 
         FileWriter simulationDataWriter = new FileWriter(simulationData);
 
         simulationDataWriter.append("Simulation Information: \n\n");
         simulationDataWriter.append("Seed: ").append(String.valueOf(ResourceExchangeArena.seed)).append("\n");
-        simulationDataWriter.append("Days of interest: ").append(Arrays.toString(daysOfInterest)).append("\n");
-        simulationDataWriter.append("Additional data: ").append(String.valueOf(additionalData)).append("\n");
+        simulationDataWriter.append("Single agent type: ").append(String.valueOf(singleAgentType)).append("\n");
+        if (singleAgentType) {
+            simulationDataWriter.append("Agent type: ")
+                    .append(String.valueOf(selectedSingleAgentType)).append("\n");
+        }
+        simulationDataWriter.append("Use social capital: ").append(String.valueOf(socialCapital)).append("\n");
         simulationDataWriter.append("Simulation runs: ").append(String.valueOf(simulationRuns)).append("\n");
         simulationDataWriter.append("Days: ").append(String.valueOf(days)).append("\n");
-        simulationDataWriter.append("Exchanges: ").append(String.valueOf(exchanges)).append("\n");
+        simulationDataWriter.append("Days of interest: ").append(Arrays.toString(daysOfInterest)).append("\n");
         simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
         simulationDataWriter.append("Maximum peak consumption: ").append(String.valueOf(maximumPeakConsumption))
                 .append("\n");
         simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
+        simulationDataWriter.append("Additional data: ").append(String.valueOf(additionalData)).append("\n");
+        simulationDataWriter.append("Exchanges: ").append(String.valueOf(exchanges)).append("\n");
         simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve))
                 .append("\n");
         simulationDataWriter.append("Starting ratio of agent types: ");
@@ -245,7 +251,6 @@ public class ArenaEnvironment {
 
         // Run as many simulations as has been requested.
         for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
-
             /*
              * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in
              * a single location.
@@ -272,6 +277,8 @@ public class ArenaEnvironment {
              *                        establishing baseline results.
              * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
              *                                singleAgentType is true.
+             * @param socialCapital Boolean value that determines whether or not social agents will utilise
+             *                      social capital.
              * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
@@ -299,6 +306,7 @@ public class ArenaEnvironment {
                     uniqueAgentTypes,
                     singleAgentType,
                     selectedSingleAgentType,
+                    socialCapital,
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
@@ -458,8 +466,7 @@ public class ArenaEnvironment {
          * @param pythonExe String representing the system path to python environment executable.
          * @param pythonPath String representing the system path to the python data visualiser.
          * @param folderName String representing the output destination folder, used to organise output data.
-         * @param initialSeed String representing the seed of the first simulation run included in the results,
-         *                    this string added to the results file names so that they can be easily replicated.
+         * @param environmentTag String detailing specifics about the simulation environment.
          * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day,
          *                                 as well as the optimum average satisfaction and the satisfaction if
          *                                 allocations remained random.
@@ -479,7 +486,7 @@ public class ArenaEnvironment {
                 pythonExe,
                 pythonPath,
                 folderName,
-                initialSeed,
+                environmentTag,
                 averageSatisfactionsFile,
                 individualsDataFile,
                 populationDistributionsFile,

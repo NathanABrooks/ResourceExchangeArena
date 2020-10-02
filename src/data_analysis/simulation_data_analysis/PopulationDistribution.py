@@ -15,7 +15,7 @@ Parameters
 ---------
 folderName : str
     The output destination folder, used to organise output data.
-seed : str
+tag : str
     A unique tag so that generated graphs can easily be associated with their corresponding data sets.
 populationDistributions : str
     The absolute path of the data set required for generating the line graph showing the average population
@@ -33,7 +33,7 @@ daysToVisualise : str
 folderName: str = sys.argv[1]
 
 # Unique identifier to identify which run the produced graphs are associated with.
-seed: str = sys.argv[2]
+tag: str = sys.argv[2]
 
 # Get the location of the raw data that requires visualising from command line arguments.
 populationDistributions: str = sys.argv[3]
@@ -51,10 +51,9 @@ inflect = inflect.engine()
 # Get the directory in which the generated graphs will be stored.
 baseOutputDirectory: str = \
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
-                 'results/'
-                 + folderName
+                 folderName
                  + '/'
-                 + seed
+                 + tag
                  + '/images')
 
 # Create the output directory if it does not already exist.

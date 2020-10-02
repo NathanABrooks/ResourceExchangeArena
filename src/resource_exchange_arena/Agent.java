@@ -9,6 +9,7 @@ class Agent {
 
     // Instance variables to store the agents state, relations and ongoing exchanges.
     private int agentType;
+    private final boolean usesSocialCapital;
     private boolean madeInteraction;
     private final int numberOfTimeSlotsWanted;
     private final ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
@@ -26,10 +27,12 @@ class Agent {
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param agents Array List of all the agents that exist in the current simulation.
+     * @param socialCapital determines whether the agent uses socialCapital.
      */
-    Agent(int agentID, int agentType, int slotsPerAgent, ArrayList<Agent> agents){
+    Agent(int agentID, int agentType, int slotsPerAgent, ArrayList<Agent> agents, boolean socialCapital){
         this.agentID = agentID;
         this.agentType = agentType;
+        this.usesSocialCapital = socialCapital;
 
         madeInteraction = false;
         numberOfTimeSlotsWanted = slotsPerAgent;
@@ -105,27 +108,29 @@ class Agent {
      * @param agents Array List of all the agents that exist in the current simulation.
      */
     void initializeFavoursStore(ArrayList<Agent> agents) {
-        if (!favoursGiven.isEmpty()) {
-            favoursGiven.clear();
-        }
-        if (!favoursOwed.isEmpty()) {
-            favoursOwed.clear();
-        }
-        for (Agent a: agents) {
-            if (a.agentID != agentID) {
-                ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
-                ArrayList<Integer> favoursGivenRelation = new ArrayList<>();
+        if (usesSocialCapital) {
+            if (!favoursGiven.isEmpty()) {
+                favoursGiven.clear();
+            }
+            if (!favoursOwed.isEmpty()) {
+                favoursOwed.clear();
+            }
+            for (Agent a : agents) {
+                if (a.agentID != agentID) {
+                    ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
+                    ArrayList<Integer> favoursGivenRelation = new ArrayList<>();
 
-                // Initially, no favours are owed or have been given to any other Agent.
-                favoursOwedRelation.add(a.agentID);
-                favoursOwedRelation.add(0);
+                    // Initially, no favours are owed or have been given to any other Agent.
+                    favoursOwedRelation.add(a.agentID);
+                    favoursOwedRelation.add(0);
 
-                favoursGivenRelation.add(a.agentID);
-                favoursGivenRelation.add(0);
+                    favoursGivenRelation.add(a.agentID);
+                    favoursGivenRelation.add(0);
 
-                // Store a reference to the new relations in the Agents corresponding lists of relations.
-                favoursOwed.add(favoursOwedRelation);
-                favoursGiven.add(favoursGivenRelation);
+                    // Store a reference to the new relations in the Agents corresponding lists of relations.
+                    favoursOwed.add(favoursOwedRelation);
+                    favoursGiven.add(favoursGivenRelation);
+                }
             }
         }
     }
@@ -310,21 +315,26 @@ class Agent {
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0){
                     exchangeRequestApproved = true;
                 } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
-                    int favoursOwedToRequester = 0;
-                    int favoursGivenToRequester = 0;
-                    for (ArrayList<Integer> favours : favoursOwed) {
-                        if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
-                            favoursOwedToRequester = favours.get(1);
-                            break;
+                    if (usesSocialCapital) {
+                        int favoursOwedToRequester = 0;
+                        int favoursGivenToRequester = 0;
+                        for (ArrayList<Integer> favours : favoursOwed) {
+                            if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
+                                favoursOwedToRequester = favours.get(1);
+                                break;
+                            }
                         }
-                    }
-                    for (ArrayList<Integer> favours : favoursGiven) {
-                        if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
-                            favoursGivenToRequester = favours.get(1);
-                            break;
+                        for (ArrayList<Integer> favours : favoursGiven) {
+                            if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
+                                favoursGivenToRequester = favours.get(1);
+                                break;
+                            }
                         }
-                    }
-                    if (favoursOwedToRequester > favoursGivenToRequester) {
+                        if (favoursOwedToRequester > favoursGivenToRequester) {
+                            exchangeRequestApproved = true;
+                        }
+                    } else {
+                        // When social capital isn't used, social agents always accept neutral exchanges.
                         exchangeRequestApproved = true;
                     }
                 }
@@ -364,12 +374,15 @@ class Agent {
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (Double.compare(newSatisfaction, previousSatisfaction) > 0 && agentType == ResourceExchangeArena.SOCIAL) {
-            for (ArrayList<Integer> favours : favoursOwed) {
-                if (favours.get(0).equals(agentID)) {
-                    int currentFavour = favours.get(1);
-                    favours.set(1, currentFavour + 1);
-                    break;
+        if (usesSocialCapital) {
+            if (Double.compare(newSatisfaction, previousSatisfaction) > 0
+                    && agentType == ResourceExchangeArena.SOCIAL) {
+                for (ArrayList<Integer> favours : favoursOwed) {
+                    if (favours.get(0).equals(agentID)) {
+                        int currentFavour = favours.get(1);
+                        favours.set(1, currentFavour + 1);
+                        break;
+                    }
                 }
             }
         }
@@ -390,12 +403,15 @@ class Agent {
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (Double.compare(newSatisfaction,previousSatisfaction) <= 0 && agentType == ResourceExchangeArena.SOCIAL) {
-            for (ArrayList<Integer> favours : favoursGiven) {
-                if (favours.get(0).equals(offer.get(0))) {
-                    int currentFavour = favours.get(1);
-                    favours.set(1, currentFavour + 1);
-                    break;
+        if (usesSocialCapital) {
+            if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
+                    && agentType == ResourceExchangeArena.SOCIAL) {
+                for (ArrayList<Integer> favours : favoursGiven) {
+                    if (favours.get(0).equals(offer.get(0))) {
+                        int currentFavour = favours.get(1);
+                        favours.set(1, currentFavour + 1);
+                        break;
+                    }
                 }
             }
         }

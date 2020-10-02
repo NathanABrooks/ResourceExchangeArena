@@ -29,6 +29,7 @@ class SimulationRun {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
+     * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
@@ -55,6 +56,7 @@ class SimulationRun {
             ArrayList<Integer> uniqueAgentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
+            boolean socialCapital,
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
@@ -76,8 +78,15 @@ class SimulationRun {
                  * @param agentType Integer value denoting the agent type, and thus how it will behave.
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
                  * @param agents Array List of all the agents that exist in the current simulation.
+                 * @param socialCapital determines whether the agent uses socialCapital.
                  */
-                new Agent(agentNumber, agentTypes[agentNumber % agentTypes.length], slotsPerAgent, agents);
+                new Agent(
+                        agentNumber,
+                        agentTypes[agentNumber % agentTypes.length],
+                        slotsPerAgent,
+                        agents,
+                        socialCapital
+                );
         }
         Collections.shuffle(agents, ResourceExchangeArena.random);
 
@@ -91,7 +100,7 @@ class SimulationRun {
         ResourceExchangeArena.seed++;
         ResourceExchangeArena.random.setSeed(ResourceExchangeArena.seed);
 
-        // Initialise each Agents relations with each other Agent if trading Agents are being simulated.
+        // Initialise each Agents relations with each other Agent.
         for (Agent a : agents) {
             a.initializeFavoursStore(agents);
         }

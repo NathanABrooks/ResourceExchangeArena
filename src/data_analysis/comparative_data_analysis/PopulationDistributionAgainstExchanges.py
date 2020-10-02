@@ -46,9 +46,8 @@ inflect = inflect.engine()
 
 # Get the directories in which the generated graphs will be stored.
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
-                                        'results/'
-                                        + folderName
-                                        + '/comparativeGraphs/images')
+                                        folderName
+                                        + '/comparativeGraphs/images/populationDistributionAgainstExchanges')
 
 # Create the output directories if they do not already exist.
 if not os.path.exists(baseOutputDirectory):
@@ -173,6 +172,6 @@ with open(populationDistributionsFile) as summaryData:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            '.pdf', '_' + str(daysToVisualise[i]) + '.pdf')
+            '.pdf', '_day_' + str(daysToVisualise[i]) + '.pdf')
         fullPath: str = os.path.join(baseOutputDirectory, fileName)
         py.io.write_image(fig, fullPath)
