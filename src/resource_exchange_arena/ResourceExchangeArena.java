@@ -124,21 +124,27 @@ public class ResourceExchangeArena extends UserParameters {
 
         // Perform a parameter sweep for the key parameters being tested.
         int simVersionsCompleted = 0;
+        parameterSweep:
         for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
             for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
 
-                String fileName = "agentsEvolving_" + NUMBER_OF_AGENTS_TO_EVOLVE + "_";
+                String fileName;
+
                 if (!SINGLE_AGENT_TYPE) {
+                    fileName = "agentsEvolving_" + NUMBER_OF_AGENTS_TO_EVOLVE + "_";
+
                     StringBuilder typeRatio = new StringBuilder("startingRatio_");
-                        int typesListed = 0;
-                        for (int type : AGENT_TYPES) {
-                            if (typesListed != 0) {
-                                typeRatio.append(":");
-                            }
-                            typesListed++;
-                            typeRatio.append(Inflect.getHumanReadableAgentType(type));
+                    int typesListed = 0;
+                    for (int type : AGENT_TYPES) {
+                        if (typesListed != 0) {
+                            typeRatio.append(":");
                         }
+                        typesListed++;
+                        typeRatio.append(Inflect.getHumanReadableAgentType(type));
+                    }
                     fileName += typeRatio;
+                } else {
+                    fileName = "singleAgentType";
                 }
 
                 // For differing numbers of exchange rounds per day, data is stored so that summary graphs can be made
@@ -312,6 +318,9 @@ public class ResourceExchangeArena extends UserParameters {
                         maxExchanges,
                         DAYS_OF_INTEREST
                 );
+                if (SINGLE_AGENT_TYPE) {
+                    break parameterSweep;
+                }
             }
         }
         allSimulationsDataWriter.close();
