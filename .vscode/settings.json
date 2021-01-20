@@ -4,5 +4,6 @@
         "**/.project": true,
         "**/.settings": true,
         "**/.factorypath": true
-    }
+    },
+    "python.pythonPath": "/home/brooks/.conda/envs/ResourceExchangeArena/bin/python"
 }
