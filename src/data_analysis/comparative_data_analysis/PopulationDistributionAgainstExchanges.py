@@ -47,7 +47,7 @@ inflect = inflect.engine()
 # Get the directories in which the generated graphs will be stored.
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
                                         folderName
-                                        + '/comparativeGraphs/images/populationDistributionAgainstExchanges')
+                                        + '/comparative/images/PDaE')
 
 # Create the output directories if they do not already exist.
 if not os.path.exists(baseOutputDirectory):

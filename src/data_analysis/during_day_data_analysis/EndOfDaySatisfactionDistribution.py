@@ -54,7 +54,7 @@ duringDayOutputDirectory: str = \
                  folderName
                  + '/'
                  + tag
-                 + '/images/duringDayDataAnalysis/endOfDaySatisfactionDistribution')
+                 + '/images/DDDataAnalysis/EoDSD')
 
 # Create the output directory if it does not already exist.
 if not os.path.exists(duringDayOutputDirectory):

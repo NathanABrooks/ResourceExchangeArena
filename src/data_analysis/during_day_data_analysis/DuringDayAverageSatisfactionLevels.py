@@ -45,6 +45,7 @@ totalExchangesSimulated: int = int(sys.argv[5])
 
 # Get the specific days to have average satisfaction visualised throughout the day.
 daysToVisualise: List[int] = ast.literal_eval(sys.argv[6])
+print(daysToVisualise)
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -55,7 +56,7 @@ duringDayOutputDirectory: str = \
                  folderName
                  + '/'
                  + tag
-                 + '/images/duringDayDataAnalysis/duringDayAverageSatisfactionLevels')
+                 + '/images/DDDataAnalysis/DDASL')
 
 # Create the output directory if it does not already exist.
 if not os.path.exists(duringDayOutputDirectory):

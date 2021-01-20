@@ -12,15 +12,15 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "System.currentTimeMillis()"
 
     // Name of the folder that will contain the set of simulations currently being ran.
-    public static final String FOLDER_NAME = "Simulation_Set:" + seed;
+    public static final String FOLDER_NAME = "Set_" + seed;
 
     // Conda env. location.
     public static final String PYTHON_EXE =
-            "/home/nathan/anaconda3/envs/ResourceExchangeArena/bin/python";
+            "/home/brooks/.conda/envs/ResourceExchangeArena/bin/python";
 
     // Location of data visualiser python scripts on your machine.
     public static final String PYTHON_PATH =
-            "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/";
+            "/mnt/c/Users/Nathan/Code/wsl/ResourceExchangeArena/src/data_analysis/";
     // Example: "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/"
 
     // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
@@ -33,7 +33,7 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 5;
+    public static final int SIMULATION_RUNS = 50;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
@@ -55,11 +55,11 @@ public abstract class UserParameters extends FixedParameters {
     // ################################################################################################################
     // Number of exchange rounds per day.
     public static final int[] EXCHANGES_ARRAY = {1,50,100,150,200};
-    // Example: "1{1,25,50,75,100,125,150,175,200}"
+    // Example: "{1,50,100,150,200};"
 
     // Number of agents that will evolve their strategy per day.
     public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,48,96};
-    // Example: "{0,10,19,29,38,48,58,67,77,86,96}"
+    // Example: " {0,48,96}"
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
     // selfish agents for each social agent.

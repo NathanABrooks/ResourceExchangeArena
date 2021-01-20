@@ -75,7 +75,7 @@ public class ResourceExchangeArena extends UserParameters {
         random.setSeed(seed);
 
         // Create a directory to store the data output by all simulations being run.
-        String dataOutputFolder = "results/" + FOLDER_NAME + "/useSocialCapital_" + USE_SOCIAL_CAPITAL + "_agentType_";
+        String dataOutputFolder = "results/" + FOLDER_NAME + "/useSC_" + USE_SOCIAL_CAPITAL + "_AType_";
         if (!SINGLE_AGENT_TYPE) {
             dataOutputFolder += "mixed";
         } else {
@@ -86,7 +86,7 @@ public class ResourceExchangeArena extends UserParameters {
         Files.createDirectories(dataOutputPath);
 
         // Create a directory to store the data output by the summary graphs.
-        String summaryDataOutputFolder = dataOutputFolder + "/comparativeGraphs/data";
+        String summaryDataOutputFolder = dataOutputFolder + "/comparative/data";
         Path summaryDataOutputPath = Paths.get(summaryDataOutputFolder);
         Files.createDirectories(summaryDataOutputPath);
 
@@ -114,11 +114,11 @@ public class ResourceExchangeArena extends UserParameters {
         allSimulationsDataWriter.append("Simulation Information (specific run details): \n\n");
 
         // Create directories to organise summary graphs data.
-        String satisfactionComparisonFolder = summaryDataOutputFolder + "/satisfactionAgainstExchanges";
+        String satisfactionComparisonFolder = summaryDataOutputFolder + "/SaE";
         Path satisfactionComparisonPath = Paths.get(satisfactionComparisonFolder);
         Files.createDirectories(satisfactionComparisonPath);
 
-        String popDistComparisonFolder = summaryDataOutputFolder + "/popDistAgainstExchanges";
+        String popDistComparisonFolder = summaryDataOutputFolder + "/PDaE";
         Path popDistComparisonPath = Paths.get(popDistComparisonFolder);
         Files.createDirectories(popDistComparisonPath);
 
@@ -131,20 +131,20 @@ public class ResourceExchangeArena extends UserParameters {
                 String fileName;
 
                 if (!SINGLE_AGENT_TYPE) {
-                    fileName = "agentsEvolving_" + NUMBER_OF_AGENTS_TO_EVOLVE + "_";
+                    fileName = "AE_" + NUMBER_OF_AGENTS_TO_EVOLVE + "_";
 
-                    StringBuilder typeRatio = new StringBuilder("startingRatio_");
+                    StringBuilder typeRatio = new StringBuilder("SR_");
                     int typesListed = 0;
                     for (int type : AGENT_TYPES) {
                         if (typesListed != 0) {
-                            typeRatio.append(":");
+                            typeRatio.append("_");
                         }
                         typesListed++;
                         typeRatio.append(Inflect.getHumanReadableAgentType(type));
                     }
                     fileName += typeRatio;
                 } else {
-                    fileName = "singleAgentType";
+                    fileName = "singleAType";
                 }
 
                 // For differing numbers of exchange rounds per day, data is stored so that summary graphs can be made
@@ -211,7 +211,7 @@ public class ResourceExchangeArena extends UserParameters {
                     allSimulationsDataWriter.append("\n\n");
 
                     // Details specifics about the simulation environment.
-                    String environmentTag = "exchanges_" + EXCHANGES + "_" + fileName;
+                    String environmentTag = "EX_" + EXCHANGES + "_" + fileName;
 
                     /*
                      * The arena is the environment in which all simulations take place.
