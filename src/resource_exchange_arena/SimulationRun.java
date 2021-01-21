@@ -91,10 +91,11 @@ class SimulationRun {
         Collections.shuffle(agents, ResourceExchangeArena.random);
 
         // Set all agents to a single type, used for establishing baseline performance.
-        if (singleAgentType && selectedSingleAgentType != 0)
-        for (Agent a: agents) {
-            a.setType(selectedSingleAgentType);
-        }
+        if (singleAgentType && selectedSingleAgentType != 0) {
+            for (Agent a: agents) {
+                a.setType(selectedSingleAgentType);
+            }
+        }   
         
         // Increment the simulations seed each run.
         ResourceExchangeArena.seed++;

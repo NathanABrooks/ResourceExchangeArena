@@ -62,7 +62,7 @@ exchanges: List[str] = []
 fieldNames: List[str] = []
 
 for exchange in range(1, maxExchangesSimulated + 1):
-    exchanges.append(str(exchange))
+    exchanges.append(exchange)
 
 # Options for graph styling.
 colours: List[str] = ['purple', 'green', 'red', 'blue']
@@ -90,7 +90,7 @@ with open(populationDistributionsFile) as summaryData:
 
         for j in range(int(len(fieldNames))):
 
-            endOfDayAverages: List = []
+            endOfDayAverages: List[float] = []
             for k in range(len(exchanges)):
                 summaryData.seek(0)
 
@@ -98,13 +98,13 @@ with open(populationDistributionsFile) as summaryData:
                 next(reader)
                 dataFound: bool = False
                 for row in reader:
-                    if int(row[1]) == int(daysToVisualise[i]) and int(row[0]) == int(exchanges[k]):
-                        endOfDayAverages.append(row[j + 2])
+                    if int(row[1]) == int(daysToVisualise[i]) and int(row[0]) == exchanges[k]:
+                        endOfDayAverages.append(float(row[j + 2]))
                         dataFound = True
                         break
                 if not dataFound:
                     endOfDayAverages.append(None)
-
+                    
             # Add the agent types data plots to the graph data.
             data.append(
                 py.graph_objs.Scatter(

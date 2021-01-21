@@ -65,15 +65,11 @@ baseFileName: str = populationDistributions.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data.
-days: List[str] = []
-exchanges: List[str] = []
+days: List[int] = []
 fieldNames: List[str] = ["Selfish", "Social"]
 
 for day in range(1, totalDaysSimulated + 1):
-    days.append(str(day))
-
-for exchange in range(1, totalExchangesSimulated + 1):
-    exchanges.append(str(exchange))
+    days.append(day)
 
 # Options for graph styling.
 colours: List[str] = ['purple', 'green', 'red', 'blue']
@@ -92,15 +88,15 @@ with open(populationDistributions) as populationData:
 
     # Each agent type is plotted separately.
     for i in range(len(fieldNames)):
-        endOfDayPopulations: List[str] = []
+        endOfDayPopulations: List[float] = []
         for j in range(len(days)):
             populationData.seek(0)
+            next(reader)
             for row in reader:
-                if row[0] == days[j] \
-                        and int(row[1]) == int(i + 1):
-                    endOfDayPopulations.append((row[2]))
+                if int(row[0]) == days[j] and int(row[1]) == i + 1:
+                    endOfDayPopulations.append(float(row[2]))
                     break
-
+                
         # Add the agent types data plots to the graph data.
         data.append(
             py.graph_objs.Scatter(

@@ -59,7 +59,7 @@ public abstract class UserParameters extends FixedParameters {
 
     // Number of agents that will evolve their strategy per day.
     public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,48,96};
-    // Example: " {0,48,96}"
+    // Example: "{0,48,96}"
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
     // selfish agents for each social agent.

@@ -67,14 +67,14 @@ convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data.
 days: List[str] = []
-exchanges: List[str] = []
+exchanges: List[int] = []
 fieldNames: List[str] = ["Selfish", "Social"]
 
 for day in range(1, totalDaysSimulated + 1):
     days.append(str(day))
 
 for exchange in range(1, totalExchangesSimulated + 1):
-    exchanges.append(str(exchange))
+    exchanges.append(exchange)
 
 # Options for graph styling.
 colours: List[str] = ['purple', 'green', 'red', 'blue']
@@ -96,7 +96,7 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
 
         # Each agent type is plotted separately.
         for j in range(len(fieldNames)):
-            endOfRoundAverages: List[str] = []
+            endOfRoundAverages: List[float] = []
             for k in range(len(exchanges)):
                 duringKeyDaysSatisfactionLevels.seek(0)
 
@@ -105,9 +105,9 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
                 for row in reader:
                     # The field type column + 1 used as agent types start at 1 as opposed to 0.
                     if int(row[0]) == int(daysToVisualise[i]) \
-                            and int(row[1]) == int(exchanges[k]) \
+                            and int(row[1]) == exchanges[k] \
                             and int(row[2]) == int(j + 1):
-                        endOfRoundAverages.append(row[3])
+                        endOfRoundAverages.append(float(row[3]))
                         break
 
             # Add the agent types data plots to the graph data.
@@ -129,6 +129,12 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
         # The day value is converted into the ordinal word form for styling.
         day: str = inflect.number_to_words(inflect.ordinal(daysToVisualise[i]))
 
+        lowx = 0
+        highx = 200
+        if len(exchanges) > 1:
+             lowx = exchanges[0]
+             highx = exchanges[-1]
+
         # Style the graph layout
         layout: any = dict(
             title=dict(
@@ -143,7 +149,7 @@ with open(keyDaysSatisfactionLevels) as duringKeyDaysSatisfactionLevels:
                 linewidth=1,
                 gridcolor='rgb(225, 225, 225)',
                 gridwidth=1,
-                range=[exchanges[0], exchanges[-1]],
+                range=[lowx, highx],
                 tickmode='linear',
                 tick0=0,
                 dtick=50,

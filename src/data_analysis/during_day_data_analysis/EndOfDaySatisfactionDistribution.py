@@ -66,14 +66,10 @@ convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data.
 days: List[str] = []
-exchanges: List[str] = []
 fieldNames: List[str] = ["Selfish", "Social"]
 
 for day in range(1, totalDaysSimulated + 1):
     days.append(str(day))
-
-for exchange in range(1, totalExchangesSimulated + 1):
-    exchanges.append(str(exchange))
 
 # Options for graph styling.
 colours: List[str] = ['purple', 'green', 'red', 'blue']
@@ -96,7 +92,7 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
         # Each agent type is plotted separately.
         firstType = True
         for j in range(len(fieldNames)):
-            satisfactions: List[str] = []
+            satisfactions: List[float] = []
             individualSatisfactionDeviations.seek(0)
 
             # The first line contains only headers and so can be skipped.
@@ -105,7 +101,7 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
                 # The field type column + 1 used as agent types start at 1 as opposed to 0.
                 if int(row[0]) == int(daysToVisualise[i]) \
                         and int(row[1]) == int(j + 1):
-                    satisfactions.append(row[2])
+                    satisfactions.append(float(row[2]))
 
             # Add the agent types data plots to the graph data.
             if firstType:

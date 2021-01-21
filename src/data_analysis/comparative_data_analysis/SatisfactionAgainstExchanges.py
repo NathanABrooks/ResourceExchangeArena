@@ -62,7 +62,7 @@ exchanges: List[str] = []
 fieldNames: List[str] = []
 
 for exchange in range(1, maxExchangesSimulated + 1):
-    exchanges.append(str(exchange))
+    exchanges.append(exchange)
 
 # Options for graph styling.
 colours: List[str] = ['purple', 'green', 'red', 'blue']
@@ -87,7 +87,7 @@ with open(exchangesFile) as summaryData:
         for j in range(len(fieldNames)):
             # If the data is for standard deviations, (j >= 2), then it needs to be handled differently.
             if j < 2:
-                endOfDayAverages: List = []
+                endOfDayAverages: List[float] = []
                 for k in range(len(exchanges)):
                     summaryData.seek(0)
 
@@ -95,8 +95,8 @@ with open(exchangesFile) as summaryData:
                     next(reader)
                     dataFound: bool = False
                     for row in reader:
-                        if int(row[1]) == int(daysToVisualise[i]) and int(row[0]) == int(exchanges[k]):
-                            endOfDayAverages.append(row[j + 2])
+                        if int(row[1]) == int(daysToVisualise[i]) and int(row[0]) == exchanges[k]:
+                            endOfDayAverages.append(float(row[j + 2]))
                             dataFound = True
                             break
                     if not dataFound:
@@ -132,7 +132,7 @@ with open(exchangesFile) as summaryData:
                     while colour >= len(colours):
                         colour -= len(colours)
 
-                    endOfDayAverages: List = []
+                    endOfDayAverages: List[float] = []
 
                     for m in range(len(exchanges)):
                         summaryData.seek(0)
@@ -141,20 +141,20 @@ with open(exchangesFile) as summaryData:
                         next(reader)
                         dataFound: bool = False
                         for row in reader:
-                            if int(row[0]) == int(exchanges[m]) and int(row[1]) == int(daysToVisualise[i]):
+                            if int(row[0]) == exchanges[m] and int(row[1]) == int(daysToVisualise[i]):
                                 if k == 0:
                                     upperSD = float(row[j]) + (float(row[j + 2]) / 2)
                                     # The upper standard deviation line can be capped at the maximum possible value.
                                     if upperSD > 1:
                                         upperSD = 1
-                                    endOfDayAverages.append(upperSD)
+                                    endOfDayAverages.append(float(upperSD))
                                     dataFound = True
                                     break
                                 else:
                                     lowerSD = float(row[j]) - (float(row[j + 2]) / 2)
                                     if lowerSD < 0:
                                         lowerSD = 0
-                                    endOfDayAverages.append(lowerSD)
+                                    endOfDayAverages.append(float(lowerSD))
                                     dataFound = True
                                     break
                         if not dataFound:

@@ -66,15 +66,11 @@ baseFileName: str = averageSatisfactionLevels.split('/')[-1]
 convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
 
 # Store the scope of the data.
-days: List[str] = []
-exchanges: List[str] = []
+days: List[int] = []
 fieldNames: List[str] = []
 
 for day in range(1, totalDaysSimulated + 1):
-    days.append(str(day))
-
-for exchange in range(1, totalExchangesSimulated + 1):
-    exchanges.append(str(exchange))
+    days.append(day)
 
 # Options for graph styling.
 colours: List[str] = ['red', 'blue', 'purple', 'green']
@@ -104,24 +100,25 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
     # Each agent type, including random and optimum allocation, is plotted separately.
     for i in range(len(fieldNames)):
         if i < 4:
-            endOfDayAverages: List[str] = []
-            errorBarValuesPlus: List[str] = []
-            errorBarValuesMinus: List[str] = []
+            endOfDayAverages: List[float] = []
+            errorBarValuesPlus: List[float] = []
+            errorBarValuesMinus: List[float] = []
             dailyAverageSatisfactionLevels.seek(0)
+            next(reader)
             for j in range(len(days)):
                 for row in reader:
-                    if row[0] == days[j]:
+                    if int(row[0]) == days[j]:
                         # Append the column + 1, to account for the 'Day' column.
-                        endOfDayAverages.append(row[i + 1])
+                        endOfDayAverages.append(float(row[i + 1]))
                         if offset:
                             if int(row[0]) > 5 \
                                     and ((int(row[0]) % 50 == 5 and i == 2) or (int(row[0]) % 50 == 45 and i == 3)):
-                                positiveError: str = row[i + 3]
-                                negativeError: str = row[i + 3]
+                                positiveError: float = float(row[i + 3])
+                                negativeError: float = float(row[i + 3])
                                 if float(row[i + 1]) + float(row[i + 3]) >= 1.0:
-                                    positiveError = str(1 - float(row[i + 1]))
+                                    positiveError = float(1 - float(row[i + 1]))
                                 if float(row[i + 1]) - float(row[i + 3]) <= 0.0:
-                                    negativeError = row[i + 1]
+                                    negativeError = float(row[i + 1])
                                 errorBarValuesPlus.append(positiveError)
                                 errorBarValuesMinus.append(negativeError)
                             else:
@@ -129,12 +126,12 @@ with open(averageSatisfactionLevels) as dailyAverageSatisfactionLevels:
                                 errorBarValuesMinus.append('null')
                         else:
                             if int(row[0]) % 50 == 0:
-                                positiveError: str = row[i + 3]
-                                negativeError: str = row[i + 3]
+                                positiveError: float = float(row[i + 3])
+                                negativeError: float = float(row[i + 3])
                                 if float(row[i + 1]) + float(row[i + 3]) >= 1.0:
-                                    positiveError = str(1 - float(row[i + 1]))
+                                    positiveError = float(1 - float(row[i + 1]))
                                 if float(row[i + 1]) - float(row[i + 3]) <= 0.0:
-                                    negativeError = row[i + 1]
+                                    negativeError = float(row[i + 1])
                                 errorBarValuesPlus.append(positiveError)
                                 errorBarValuesMinus.append(negativeError)
                             else:
