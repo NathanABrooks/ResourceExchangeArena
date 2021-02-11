@@ -14,6 +14,7 @@ public class ArenaEnvironment {
     ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
+	private int slotsPerAgent;
 
     /**
      * The arena is the environment in which all simulations take place.
@@ -70,7 +71,8 @@ public class ArenaEnvironment {
             String pythonPath
     ) throws IOException {
 
-        System.out.println("Starting simulation...");
+        this.slotsPerAgent = slotsPerAgent;
+		System.out.println("Starting simulation...");
 
         // Array of the unique agent types used in the simulation.
         ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();

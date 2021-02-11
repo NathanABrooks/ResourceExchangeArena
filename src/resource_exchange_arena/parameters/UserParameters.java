@@ -16,7 +16,7 @@ public abstract class UserParameters extends FixedParameters {
 
     // Conda env. location.
     public static final String PYTHON_EXE =
-            "/home/brooks/.conda/envs/ResourceExchangeArena/bin/python";
+            "/home/nathan/python_environments/ResourceExchangeArena/bin/python";
 
     // Location of data visualiser python scripts on your machine.
     public static final String PYTHON_PATH =
