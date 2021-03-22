@@ -106,8 +106,6 @@ public class ResourceExchangeArena extends UserParameters {
         allSimulationsDataWriter.append("Days: ").append(String.valueOf(DAYS)).append("\n");
         allSimulationsDataWriter.append("Days of interest: ").append(Arrays.toString(DAYS_OF_INTEREST)).append("\n");
         allSimulationsDataWriter.append("Population size: ").append(String.valueOf(POPULATION_SIZE)).append("\n");
-        allSimulationsDataWriter.append("Maximum peak consumption: ").append(String.valueOf(MAXIMUM_PEAK_CONSUMPTION))
-                .append("\n");
         allSimulationsDataWriter.append("Unique time slots: ").append(String.valueOf(UNIQUE_TIME_SLOTS)).append("\n");
         allSimulationsDataWriter.append("Slots per agent: ").append(String.valueOf(SLOTS_PER_AGENT)).append("\n");
         allSimulationsDataWriter.append("Additional data: ").append(String.valueOf(ADDITIONAL_DATA)).append("\n\n\n");
@@ -231,8 +229,6 @@ public class ResourceExchangeArena extends UserParameters {
                      * @param exchanges Integer value representing the number of times all agents perform pairwise
                      *                  exchanges per day.
                      * @param populationSize Integer value representing the size of the initial agent population.
-                     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to
-                     *                               each time slot.
                      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in
                      *                        the simulation.
                      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
@@ -263,7 +259,6 @@ public class ResourceExchangeArena extends UserParameters {
                             DAYS,
                             EXCHANGES,
                             POPULATION_SIZE,
-                            MAXIMUM_PEAK_CONSUMPTION,
                             UNIQUE_TIME_SLOTS,
                             SLOTS_PER_AGENT,
                             NUMBER_OF_AGENTS_TO_EVOLVE,
@@ -305,6 +300,7 @@ public class ResourceExchangeArena extends UserParameters {
                  *                                  simulated, determines graphs axis dimensions.
                  * @param daysToVisualise Integer array containing the days be shown in graphs produced after the
                  *                        simulation.
+                 * @param populationSize Integer value representing the size of the initial agent population.
                  * @exception IOException On input error.
                  * @see IOException
                  */
@@ -316,7 +312,8 @@ public class ResourceExchangeArena extends UserParameters {
                         comparingExchangesFile,
                         comparingPopulationDistributionsFile,
                         maxExchanges,
-                        DAYS_OF_INTEREST
+                        DAYS_OF_INTEREST,
+                        POPULATION_SIZE
                 );
                 if (SINGLE_AGENT_TYPE) {
                     break parameterSweep;

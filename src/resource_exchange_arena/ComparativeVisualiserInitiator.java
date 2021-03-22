@@ -21,6 +21,7 @@ class ComparativeVisualiserInitiator {
      * @param maximumExchangesSimulated Integer representing the total number of exchanges that have been simulated,
      *                                determines graphs axis dimensions.
      * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
+     * @param populationSize Integer value representing the size of the initial agent population.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -32,7 +33,8 @@ class ComparativeVisualiserInitiator {
             File exchangesFile,
             File populationDistributionsFile,
             int maximumExchangesSimulated,
-            int[] daysToVisualise
+            int[] daysToVisualise,
+            int populationSize
     ) throws IOException {
         System.out.println("Starting comparative data visualisation...");
 
@@ -50,6 +52,7 @@ class ComparativeVisualiserInitiator {
         popDistPythonArgs.add(populationDistributionsFile.getAbsolutePath());
         popDistPythonArgs.add(String.valueOf(maximumExchangesSimulated));
         popDistPythonArgs.add(Arrays.toString(daysToVisualise));
+        popDistPythonArgs.add(String.valueOf(populationSize));
 
         ProcessBuilder popDistBuilder = new ProcessBuilder(popDistPythonArgs);
 

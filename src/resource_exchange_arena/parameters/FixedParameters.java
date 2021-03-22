@@ -12,8 +12,8 @@ public abstract class FixedParameters {
     public static final int[] ALL_AGENT_TYPES = {SELFISH, SOCIAL};
 
     // Constant parameters for all simulations, this version of the system is not designed for these to be modified.
-    public static final int POPULATION_SIZE = 96;
-    public static final int MAXIMUM_PEAK_CONSUMPTION = 16;
     public static final int UNIQUE_TIME_SLOTS = 24;
-    public static final int SLOTS_PER_AGENT = 4;
+
+    // In this version maximum peak consumption is calculated to be the number of agents * the number of slots requested per agent.
+    // public static final int MAXIMUM_PEAK_CONSUMPTION = 16;
 }

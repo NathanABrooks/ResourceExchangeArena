@@ -16,7 +16,6 @@ class SimulationRun {
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
-     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
@@ -48,7 +47,6 @@ class SimulationRun {
             int days,
             int exchanges,
             int populationSize,
-            int maximumPeakConsumption,
             int uniqueTimeSlots,
             int slotsPerAgent,
             int numberOfAgentsToEvolve,
@@ -119,8 +117,7 @@ class SimulationRun {
              * @param day Integer value representing the current day being simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
-             * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time
-             *                               slot.
+             * @param populationSize Integer value representing the size of the initial agent population.
              * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
              *                        simulation.
              * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
@@ -147,7 +144,7 @@ class SimulationRun {
                     additionalData,
                     day,
                     exchanges,
-                    maximumPeakConsumption,
+                    populationSize,
                     uniqueTimeSlots,
                     slotsPerAgent,
                     numberOfAgentsToEvolve,

@@ -20,7 +20,7 @@ public class Day {
      *                       exchange and at the end of each day.
      * @param day Integer value representing the current day being simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
-     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
+     * @param populationSize Integer value representing the size of the initial agent population.
      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
@@ -45,7 +45,7 @@ public class Day {
             boolean additionalData,
             int day,
             int exchanges,
-            int maximumPeakConsumption,
+            int populationSize,
             int uniqueTimeSlots,
             int slotsPerAgent,
             int numberOfAgentsToEvolve,
@@ -60,9 +60,26 @@ public class Day {
     ) throws IOException{
 
         // Fill the available time slots with all the slots that exist each day.
-        for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
-            for (int unit = 1; unit <= maximumPeakConsumption; unit++) {
-                availableTimeSlots.add(timeSlot);
+        int requiredTimeSLots = populationSize * slotsPerAgent;
+        List<Integer> possibleTimeSLots = new ArrayList<>();
+
+        while(availableTimeSlots.size() < requiredTimeSLots){
+            for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
+                possibleTimeSLots.add(timeSlot);
+            }
+            Collections.shuffle(possibleTimeSLots, ResourceExchangeArena.random);
+
+            while(!possibleTimeSLots.isEmpty()){
+                if (availableTimeSlots.size() < requiredTimeSLots) {
+                    int selector = ResourceExchangeArena.random.nextInt(possibleTimeSLots.size());
+                    int timeSlot = possibleTimeSLots.get(selector);
+
+                    availableTimeSlots.add(timeSlot);
+                    possibleTimeSLots.remove(selector);
+                } else {
+                    possibleTimeSLots.clear();
+                    break;
+                }
             }
         }
 
@@ -203,6 +220,8 @@ public class Day {
 
                 timeSlots.add(timeSlot);
                 availableTimeSlots.remove(selector);
+            } else {
+                System.out.println("Error: No Timeslots Available");
             }
         }
         return timeSlots;

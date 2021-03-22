@@ -29,7 +29,6 @@ public class ArenaEnvironment {
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
-     * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time slot.
      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
@@ -58,7 +57,6 @@ public class ArenaEnvironment {
             int days,
             int exchanges,
             int populationSize,
-            int maximumPeakConsumption,
             int uniqueTimeSlots,
             int slotsPerAgent,
             int numberOfAgentsToEvolve,
@@ -220,8 +218,6 @@ public class ArenaEnvironment {
         simulationDataWriter.append("Days: ").append(String.valueOf(days)).append("\n");
         simulationDataWriter.append("Days of interest: ").append(Arrays.toString(daysOfInterest)).append("\n");
         simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
-        simulationDataWriter.append("Maximum peak consumption: ").append(String.valueOf(maximumPeakConsumption))
-                .append("\n");
         simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
         simulationDataWriter.append("Additional data: ").append(String.valueOf(additionalData)).append("\n");
@@ -264,8 +260,6 @@ public class ArenaEnvironment {
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
              * @param populationSize Integer value representing the size of the initial agent population.
-             * @param maximumPeakConsumption Integer value representing how many agents can be allocated to each time
-             *                               slot.
              * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
              *                        simulation.
              * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
@@ -300,7 +294,6 @@ public class ArenaEnvironment {
                     days,
                     exchanges,
                     populationSize,
-                    maximumPeakConsumption,
                     uniqueTimeSlots,
                     slotsPerAgent,
                     numberOfAgentsToEvolve,
@@ -481,6 +474,7 @@ public class ArenaEnvironment {
          * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
          *                  per day.
          * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
+         * @param populationSize Integer value representing the size of the initial agent population.
          * @exception IOException On input error.
          * @see IOException
          */
@@ -495,7 +489,8 @@ public class ArenaEnvironment {
                 endOfDaySatisfactionsFile,
                 days,
                 exchanges,
-                daysOfInterest
+                daysOfInterest,
+                populationSize
         );
     }
 }

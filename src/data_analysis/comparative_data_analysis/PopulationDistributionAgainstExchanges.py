@@ -1,3 +1,4 @@
+import math
 import ast
 import csv
 import inflect
@@ -24,6 +25,8 @@ maximumExchangesSimulated : int
     The maximum number of exchanges that have been simulated, determines graphs axis dimensions.
 daysToVisualise : str
     The specific days that will have a line graph showing the satisfaction of each agent type generated.
+totalAgents : str
+    the number of Agents that exist in the simulation.
 """
 
 # Get the output folder from command line arguments.
@@ -40,6 +43,9 @@ maxExchangesSimulated: int = int(sys.argv[4])
 
 # Get the specific days to be visualised.
 daysToVisualise: List[int] = ast.literal_eval(sys.argv[5])
+
+# Number of Agents that exist in the simulation.
+totalAgents: int = int(sys.argv[6])
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -151,10 +157,10 @@ with open(populationDistributionsFile) as summaryData:
                 linewidth=1,
                 gridcolor='rgb(225, 225, 225)',
                 gridwidth=1,
-                range=[0, 96],
+                range=[0, totalAgents],
                 tickmode='linear',
                 tick0=0,
-                dtick=16,
+                dtick=math.floor(totalAgents/5),
             ),
             margin=dict(
                 l=40,

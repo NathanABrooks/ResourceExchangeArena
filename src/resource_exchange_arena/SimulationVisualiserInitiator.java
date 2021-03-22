@@ -25,6 +25,7 @@ class SimulationVisualiserInitiator {
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
+     * @param populationSize Integer value representing the size of the initial agent population.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -39,7 +40,8 @@ class SimulationVisualiserInitiator {
             File endOfDaySatisfactionsFile,
             int days,
             int exchanges,
-            int[] daysToVisualise
+            int[] daysToVisualise,
+            int populationSize
     ) throws IOException {
         System.out.println("Starting simulation data visualisation...");
 
@@ -87,6 +89,7 @@ class SimulationVisualiserInitiator {
         popDistPythonArgs.add(Integer.toString(days));
         popDistPythonArgs.add(Integer.toString(exchanges));
         popDistPythonArgs.add(Arrays.toString(daysToVisualise));
+        popDistPythonArgs.add(String.valueOf(populationSize));
 
         ProcessBuilder popDistBuilder = new ProcessBuilder(popDistPythonArgs);
 

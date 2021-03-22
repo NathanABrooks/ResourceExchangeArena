@@ -1,3 +1,4 @@
+import math
 import ast
 import csv
 import inflect
@@ -27,6 +28,8 @@ totalExchangesSimulated : int
 daysToVisualise : str
     The specific days that will have a line graph of the agent satisfactions at the end of each round throughout the 
     day generated. Note that this is immediately converted to type List[int].
+totalAgents : str
+    the number of Agents that exist in the simulation.
 """
 
 # Get the output folder from command line arguments.
@@ -44,6 +47,9 @@ totalExchangesSimulated: int = int(sys.argv[5])
 
 # Get the specific days to have average satisfaction visualised throughout the day.
 daysToVisualise: List[int] = ast.literal_eval(sys.argv[6])
+
+# Number of Agents that exist in the simulation.
+totalAgents: int = int(sys.argv[7])
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -139,10 +145,10 @@ with open(populationDistributions) as populationData:
             linewidth=1,
             gridcolor='rgb(225, 225, 225)',
             gridwidth=1,
-            range=[0, 96],
+            range=[0, totalAgents],
             tickmode='linear',
             tick0=0,
-            dtick=16,
+            dtick=math.floor(totalAgents/5),
         ),
         margin=dict(
             l=40,

@@ -22,6 +22,12 @@ public abstract class UserParameters extends FixedParameters {
     public static final String PYTHON_PATH =
             "/mnt/c/Users/Nathan/Code/wsl/ResourceExchangeArena/src/data_analysis/";
     // Example: "/home/nathan/IdeaProjects/ResourceExchangeArena/src/data_analysis/"
+    
+    // Alter the population size.
+    public static final int POPULATION_SIZE = 96;
+
+    // Alter the number of timeslots that each agent requests each day.
+    public static final int SLOTS_PER_AGENT = 8;
 
     // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
     // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
@@ -53,12 +59,12 @@ public abstract class UserParameters extends FixedParameters {
     // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
     // the following arrays. All possible combinations will be simulated.
     // ################################################################################################################
-    // Number of exchange rounds per day.
-    public static final int[] EXCHANGES_ARRAY = {1,50,100,150,200};
+    // Number of exchange rounds per day. 
+    public static final int[] EXCHANGES_ARRAY = {200};
     // Example: "{1,50,100,150,200};"
 
     // Number of agents that will evolve their strategy per day.
-    public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {0,48,96};
+    public static final int[] NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY = {96};
     // Example: "{0,48,96}"
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
