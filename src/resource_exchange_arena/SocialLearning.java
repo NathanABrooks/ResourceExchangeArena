@@ -16,43 +16,47 @@ class SocialLearning {
      *                               end of each day.
      */
     SocialLearning(ArrayList<Agent> agents, int slotsPerAgent, int numberOfAgentsToEvolve) {
-        // Generate array containing each agents ID, current satisfaction, and type.
-        int[][] previousResults = new int[agents.size()][3];
-
-        // List of all agents that haven't yet been selected for social learning.
-        ArrayList<Integer> unselectedAgents = new ArrayList<>();
-
-        // Collect identifying data for each agent and the strategy that they used.
-        for (Agent a : agents) {
-            previousResults[a.agentID - 1][0] = a.agentID;
-            previousResults[a.agentID - 1][1] =
-                    (int) (Math.round(a.calculateSatisfaction(null) * slotsPerAgent));
-            previousResults[a.agentID - 1][2] = a.getAgentType();
-            unselectedAgents.add(a.agentID);
+        // Copy agents to store previous results, this needs to be a deep copy and so a new cloned agent is made.
+        ArrayList<Agent> previousResults = new ArrayList<>();
+        for(Agent a: agents) {
+            Agent newA = new Agent(a.agentID, a.getAgentType(), a.usesSocialCapital(), !a.canMakeInteraction(), a.numberOfTimeSlotsWanted(), a.publishRequestedTimeSlots(), a.publishAllocatedTimeSlots(), a.getFavoursOwed(), a.getFavoursGiven(), a.getExchangeRequestReceived(), a.getExchangeRequestApproved());
+            previousResults.add(newA);
         }
+
+        // Copy agents to store all agents that haven't yet been selected for social learning.
+        ArrayList<Agent> unselectedAgents = new ArrayList<>(agents);
 
         for (int i = 0; i < numberOfAgentsToEvolve; i++) {
             // Assign the selected agent another agent to 'retrospectively' observe.
-            Agent agent = agents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size()));
-            int[] agentToCopy = previousResults[ResourceExchangeArena.random.nextInt(agents.size())];
+            Agent observedAgent = previousResults.get(ResourceExchangeArena.random.nextInt(previousResults.size()));
+
+            // Select an agent to learn.
+            int learningAgentID = unselectedAgents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size())).agentID;  
+            Agent learningAgent = observedAgent; // This is just for initialisation (not optimal as not used)
+            for (Agent a : agents) {
+                if (a.agentID == learningAgentID) {
+                    learningAgent = a;
+                    break;
+                }
+            }
+            unselectedAgents.remove(learningAgent);
 
             // Ensure the agent altering its strategy doesnt copy itself.
-            while (agent.agentID == agentToCopy[0]) {
-                agentToCopy = previousResults[ResourceExchangeArena.random.nextInt(agents.size())];
+            while (learningAgent.agentID == observedAgent.agentID) {
+                observedAgent = previousResults.get(ResourceExchangeArena.random.nextInt(previousResults.size()));
             }
 
             // Copy the observed agents strategy if it is better than its own, with likelihood dependent on the
             // difference between the agents satisfaction and the observed satisfaction.
-            double agentSatisfaction = agent.calculateSatisfaction(null);
-            double observedSatisfaction = (double) agentToCopy[1] / 4;
-            if (agentSatisfaction < observedSatisfaction) {
-                double difference = observedSatisfaction - agentSatisfaction;
+            double learningAgentSatisfaction = learningAgent.calculateSatisfaction(null);
+            double observedAgentSatisfaction = observedAgent.calculateSatisfaction(null);
+            if (learningAgentSatisfaction < observedAgentSatisfaction) {
+                double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                 double threshold = ResourceExchangeArena.random.nextDouble();
                 if (difference > threshold) {
-                    agent.setType(agentToCopy[2]);
+                    learningAgent.setType(observedAgent.getAgentType());
                 }
             }
-            unselectedAgents.remove(Integer.valueOf(agent.agentID));
         }
     }
 }

@@ -32,6 +32,7 @@ public abstract class UserParameters extends FixedParameters {
     // Configures the simulation to output the state of each agent after each exchange and at the end of each day.
     // DUE TO THE POTENTIAL VOLUME OF DATA THIS CAN GENERATE, IT IS HIGHLY RECOMMENDED THAT THIS REMAINS SET TO
     // 'false' OUTSIDE OF STATISTICAL TESTING OR WHERE OTHERWISE REQUIRED.
+    // I have also not fully tested this, im 99% sure it's working but be sure to check any results for obvious issues.
     public static final boolean ADDITIONAL_DATA = false;
 
     // Alter the length of time to be simulated.

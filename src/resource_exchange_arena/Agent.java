@@ -12,10 +12,10 @@ class Agent {
     private final boolean usesSocialCapital;
     private boolean madeInteraction;
     private final int numberOfTimeSlotsWanted;
-    private final ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
+    private ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
-    private final ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
-    private final ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
+    private ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
+    private ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
     private ArrayList<Integer> exchangeRequestReceived = new ArrayList<>();
     private boolean exchangeRequestApproved;
 
@@ -39,6 +39,39 @@ class Agent {
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
         agents.add(this);
+    }
+
+    /**
+     * Extended initialisation for clones.
+     *
+     * @param agentID This is an integer value that is unique to the individual agent and used to identify it to others
+     *                in the ExchangeArena.
+     * @param agentType Integer value denoting the agent type, and thus how it will behave.
+     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param agents Array List of all the agents that exist in the current simulation.
+     * @param socialCapital determines whether the agent uses socialCapital.
+     */
+    Agent(int agentID, int agentType, boolean usesSocialCapital, boolean madeInteraction, int numberOfTimeSlotsWanted, ArrayList<Integer>requestedTimeSlots, ArrayList<Integer>allocatedTimeSlots, ArrayList<ArrayList<Integer>>favoursOwed, ArrayList<ArrayList<Integer>>favoursGiven, ArrayList<Integer> exchangeRequestReceived, boolean exchangeRequestApproved){
+        this.agentID = agentID;
+        this.agentType = agentType;
+        this.usesSocialCapital = usesSocialCapital;
+        this.madeInteraction = madeInteraction;
+        this.numberOfTimeSlotsWanted = numberOfTimeSlotsWanted;
+        this.requestedTimeSlots = requestedTimeSlots;
+        this.allocatedTimeSlots = allocatedTimeSlots;
+        this.favoursOwed = favoursOwed;
+        this.favoursGiven = favoursGiven;
+        this.exchangeRequestReceived = exchangeRequestReceived;
+        this.exchangeRequestApproved = exchangeRequestApproved;
+    }
+
+    /**
+     * Getter for whether the Agent uses social capital.
+     *
+     * @return boolean Returns whether the Agent uses social capital.
+     */
+    boolean usesSocialCapital() {
+        return usesSocialCapital;
     }
 
     /**
@@ -67,6 +100,15 @@ class Agent {
      */
     void setMadeInteraction(boolean state) {
         madeInteraction = state;
+    }
+
+    /**
+     * Getter for the number of timeslots requested.
+     *
+     * @return boolean Returns the number of timeslots the Agent wants.
+     */
+    int numberOfTimeSlotsWanted() {
+        return numberOfTimeSlotsWanted;
     }
 
     /**
@@ -99,6 +141,24 @@ class Agent {
      */
     void setExchangeRequestReceived() {
         exchangeRequestReceived.clear();
+    }
+
+    /**
+     * Getter for the favours the agent owes.
+     *
+     * @return ArrayList<ArrayList<Integer>> Returns all the favours the agent owes.
+     */
+    ArrayList<ArrayList<Integer>> getFavoursOwed() {
+        return favoursOwed;
+    }
+
+    /**
+     * Getter for the favours given by the agent.
+     *
+     * @return ArrayList<ArrayList<Integer>> Returns all the favours given by the agent, i.e. the other agents who owe this agent a favour.
+     */
+    ArrayList<ArrayList<Integer>> getFavoursGiven() {
+        return favoursGiven;
     }
 
     /**
