@@ -148,25 +148,22 @@ public class ArenaEnvironment {
         individualSatisfactionsCSVWriter.append("Satisfaction");
         individualSatisfactionsCSVWriter.append("\n");
 
-        // Temporary file that is deleted prior to graph generation. Used as a placeholder for when additional data
-        // has not been requested.
-        File tempFile = new File(dataOutputFolder,"temp" + ".csv");
+        // Create a directory to store the additional data output by the simulation when requested.
+        String additionalDataOutputFolder = folderName + "/" + environmentTag + "/additionalData";
+        Path additionalDataOutputPath = Path.of(additionalDataOutputFolder);
+        Files.createDirectories(additionalDataOutputPath);
 
-        FileWriter additionalAverageSatisfactionsCSVWriter = new FileWriter(tempFile);
-        FileWriter additionalIndividualsDataCSVWriter = new FileWriter(tempFile);
+        // Stores the average satisfaction of each agent type at the end of each day, as well as the optimum
+        // average satisfaction and the satisfaction if allocations remained random.
+        File additionalAverageSatisfactionsFile = new File(additionalDataOutputFolder,"endOfDayAverages.csv");
+        
+        // Stores the satisfaction of each individual agent at the end of every round throughout the simulation.
+        File additionalIndividualsDataFile = new File(additionalDataOutputFolder,"duringDayAverages.csv");
+
+        FileWriter additionalAverageSatisfactionsCSVWriter = new FileWriter(additionalAverageSatisfactionsFile);
+        FileWriter additionalIndividualsDataCSVWriter = new FileWriter(additionalIndividualsDataFile);
 
         if (additionalData) {
-            // Create a directory to store the additional data output by the simulation.
-            String additionalDataOutputFolder = folderName + "/" + environmentTag + "/additionalData";
-            Path additionalDataOutputPath = Paths.get(additionalDataOutputFolder);
-            Files.createDirectories(additionalDataOutputPath);
-
-            // Stores the average satisfaction of each agent type at the end of each day, as well as the optimum
-            // average satisfaction and the satisfaction if allocations remained random.
-            File additionalAverageSatisfactionsFile = new File(additionalDataOutputFolder,"endOfDayAverages.csv");
-
-            additionalAverageSatisfactionsCSVWriter = new FileWriter(additionalAverageSatisfactionsFile);
-
             additionalAverageSatisfactionsCSVWriter.append("Simulation Run");
             additionalAverageSatisfactionsCSVWriter.append(",");
             additionalAverageSatisfactionsCSVWriter.append("Day");
@@ -179,11 +176,6 @@ public class ArenaEnvironment {
                 additionalAverageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type));
             }
             additionalAverageSatisfactionsCSVWriter.append("\n");
-
-            // Stores the satisfaction of each individual agent at the end of every round throughout the simulation.
-            File additionalIndividualsDataFile = new File(additionalDataOutputFolder,"duringDayAverages.csv");
-
-            additionalIndividualsDataCSVWriter = new FileWriter(additionalIndividualsDataFile);
 
             additionalIndividualsDataCSVWriter.append("Simulation Run");
             additionalIndividualsDataCSVWriter.append(",");
@@ -448,9 +440,9 @@ public class ArenaEnvironment {
         additionalAverageSatisfactionsCSVWriter.close();
         additionalIndividualsDataCSVWriter.close();
 
-        // Delete the temporary file.
-        if (!tempFile.delete()) {
-            System.out.println("Issues with temporary file");
+        // Delete additional data files if not used.
+        if (!additionalData) {
+            deleteDirectory(additionalDataOutputPath.toFile());
         }
 
         /*
@@ -490,5 +482,16 @@ public class ArenaEnvironment {
                 daysOfInterest,
                 populationSize
         );
+    }
+
+    // Used for deleting unused additional data directories.
+    boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
     }
 }
