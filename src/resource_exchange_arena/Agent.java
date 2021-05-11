@@ -276,15 +276,6 @@ class Agent {
     }
 
     /**
-     * Shares the time slots that are currently allocated to the Agent that it hasn't requested.
-     *
-     * @return ArrayList<Integer> Returns the time slots that are allocated to the Agent but it doesn't want.
-     */
-    ArrayList<Integer> publishUnwantedTimeSlots() {
-        return nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots);
-    }
-
-    /**
      * Takes two arrays of time slots, and returns the time slots from the first array that are not present in the
      * second array.
      *
