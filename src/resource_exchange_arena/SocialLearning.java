@@ -50,7 +50,7 @@ class SocialLearning {
             // difference between the agents satisfaction and the observed satisfaction.
             double learningAgentSatisfaction = learningAgent.calculateSatisfaction(null);
             double observedAgentSatisfaction = observedAgent.calculateSatisfaction(null);
-            if (learningAgentSatisfaction < observedAgentSatisfaction) {
+            if (Math.round(learningAgentSatisfaction * slotsPerAgent) < Math.round(observedAgentSatisfaction * slotsPerAgent)) {
                 double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                 double threshold = ResourceExchangeArena.random.nextDouble();
                 if (difference > threshold) {

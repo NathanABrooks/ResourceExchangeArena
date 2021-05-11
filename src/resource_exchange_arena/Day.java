@@ -61,23 +61,22 @@ public class Day {
 
         // Fill the available time slots with all the slots that exist each day.
         int requiredTimeSLots = populationSize * slotsPerAgent;
-        List<Integer> possibleTimeSLots = new ArrayList<>();
+        List<Integer> possibleTimeSlots = new ArrayList<>();
 
         while(availableTimeSlots.size() < requiredTimeSLots){
             for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
-                possibleTimeSLots.add(timeSlot);
+                possibleTimeSlots.add(timeSlot);
             }
-            Collections.shuffle(possibleTimeSLots, ResourceExchangeArena.random);
 
-            while(!possibleTimeSLots.isEmpty()){
+            while(!possibleTimeSlots.isEmpty()){
                 if (availableTimeSlots.size() < requiredTimeSLots) {
-                    int selector = ResourceExchangeArena.random.nextInt(possibleTimeSLots.size());
-                    int timeSlot = possibleTimeSLots.get(selector);
+                    int selector = ResourceExchangeArena.random.nextInt(possibleTimeSlots.size());
+                    int timeSlot = possibleTimeSlots.get(selector);
 
                     availableTimeSlots.add(timeSlot);
-                    possibleTimeSLots.remove(selector);
+                    possibleTimeSlots.remove(selector);
                 } else {
-                    possibleTimeSLots.clear();
+                    possibleTimeSlots.clear();
                     break;
                 }
             }
