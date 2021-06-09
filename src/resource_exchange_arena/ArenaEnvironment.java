@@ -21,8 +21,6 @@ public class ArenaEnvironment {
      * @param folderName String representing the output destination folder, used to organise output data.
      * @param environmentTag String detailing specifics about the simulation environment.
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
-     *                       exchange and at the end of each day.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
      * @param days Integer value representing the number of days to be simulated.
@@ -50,7 +48,6 @@ public class ArenaEnvironment {
             String folderName,
             String environmentTag,
             int[] daysOfInterest,
-            boolean additionalData,
             boolean socialCapital,
             int simulationRuns,
             int days,
@@ -148,49 +145,6 @@ public class ArenaEnvironment {
         individualSatisfactionsCSVWriter.append("Satisfaction");
         individualSatisfactionsCSVWriter.append("\n");
 
-        // Create a directory to store the additional data output by the simulation when requested.
-        String additionalDataOutputFolder = folderName + "/" + environmentTag + "/additionalData";
-        Path additionalDataOutputPath = Path.of(additionalDataOutputFolder);
-        Files.createDirectories(additionalDataOutputPath);
-
-        // Stores the average satisfaction of each agent type at the end of each day, as well as the optimum
-        // average satisfaction and the satisfaction if allocations remained random.
-        File additionalAverageSatisfactionsFile = new File(additionalDataOutputFolder,"endOfDayAverages.csv");
-        
-        // Stores the satisfaction of each individual agent at the end of every round throughout the simulation.
-        File additionalIndividualsDataFile = new File(additionalDataOutputFolder,"duringDayAverages.csv");
-
-        FileWriter additionalAverageSatisfactionsCSVWriter = new FileWriter(additionalAverageSatisfactionsFile);
-        FileWriter additionalIndividualsDataCSVWriter = new FileWriter(additionalIndividualsDataFile);
-
-        if (additionalData) {
-            additionalAverageSatisfactionsCSVWriter.append("Simulation Run");
-            additionalAverageSatisfactionsCSVWriter.append(",");
-            additionalAverageSatisfactionsCSVWriter.append("Day");
-            additionalAverageSatisfactionsCSVWriter.append(",");
-            additionalAverageSatisfactionsCSVWriter.append("Random (No exchange)");
-            additionalAverageSatisfactionsCSVWriter.append(",");
-            additionalAverageSatisfactionsCSVWriter.append("Optimum (No exchange)");
-            for (Integer type : uniqueAgentTypes) {
-                additionalAverageSatisfactionsCSVWriter.append(",");
-                additionalAverageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type));
-            }
-            additionalAverageSatisfactionsCSVWriter.append("\n");
-
-            additionalIndividualsDataCSVWriter.append("Simulation Run");
-            additionalIndividualsDataCSVWriter.append(",");
-            additionalIndividualsDataCSVWriter.append("Day");
-            additionalIndividualsDataCSVWriter.append(",");
-            additionalIndividualsDataCSVWriter.append("Round");
-            additionalIndividualsDataCSVWriter.append(",");
-            additionalIndividualsDataCSVWriter.append("Agent ID");
-            additionalIndividualsDataCSVWriter.append(",");
-            additionalIndividualsDataCSVWriter.append("Agent Type");
-            additionalIndividualsDataCSVWriter.append(",");
-            additionalIndividualsDataCSVWriter.append("Satisfaction");
-            additionalIndividualsDataCSVWriter.append("\n");
-        }
-
         // Stores the key data about the simulation about to begin in the data output location.
         File simulationData = new File(folderName + "/" + environmentTag,"simulationData.txt");
 
@@ -210,7 +164,6 @@ public class ArenaEnvironment {
         simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
         simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
-        simulationDataWriter.append("Additional data: ").append(String.valueOf(additionalData)).append("\n");
         simulationDataWriter.append("Exchanges: ").append(String.valueOf(exchanges)).append("\n");
         simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve))
                 .append("\n");
@@ -244,8 +197,6 @@ public class ArenaEnvironment {
              * a single location.
              *
              * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-             * @param additionalData Boolean value that configures the simulation to output the state of each agent
-             *                       after each exchange and at the end of each day.
              * @param days Integer value representing the number of days to be simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
@@ -271,16 +222,11 @@ public class ArenaEnvironment {
              * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                      each day.
              * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
-             * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of
-             *                         each day when additional data is requested.
-             * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
-             *                            exchange when additional data is requested.
              * @exception IOException On input error.
              * @see IOException
              */
             new SimulationRun(
                     daysOfInterest,
-                    additionalData,
                     days,
                     exchanges,
                     populationSize,
@@ -295,9 +241,7 @@ public class ArenaEnvironment {
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
-                    endOfDayPopulationDistributions,
-                    additionalAverageSatisfactionsCSVWriter,
-                    additionalIndividualsDataCSVWriter
+                    endOfDayPopulationDistributions
             );
             System.out.println("RUNS COMPLETED: " + simulationRun);
         }
@@ -437,13 +381,6 @@ public class ArenaEnvironment {
         individualSatisfactionsCSVWriter.close();
         individualsDataCSVWriter.close();
         populationDistributionsCSVWriter.close();
-        additionalAverageSatisfactionsCSVWriter.close();
-        additionalIndividualsDataCSVWriter.close();
-
-        // Delete additional data files if not used.
-        if (!additionalData) {
-            deleteDirectory(additionalDataOutputPath.toFile());
-        }
 
         /*
          * Begins python code that visualises the gathered data from the current environment being simulated.
@@ -482,16 +419,5 @@ public class ArenaEnvironment {
                 daysOfInterest,
                 populationSize
         );
-    }
-
-    // Used for deleting unused additional data directories.
-    boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
-        }
-        return directoryToBeDeleted.delete();
     }
 }

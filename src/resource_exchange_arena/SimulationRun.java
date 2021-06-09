@@ -1,6 +1,5 @@
 package resource_exchange_arena;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +10,6 @@ class SimulationRun {
      * location.
      *
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
-     *                       exchange and at the end of each day.
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
@@ -34,16 +31,11 @@ class SimulationRun {
      *                                       round.
      * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
      * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
-     * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of each day
-     *                         when additional data is requested.
-     * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each exchange when
-     *                            additional data is requested.
      * @exception IOException On input error.
      * @see IOException
      */
     SimulationRun(
             int[] daysOfInterest,
-            boolean additionalData,
             int days,
             int exchanges,
             int populationSize,
@@ -58,9 +50,7 @@ class SimulationRun {
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
-            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
-            FileWriter averageCSVWriter,
-            FileWriter individualCSVWriter
+            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions
     ) throws IOException {
 
         // List of all the Agents that are part of the current simulation.
@@ -112,8 +102,6 @@ class SimulationRun {
              * single location.
              *
              * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-             * @param additionalData Boolean value that configures the simulation to output the state of each agent
-             *                       after each exchange and at the end of each day.
              * @param day Integer value representing the current day being simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
@@ -132,16 +120,11 @@ class SimulationRun {
              * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                     each day.
              * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
-             * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of
-             *                         each day when additional data is requested.
-             * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
-             *                            exchange when additional data is requested.
              * @exception IOException On input error.
              * @see IOException
              */
             new Day(
                     daysOfInterest,
-                    additionalData,
                     day,
                     exchanges,
                     populationSize,
@@ -153,9 +136,7 @@ class SimulationRun {
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
-                    endOfDayPopulationDistributions,
-                    averageCSVWriter,
-                    individualCSVWriter
+                    endOfDayPopulationDistributions
             );
         }
     }

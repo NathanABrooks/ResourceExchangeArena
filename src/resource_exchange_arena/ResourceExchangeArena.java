@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class ResourceExchangeArena extends UserParameters {
+
     // Create a single Random object for generating random numerical data for the simulation, a single object exists to
     // allow for result replication given a specific user seed.
     static Random random = new Random();
@@ -108,7 +109,6 @@ public class ResourceExchangeArena extends UserParameters {
         allSimulationsDataWriter.append("Population size: ").append(String.valueOf(POPULATION_SIZE)).append("\n");
         allSimulationsDataWriter.append("Unique time slots: ").append(String.valueOf(UNIQUE_TIME_SLOTS)).append("\n");
         allSimulationsDataWriter.append("Slots per agent: ").append(String.valueOf(SLOTS_PER_AGENT)).append("\n");
-        allSimulationsDataWriter.append("Additional data: ").append(String.valueOf(ADDITIONAL_DATA)).append("\n\n\n");
         allSimulationsDataWriter.append("Simulation Information (specific run details): \n\n");
 
         // Create directories to organise summary graphs data.
@@ -219,8 +219,6 @@ public class ResourceExchangeArena extends UserParameters {
                      * @param environmentTag String detailing specifics about the simulation environment.
                      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the
                      *                       simulation.
-                     * @param additionalData Boolean value that configures the simulation to output the state of each
-                     *                       agent after each exchange and at the end of each day.
                      * @param socialCapital Boolean value that determines whether or not social agents will utilise
                      *                      social capital.
                      * @param simulationRuns Integer value representing the number of simulations to be ran and
@@ -253,7 +251,6 @@ public class ResourceExchangeArena extends UserParameters {
                             dataOutputFolder,
                             environmentTag,
                             DAYS_OF_INTEREST,
-                            ADDITIONAL_DATA,
                             USE_SOCIAL_CAPITAL,
                             SIMULATION_RUNS,
                             DAYS,

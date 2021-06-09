@@ -1,6 +1,5 @@
 package resource_exchange_arena;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +11,6 @@ class Exchange {
      * one time slot.
      *
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
-     *                       exchange and at the end of each day.
      * @param day Integer value representing the current day being simulated.
      * @param exchange Integer value representing the current exchange being simulated.
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
@@ -21,20 +18,16 @@ class Exchange {
      * @param agents Array List of all the agents that exist in the current simulation.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
-     * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each exchange when
-     *                            additional data is requested.
      * @exception IOException On input error.
      * @see IOException
      */
     Exchange(
             int[] daysOfInterest,
-            boolean additionalData,
             int day,
             int exchange,
             ArrayList<Integer> uniqueAgentTypes,
             ArrayList<Agent> agents,
-            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
-            FileWriter individualCSVWriter
+            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions
     ) throws IOException {
 
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
@@ -115,24 +108,6 @@ class Exchange {
             // Clear the agents accepted offers list before the next exchange round.
             if (!a.getExchangeRequestReceived().isEmpty()) {
                 a.setExchangeRequestReceived();
-            }
-        }
-
-        // Record individual agent data if additional data has been requested by the user.
-        if (additionalData) {
-            for (Agent a : agents) {
-                individualCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
-                individualCSVWriter.append(",");
-                individualCSVWriter.append(String.valueOf(day));
-                individualCSVWriter.append(",");
-                individualCSVWriter.append(String.valueOf(exchange));
-                individualCSVWriter.append(",");
-                individualCSVWriter.append(String.valueOf(a.agentID));
-                individualCSVWriter.append(",");
-                individualCSVWriter.append(String.valueOf(a.getAgentType()));
-                individualCSVWriter.append(",");
-                individualCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
-                individualCSVWriter.append("\n");
             }
         }
 

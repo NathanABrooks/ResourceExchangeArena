@@ -1,23 +1,19 @@
 package resource_exchange_arena;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.IntStream;
 
 public class Day {
     // List of all the possible allocations that exist in the current simulation.
-    private final List<Integer> availableTimeSlots = new ArrayList<>();
+    private final ArrayList<Integer> availableTimeSlots = new ArrayList<>();
 
     /**
      * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
      * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
      *
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-     * @param additionalData Boolean value that configures the simulation to output the state of each agent after each
-     *                       exchange and at the end of each day.
      * @param day Integer value representing the current day being simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
@@ -33,16 +29,11 @@ public class Day {
      *                                       round.
      * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
      * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
-     * @param averageCSVWriter Writes additional data on the average satisfaction of every agent at the end of each day
-     *                         when additional data is requested.
-     * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each exchange when
-     *                            additional data is requested.
      * @exception IOException On input error.
      * @see IOException
      */
     Day(
             int[] daysOfInterest,
-            boolean additionalData,
             int day,
             int exchanges,
             int populationSize,
@@ -54,14 +45,12 @@ public class Day {
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
-            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
-            FileWriter averageCSVWriter,
-            FileWriter individualCSVWriter
+            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions
     ) throws IOException{
 
         // Fill the available time slots with all the slots that exist each day.
         int requiredTimeSLots = populationSize * slotsPerAgent;
-        List<Integer> possibleTimeSlots = new ArrayList<>();
+        ArrayList<Integer> possibleTimeSlots = new ArrayList<>();
 
         while(availableTimeSlots.size() < requiredTimeSLots){
             for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
@@ -94,16 +83,6 @@ public class Day {
         double randomAllocations = CalculateSatisfaction.averageAgentSatisfaction(agents);
         double optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
 
-        if (additionalData) {
-            averageCSVWriter.append(String.valueOf(ResourceExchangeArena.seed));
-            averageCSVWriter.append(",");
-            averageCSVWriter.append(String.valueOf(day));
-            averageCSVWriter.append(",");
-            averageCSVWriter.append(String.valueOf(randomAllocations));
-            averageCSVWriter.append(",");
-            averageCSVWriter.append(String.valueOf(optimumAllocations));
-        }
-
         // A pre-determined number of pairwise exchanges take place, during each exchange all agents have a chance to
         // trade with another agent.
         for (int exchange = 1; exchange <= exchanges; exchange++) {
@@ -113,8 +92,6 @@ public class Day {
              * partner for one time slot.
              *
              * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-             * @param additionalData Boolean value that configures the simulation to output the state of each agent
-             *                       after each exchange and at the end of each day.
              * @param day Integer value representing the current day being simulated.
              * @param exchange Integer value representing the current exchange being simulated.
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
@@ -122,20 +99,16 @@ public class Day {
              * @param agents Array List of all the agents that exist in the current simulation.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
-             * @param individualCSVWriter Writes additional data on the individual agents satisfaction after each
-             *                            exchange when additional data is requested.
              * @exception IOException On input error.
              * @see IOException
              */
             new Exchange(
                     daysOfInterest,
-                    additionalData,
                     day,
                     exchange,
                     uniqueAgentTypes,
                     agents,
-                    endOfRoundAverageSatisfactions,
-                    individualCSVWriter
+                    endOfRoundAverageSatisfactions
             );
         }
         // The average end of day satisfaction is stored for each agent type to later be averaged and analysed.
@@ -148,19 +121,12 @@ public class Day {
         for (int uniqueAgentType : uniqueAgentTypes) {
             double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
             endOfDayAverageSatisfaction.add(typeAverageSatisfaction);
-            if (additionalData) {
-                averageCSVWriter.append(",");
-                averageCSVWriter.append(String.valueOf(typeAverageSatisfaction));
-            }
         }
         // Temporarily store the end of day average variance for each agent type.
         for (int uniqueAgentType : uniqueAgentTypes) {
             double typeAverageSatisfactionSD =
                     CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, uniqueAgentType);
             endOfDayAverageSatisfaction.add(typeAverageSatisfactionSD);
-        }
-        if (additionalData) {
-            averageCSVWriter.append("\n");
         }
         endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
 
