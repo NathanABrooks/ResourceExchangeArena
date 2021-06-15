@@ -123,8 +123,8 @@ class Agent {
     /**
      * Setter for whether the Agent approved the current received exchange request.
      */
-    void setExchangeRequestApproved() {
-        exchangeRequestApproved = false;
+    void setExchangeRequestApproved(boolean approved) {
+        exchangeRequestApproved = approved;
     }
 
     /**
@@ -341,7 +341,6 @@ class Agent {
      */
     void receiveExchangeRequest(ArrayList<Integer> request) {
         exchangeRequestReceived = request;
-        exchangeRequestApproved = false;
     }
 
     /**
@@ -418,6 +417,7 @@ class Agent {
      */
     void completeRequestedExchange(ArrayList<Integer> offer, int agentID) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
+        ArrayList<Integer> oldAllocated = new ArrayList<>(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(2));
         allocatedTimeSlots.add(offer.get(1));
@@ -437,6 +437,33 @@ class Agent {
                 }
             }
         }
+
+
+
+        if (Double.compare(newSatisfaction, previousSatisfaction) <= 0) {
+            System.out.println("Error - requester   " + previousSatisfaction + "   " + newSatisfaction);
+            System.out.print("requested: ");
+            for(Integer i: requestedTimeSlots) {
+                System.out.print(i + " ");
+            }
+            System.out.print("   ");
+            System.out.print("allocated: ");
+            for(Integer i: oldAllocated) {
+                System.out.print(i + " ");
+            }
+            System.out.print("   ");
+            System.out.print("offer: ");
+            for(Integer i: offer) {
+                System.out.print(i + " ");
+            }
+            System.out.print("   ");
+            System.out.print("new allocated: ");
+            for(Integer i: allocatedTimeSlots) {
+                System.out.print(i + " ");
+            }
+            System.out.println("");
+            System.out.println("");
+        }
     }
 
     /**
@@ -447,7 +474,7 @@ class Agent {
      */
     void completeReceivedExchange(ArrayList<Integer> offer) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
-
+        ArrayList<Integer> oldAllocated = new ArrayList<>(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(1));
         allocatedTimeSlots.add(offer.get(2));
@@ -465,6 +492,31 @@ class Agent {
                     }
                 }
             }
+        }
+
+        if (Double.compare(newSatisfaction, previousSatisfaction) < 0) {
+            System.out.println("Error - receiver   " + previousSatisfaction + "   " + newSatisfaction);
+            System.out.print("requested: ");
+            for(Integer i: requestedTimeSlots) {
+                System.out.print(i + " ");
+            }
+            System.out.print("   "); 
+            System.out.print("allocated: ");
+            for(Integer i: oldAllocated) {
+                System.out.print(i + " ");
+            }
+            System.out.print("   ");
+            System.out.print("offer: ");
+            for(Integer i: offer) {
+                System.out.print(i + " ");
+            }
+            System.out.print("   ");
+            System.out.print("new allocated: ");
+            for(Integer i: allocatedTimeSlots) {
+                System.out.print(i + " ");
+            }
+            System.out.println("");
+            System.out.println("");
         }
     }
 

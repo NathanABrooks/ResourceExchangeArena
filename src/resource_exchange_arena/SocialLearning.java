@@ -31,7 +31,7 @@ class SocialLearning {
             Agent observedAgent = previousResults.get(ResourceExchangeArena.random.nextInt(previousResults.size()));
 
             // Select an agent to learn.
-            int learningAgentID = unselectedAgents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size())).agentID;  
+            int learningAgentID = unselectedAgents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size())).agentID;
             Agent learningAgent = observedAgent; // This is just for initialisation (not optimal as not used)
             for (Agent a : agents) {
                 if (a.agentID == learningAgentID) {

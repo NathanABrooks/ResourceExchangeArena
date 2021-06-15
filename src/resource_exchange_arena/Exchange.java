@@ -103,7 +103,7 @@ class Exchange {
                         }
                     }
                 }
-                a.setExchangeRequestApproved();
+                a.setExchangeRequestApproved(false);
             }
             // Clear the agents accepted offers list before the next exchange round.
             if (!a.getExchangeRequestReceived().isEmpty()) {
