@@ -19,7 +19,7 @@ class SocialLearning {
         // Copy agents to store previous results, this needs to be a deep copy and so a new cloned agent is made.
         ArrayList<Agent> previousResults = new ArrayList<>();
         for(Agent a: agents) {
-            Agent newA = new Agent(a.agentID, a.getAgentType(), a.usesSocialCapital(), !a.canMakeInteraction(), a.numberOfTimeSlotsWanted(), a.publishRequestedTimeSlots(), a.publishAllocatedTimeSlots(), a.getFavoursOwed(), a.getFavoursGiven(), a.getExchangeRequestReceived(), a.getExchangeRequestApproved());
+            Agent newA = new Agent(a.agentID, a.getAgentType(), a.usesSocialCapital(), a.madeInteraction(), a.numberOfTimeSlotsWanted(), a.publishRequestedTimeSlots(), a.publishAllocatedTimeSlots(), a.getFavoursOwed(), a.getFavoursGiven(), a.getExchangeRequestApproved());
             previousResults.add(newA);
         }
 
