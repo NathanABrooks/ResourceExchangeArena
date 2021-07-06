@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -29,11 +30,11 @@ public class ResourceExchangeArena extends UserParameters {
             case 1:
                 // Test user parameters with and without social capital for comparison.
                 USE_SOCIAL_CAPITAL = false;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 1 / 2 ENVIRONMENT VERSIONS COMPLETE **********");
 
                 USE_SOCIAL_CAPITAL = true;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 2 / 2 ENVIRONMENT VERSIONS COMPLETE **********");
                 break;
             case 2:
@@ -41,37 +42,106 @@ public class ResourceExchangeArena extends UserParameters {
                 USE_SOCIAL_CAPITAL = false;
                 SINGLE_AGENT_TYPE = true;
                 SELECTED_SINGLE_AGENT_TYPE = SELFISH;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 1 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
 
                 USE_SOCIAL_CAPITAL = false;
                 SINGLE_AGENT_TYPE = true;
                 SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 2 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
 
                 USE_SOCIAL_CAPITAL = true;
                 SINGLE_AGENT_TYPE = true;
                 SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 3 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
 
                 USE_SOCIAL_CAPITAL = false;
                 SINGLE_AGENT_TYPE = false;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 4 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
 
                 USE_SOCIAL_CAPITAL = true;
                 SINGLE_AGENT_TYPE = false;
-                prepareEnvironmentSet();
+                runSimulationSet();
                 System.out.println("********** 5 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
                 break;
             default:
                 // Run only the set of parameters defined by the user.
-                prepareEnvironmentSet();
+                runSimulationSet();
+        }
+
+        String resultsFolder = "results/" + FOLDER_NAME;
+
+        // String version of starting ratios for file names.
+        ArrayList<String> startingRatiosArray = new ArrayList<String>();
+
+        for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
+            String ratio = "";
+            int typesListed = 0;
+            for (int type : AGENT_TYPES) {
+                if (typesListed != 0) {
+                    ratio += "_";
+                }
+                typesListed++;
+                ratio += Inflect.getHumanReadableAgentType(type);
+            }
+            startingRatiosArray.add(ratio);          
+        }
+
+        /*
+         * Begins python code that generates heatmaps to compare various simulations.
+         *
+         * @param pythonExe String representing the system path to python environment executable.
+         * @param pythonPath String representing the system path to the python data visualiser.
+         * @param folderName String representing the output destination folder, used to organise output data.
+         * @param comparisonLevel Integer unique to quickly identify which heat maps should be generated.
+         * @param learningPercentages Integer array of the percentage of Agents that possibly used social Learning per day.
+         * @param exchangesArray Integer array of the various number of exchanges per day that were simulated.
+         * @param startingRatiosArray String arraylist of the various starting ratios between agent types that were simulated.
+         * @param daysOfInterest Integer array containing the days to be analysed.
+         * @exception IOException On input error.
+         * @see IOException
+         */
+        new HeatMapsInitiator(
+                PYTHON_EXE,
+                PYTHON_PATH,
+                resultsFolder,
+                COMPARISON_LEVEL,
+                PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY,
+                EXCHANGES_ARRAY,
+                startingRatiosArray,
+                DAYS_OF_INTEREST
+        );
+
+        if (COMPARISON_LEVEL != 0) {
+            /*
+            * Begins python code that runs statistical significance test on the simulation results.
+            *
+            * @param pythonExe String representing the system path to python environment executable.
+            * @param pythonPath String representing the system path to the python data visualiser.
+            * @param folderName String representing the output destination folder, used to organise output data.
+            * @param learningPercentages Integer array of the percentage of Agents that possibly used social Learning per day.
+            * @param exchangesArray Integer array of the various number of exchanges per day that were simulated.
+            * @param startingRatiosArray String arraylist of the various starting ratios between agent types that were simulated.
+            * @param daysOfInterest Integer array containing the days to be analysed.
+            * @exception IOException On input error.
+            * @see IOException
+            */
+            new significanceTestInitiator(
+                    PYTHON_EXE,
+                    PYTHON_PATH,
+                    resultsFolder,
+                    PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY,
+                    EXCHANGES_ARRAY,
+                    startingRatiosArray,
+                    DAYS_OF_INTEREST
+            );
         }
     }
-    private static void prepareEnvironmentSet() throws IOException {
+    
+    private static void runSimulationSet() throws IOException {
         // Set the simulations initial random seed.
         random.setSeed(seed);
 
@@ -120,18 +190,26 @@ public class ResourceExchangeArena extends UserParameters {
         Path popDistComparisonPath = Paths.get(popDistComparisonFolder);
         Files.createDirectories(popDistComparisonPath);
 
+        // Percentage of learning agents converted to actual number of agents that can learn each day.
+        int[] numberOfLearningAgents = new int[PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY.length];
+        float onePercent = POPULATION_SIZE / 100;
+        for (int i = 0; i < PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY.length; i++) {
+            int learningAgents = Math.round(onePercent * PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY[i]);
+            numberOfLearningAgents[i] = learningAgents;
+        }
+
         // Perform a parameter sweep for the key parameters being tested.
         int simVersionsCompleted = 0;
         parameterSweep:
         for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
-            for (int NUMBER_OF_AGENTS_TO_EVOLVE : NUMBER_OF_AGENTS_TO_EVOLVE_ARRAY) {
+            for (int i = 0; i < numberOfLearningAgents.length; i++) {
 
                 String fileName;
 
                 if (!SINGLE_AGENT_TYPE) {
-                    fileName = "AE_" + NUMBER_OF_AGENTS_TO_EVOLVE + "_";
+                    fileName = "AE_" + PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY[i];
 
-                    StringBuilder typeRatio = new StringBuilder("SR_");
+                    StringBuilder typeRatio = new StringBuilder("_SR_");
                     int typesListed = 0;
                     for (int type : AGENT_TYPES) {
                         if (typesListed != 0) {
@@ -142,7 +220,7 @@ public class ResourceExchangeArena extends UserParameters {
                     }
                     fileName += typeRatio;
                 } else {
-                    fileName = "singleAType";
+                    fileName = "SR_" + Inflect.getHumanReadableAgentType(SELECTED_SINGLE_AGENT_TYPE);
                 }
 
                 // For differing numbers of exchange rounds per day, data is stored so that summary graphs can be made
@@ -193,7 +271,7 @@ public class ResourceExchangeArena extends UserParameters {
                     allSimulationsDataWriter.append("Seed: ").append(initialSeed).append("\n");
                     allSimulationsDataWriter.append("Exchanges: ").append(String.valueOf(EXCHANGES)).append("\n");
                     allSimulationsDataWriter.append("Number of agents to evolve: ")
-                            .append(String.valueOf(NUMBER_OF_AGENTS_TO_EVOLVE))
+                            .append(String.valueOf(numberOfLearningAgents[i]))
                             .append("\n");
                     if (!SINGLE_AGENT_TYPE) {
                         allSimulationsDataWriter.append("Starting ratio of agent types: ");
@@ -258,7 +336,7 @@ public class ResourceExchangeArena extends UserParameters {
                             POPULATION_SIZE,
                             UNIQUE_TIME_SLOTS,
                             SLOTS_PER_AGENT,
-                            NUMBER_OF_AGENTS_TO_EVOLVE,
+                            numberOfLearningAgents[i],
                             AGENT_TYPES,
                             SINGLE_AGENT_TYPE,
                             SELECTED_SINGLE_AGENT_TYPE,
@@ -312,6 +390,7 @@ public class ResourceExchangeArena extends UserParameters {
                         DAYS_OF_INTEREST,
                         POPULATION_SIZE
                 );
+
                 if (SINGLE_AGENT_TYPE) {
                     break parameterSweep;
                 }
