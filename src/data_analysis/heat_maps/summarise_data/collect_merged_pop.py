@@ -6,8 +6,7 @@ import pandas as pd
 from distutils.util import strtobool
 from typing import List
 
-""" Collects all the satiscfaction data for each agent from a version of the simulation
-(Such as all runs with social capital enabled and a mixed population) into a single file for statistical significance testing.
+""" Creates csv files summarising the population distributions with and without social capital.
 This is completed for each simulation version.
 
 Parameters
@@ -36,7 +35,7 @@ startingRatiosArray: List[str] = list(temp.split(","))
 
 daysOfInterest: List[int] = ast.literal_eval(sys.argv[5])
 
-baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), folderName)
+baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), folderName)
 
 simulationVersions: List[str] = []
 for it in os.scandir(baseOutputDirectory):
@@ -48,36 +47,40 @@ for v in simulationVersions:
         socialCapital: bool = strtobool((v.split('useSC_')[1]).split('_')[0])
         for r in startingRatiosArray:
 
-            sc: List[str] = []
             ln: List[int] = []
             ex: List[int] = []
-            satis: List[float] = []
-            a_t: List[int] = []
-            day: List[int] = []
+            dy: List[int] = []
+            sel: List[float] = []
+            soc: List[float] = []
+            pSoc: List[float] = []
 
             for l in learningPercentages:
                 for e in exchangesArray:
-                    path = v + "/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/endOfDaySatisfactions.csv"
+                    path = v + "/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/populationDistributions.csv"
                     df = pd.read_csv(path)
-                    i_name = df[~df['Day'].isin(daysOfInterest)].index
-                    df = df.drop(i_name)
-                    for i in range(0, len(df.index)):
-                        satis.append(df.iloc[i]['Satisfaction'])
-                        a_t.append(df.iloc[i]['Agent Type'].astype(int))
-                        day.append(df.iloc[i]['Day'].astype(int))
+                    for d in daysOfInterest:
+                        df_day = df.loc[df['Day'] == d]
+                        selPop = 0
+                        socPop = 0
+                        totalPop = 0
+                        for i in df_day.index:
+                            if int(df_day['Agent Type'][i]) == 1:
+                                selPop += float(df_day['Population'][i])
+                            elif int(df_day['Agent Type'][i]) == 2:
+                                socPop += float(df_day['Population'][i])
+                            totalPop += int(df_day['Population'][i])
                         ln.append(l)
                         ex.append(e)
-                        if socialCapital:
-                            sc.append("Y")
-                        else:
-                            sc.append("N")
+                        dy.append(d)
+                        sel.append(selPop)
+                        soc.append(socPop)
+                        pSoc.append((socPop / totalPop) * 100)
 
-
-            d = {'Day':day, '%_Learning':ln, 'Agent Type':a_t, 'Exchanges':ex, 'Satisfaction':satis, 'Social_Capital':sc,}
+            d = {'%_Learning':ln, 'Exchanges':ex, 'Day':dy, 'Selfish':sel, 'Social':soc, '%_Social':pSoc}
             df = pd.DataFrame(data=d)
-            dir = v + "/comparative/data/stats/" + r
+            dir = v + "/comparative/data/heat_maps/" + r
             # Create the output directories if they do not already exist.
             if not os.path.exists(dir):
                 os.makedirs(dir)
-            fn = dir + "/SatisfactionBreakdown.csv"
+            fn = dir + "/mergedPopulationSummary.csv"
             df.to_csv(fn, index=False)

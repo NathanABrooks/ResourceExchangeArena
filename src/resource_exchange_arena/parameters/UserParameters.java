@@ -77,5 +77,5 @@ public abstract class UserParameters extends FixedParameters {
     //     be compared.
     // 2 = The above combinations will be ran both with and without social capital enabled and with only selfish agents
     //     and with only social agents so that a baseline comparison can be made between the agents types.
-    public static int COMPARISON_LEVEL = 1;
+    public static int COMPARISON_LEVEL = 2;
 }

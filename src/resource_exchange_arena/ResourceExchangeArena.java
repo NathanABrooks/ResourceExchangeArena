@@ -97,6 +97,7 @@ public class ResourceExchangeArena extends UserParameters {
          * @param pythonPath String representing the system path to the python data visualiser.
          * @param folderName String representing the output destination folder, used to organise output data.
          * @param comparisonLevel Integer unique to quickly identify which heat maps should be generated.
+         * @param socialCapital Boolean representing whether social capital was enabled if the comparison level was set to 0.
          * @param learningPercentages Integer array of the percentage of Agents that possibly used social Learning per day.
          * @param exchangesArray Integer array of the various number of exchanges per day that were simulated.
          * @param startingRatiosArray String arraylist of the various starting ratios between agent types that were simulated.
@@ -109,6 +110,7 @@ public class ResourceExchangeArena extends UserParameters {
                 PYTHON_PATH,
                 resultsFolder,
                 COMPARISON_LEVEL,
+                USE_SOCIAL_CAPITAL,
                 PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY,
                 EXCHANGES_ARRAY,
                 startingRatiosArray,

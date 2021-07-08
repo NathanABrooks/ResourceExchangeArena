@@ -36,7 +36,7 @@ startingRatiosArray: List[str] = list(temp.split(","))
 
 daysOfInterest: List[int] = ast.literal_eval(sys.argv[5])
 
-baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), folderName)
+baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), folderName)
 
 simulationVersions: List[str] = []
 for it in os.scandir(baseOutputDirectory):
@@ -53,31 +53,29 @@ for v in simulationVersions:
             ex: List[int] = []
             satis: List[float] = []
             a_t: List[int] = []
-            day: List[int] = []
+            dy: List[int] = []
 
             for l in learningPercentages:
                 for e in exchangesArray:
                     path = v + "/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/endOfDaySatisfactions.csv"
                     df = pd.read_csv(path)
-                    i_name = df[~df['Day'].isin(daysOfInterest)].index
-                    df = df.drop(i_name)
-                    for i in range(0, len(df.index)):
-                        satis.append(df.iloc[i]['Satisfaction'])
-                        a_t.append(df.iloc[i]['Agent Type'].astype(int))
-                        day.append(df.iloc[i]['Day'].astype(int))
-                        ln.append(l)
-                        ex.append(e)
+                    df = df.drop(columns=['Agent Type'])
+                    for d in daysOfInterest:
                         if socialCapital:
                             sc.append("Y")
                         else:
-                            sc.append("N")
+                            sc.append("N")		
+                        df_day = df.loc[df['Day'] == d]
+                        satis.append(df_day['Satisfaction'].mean())
+                        ln.append(l)
+                        ex.append(e)
+                        dy.append(d)
 
-
-            d = {'Day':day, '%_Learning':ln, 'Agent Type':a_t, 'Exchanges':ex, 'Satisfaction':satis, 'Social_Capital':sc,}
+            d = {'Day':dy, '%_Learning':ln, 'Exchanges':ex, 'Social_Capital':sc, 'Satisfaction':satis,}
             df = pd.DataFrame(data=d)
-            dir = v + "/comparative/data/stats/" + r
+            dir = v + "/comparative/data/heat_maps/" + r
             # Create the output directories if they do not already exist.
             if not os.path.exists(dir):
                 os.makedirs(dir)
-            fn = dir + "/SatisfactionBreakdown.csv"
+            fn = dir + "/meanPopulationSatisfaction.csv"
             df.to_csv(fn, index=False)

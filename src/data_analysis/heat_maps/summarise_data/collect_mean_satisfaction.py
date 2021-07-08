@@ -6,8 +6,7 @@ import pandas as pd
 from distutils.util import strtobool
 from typing import List
 
-""" Collects all the satiscfaction data for each agent from a version of the simulation
-(Such as all runs with social capital enabled and a mixed population) into a single file for statistical significance testing.
+""" Create csv files summarising the mean satisfaction levels for each agent type with and without social capital.
 This is completed for each simulation version.
 
 Parameters
@@ -38,45 +37,69 @@ daysOfInterest: List[int] = ast.literal_eval(sys.argv[5])
 
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), folderName)
 
-simulationVersions: List[str] = []
-for it in os.scandir(baseOutputDirectory):
-    if it.is_dir():
-        simulationVersions.append(it.path)
+resultDir = baseOutputDirectory + "/comparativeHeatMaps/"
+# Create the output directories if they do not already exist.
+if not os.path.exists(resultDir):
+    os.makedirs(resultDir)
 
-for v in simulationVersions:
-    socialCapital: bool = strtobool((v.split('useSC_')[1]).split('_')[0])
-    popType: str = v.split('AType_')[1]
-    if popType == "mixed":
-        for r in startingRatiosArray:
+for r in startingRatiosArray:
 
-            sc: List[str] = []
-            ln: List[int] = []
-            ex: List[int] = []
-            satis: List[float] = []
-            a_t: List[int] = []
-            dy: List[int] = []
+    ln: List[int] = []
+    ex: List[int] = []
+    dy: List[int] = []
+    sc: List[float] = []
+    wsc: List[float] = []
+    dif: List[float] = []
+    sc_sel: List[float] = []
+    sc_soc: List[float] = []
+    wsc_sel: List[float] = []
+    wsc_soc: List[float] = []
+    dif_sel: List[float] = []
+    dif_soc: List[float] = []
 
-            for l in learningPercentages:
-                for e in exchangesArray:
-                    path = v + "/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/endOfDaySatisfactions.csv"
-                    df = pd.read_csv(path)
-                    df = df.drop(columns=['Agent Type'])
-                    for d in daysOfInterest:
-                        if socialCapital:
-                            sc.append("Y")
-                        else:
-                            sc.append("N")		
-                        df_day = df.loc[df['Day'] == d]
-                        satis.append(df_day['Satisfaction'].mean())
-                        ln.append(l)
-                        ex.append(e)
-                        dy.append(d)
+    for l in learningPercentages:
+        for e in exchangesArray:
+            sc_path = baseOutputDirectory + "/useSC_true_AType_mixed/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/endOfDaySatisfactions.csv"
+            wsc_path = baseOutputDirectory + "/useSC_false_AType_mixed/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/endOfDaySatisfactions.csv"
+            sc_df = pd.read_csv(sc_path)
+            wsc_df = pd.read_csv(wsc_path)
 
-            d = {'Day':dy, '%_Learning':ln, 'Exchanges':ex, 'Social_Capital':sc, 'Satisfaction':satis,}
-            df = pd.DataFrame(data=d)
-            dir = v + "/comparative/data/heat_maps/" + r
-            # Create the output directories if they do not already exist.
-            if not os.path.exists(dir):
-                os.makedirs(dir)
-            fn = dir + "/meanPopulationSatisfaction.csv"
-            df.to_csv(fn, index=False)
+            for d in daysOfInterest:
+                ln.append(l)
+                ex.append(e)
+                dy.append(d)
+		
+                sc_df_day = sc_df.loc[sc_df['Day'] == d]
+                wsc_df_day = wsc_df.loc[wsc_df['Day'] == d]
+
+                scMean = sc_df_day['Satisfaction'].mean()
+                wscMean = wsc_df_day['Satisfaction'].mean()
+                meanDiff = wscMean - scMean
+
+                sc.append(scMean)
+                wsc.append(wscMean)
+                dif.append(meanDiff)
+
+                scSel_df_day = sc_df_day.loc[sc_df_day['Agent Type'] == 1]
+                scSoc_df_day = sc_df_day.loc[sc_df_day['Agent Type'] == 2]
+                wscSel_df_day = wsc_df_day.loc[wsc_df_day['Agent Type'] == 1]
+                wscSoc_df_day = wsc_df_day.loc[wsc_df_day['Agent Type'] == 2]
+
+                scSelMean = scSel_df_day['Satisfaction'].mean()
+                scSocMean = scSoc_df_day['Satisfaction'].mean()
+                wscSelMean = wscSel_df_day['Satisfaction'].mean()
+                wscSocMean = wscSoc_df_day['Satisfaction'].mean()
+                selMeanDiff = wscSelMean - scSelMean
+                socMeanDiff = wscSocMean - scSocMean
+                
+                sc_sel.append(scSelMean)
+                sc_soc.append(scSocMean)
+                wsc_sel.append(wscSelMean)
+                wsc_soc.append(wscSocMean)
+                dif_sel.append(selMeanDiff)
+                dif_soc.append(socMeanDiff)
+
+    d = {'Day':dy, '%_Learning':ln, 'Exchanges':ex, 'SC_Satisfaction':sc, 'WSC_Satisfaction':wsc, 'Difference':dif, 'SC_Selfish':sc_sel, 'SC_Social':sc_soc, 'WSC_Selfish':wsc_sel, 'WSC_Social':wsc_soc, 'Selfish_Diff':dif_sel, 'Social_Diff':dif_soc}
+    df = pd.DataFrame(data=d)
+    fn = resultDir + "/" + r + "_comp_mean_satisfaction.csv"
+    df.to_csv(fn, index=False)
