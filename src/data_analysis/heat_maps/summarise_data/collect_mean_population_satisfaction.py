@@ -64,7 +64,7 @@ for v in simulationVersions:
                         if socialCapital:
                             sc.append("Y")
                         else:
-                            sc.append("N")		
+                            sc.append("N")
                         df_day = df.loc[df['Day'] == d]
                         satis.append(df_day['Satisfaction'].mean())
                         ln.append(l)

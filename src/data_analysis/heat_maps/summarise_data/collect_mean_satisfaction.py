@@ -37,7 +37,7 @@ daysOfInterest: List[int] = ast.literal_eval(sys.argv[5])
 
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), folderName)
 
-resultDir = baseOutputDirectory + "/comparativeHeatMaps/"
+resultDir = baseOutputDirectory + "/comparativeHeatMaps/data/"
 # Create the output directories if they do not already exist.
 if not os.path.exists(resultDir):
     os.makedirs(resultDir)
@@ -68,7 +68,7 @@ for r in startingRatiosArray:
                 ln.append(l)
                 ex.append(e)
                 dy.append(d)
-		
+
                 sc_df_day = sc_df.loc[sc_df['Day'] == d]
                 wsc_df_day = wsc_df.loc[wsc_df['Day'] == d]
 
@@ -91,7 +91,7 @@ for r in startingRatiosArray:
                 wscSocMean = wscSoc_df_day['Satisfaction'].mean()
                 selMeanDiff = wscSelMean - scSelMean
                 socMeanDiff = wscSocMean - scSocMean
-                
+
                 sc_sel.append(scSelMean)
                 sc_soc.append(scSocMean)
                 wsc_sel.append(wscSelMean)

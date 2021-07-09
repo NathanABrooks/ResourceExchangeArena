@@ -37,7 +37,7 @@ daysOfInterest: List[int] = ast.literal_eval(sys.argv[5])
 
 baseOutputDirectory: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))), folderName)
 
-resultDir = baseOutputDirectory + "/comparativeHeatMaps/"
+resultDir = baseOutputDirectory + "/comparativeHeatMaps/data/"
 # Create the output directories if they do not already exist.
 if not os.path.exists(resultDir):
     os.makedirs(resultDir)

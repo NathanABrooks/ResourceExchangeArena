@@ -39,31 +39,31 @@ class HeatMapsInitiator {
         // (Such as all runs with social capital enabled and a mixed population)
         // into a single file for statistical significance testing.
         // This is completed for each simulation version.
-        List<String> meanPopulationSatisfactionArgs = new ArrayList<>();
+        // List<String> meanPopulationSatisfactionArgs = new ArrayList<>();
 
-        String meanPopulationSatisfactionPath = pythonPath + "summarise_data/collect_mean_population_satisfaction.py";
+        // String meanPopulationSatisfactionPath = pythonPath + "summarise_data/collect_mean_population_satisfaction.py";
 
-        meanPopulationSatisfactionArgs.add(pythonExe);
-        meanPopulationSatisfactionArgs.add(meanPopulationSatisfactionPath);
-        meanPopulationSatisfactionArgs.add(folderName);
-        meanPopulationSatisfactionArgs.add(Arrays.toString(evolvingAgentsArray));
-        meanPopulationSatisfactionArgs.add(Arrays.toString(exchangesArray));
-        meanPopulationSatisfactionArgs.add(startingRatiosArray.toString());
-        meanPopulationSatisfactionArgs.add(Arrays.toString(daysToVisualise));
+        // meanPopulationSatisfactionArgs.add(pythonExe);
+        // meanPopulationSatisfactionArgs.add(meanPopulationSatisfactionPath);
+        // meanPopulationSatisfactionArgs.add(folderName);
+        // meanPopulationSatisfactionArgs.add(Arrays.toString(evolvingAgentsArray));
+        // meanPopulationSatisfactionArgs.add(Arrays.toString(exchangesArray));
+        // meanPopulationSatisfactionArgs.add(startingRatiosArray.toString());
+        // meanPopulationSatisfactionArgs.add(Arrays.toString(daysToVisualise));
 
-        ProcessBuilder meanPopulationSatisfactionBuilder = new ProcessBuilder(meanPopulationSatisfactionArgs);
+        // ProcessBuilder meanPopulationSatisfactionBuilder = new ProcessBuilder(meanPopulationSatisfactionArgs);
 
-        // IO from the Python is shared with the same terminal as the Java code.
-        meanPopulationSatisfactionBuilder.inheritIO();
-        meanPopulationSatisfactionBuilder.redirectErrorStream(true);
+        // // IO from the Python is shared with the same terminal as the Java code.
+        // meanPopulationSatisfactionBuilder.inheritIO();
+        // meanPopulationSatisfactionBuilder.redirectErrorStream(true);
 
-        Process meanPopulationSatisfactionProcess = meanPopulationSatisfactionBuilder.start();
-        try {
-            meanPopulationSatisfactionProcess.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Mean population satisfaction summary file created.");
+        // Process meanPopulationSatisfactionProcess = meanPopulationSatisfactionBuilder.start();
+        // try {
+        //     meanPopulationSatisfactionProcess.waitFor();
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
+        // System.out.println("Mean population satisfaction summary file created.");
 
 
         // Here we create csv files summarising the population distributions with and without social capital.
@@ -122,34 +122,91 @@ class HeatMapsInitiator {
         }
         System.out.println("Merged summary files created.");
 
+        // Here we create heat maps summarising the satisfaction levels and population distributions for each agent type with and without social capital.
+        // This is completed for each simulation version.
+        List<String> behaviourComparisonsHeatMapsArgs = new ArrayList<>();
+
+        String behaviourComparisonsHeatMapsPath = pythonPath + "create_heatmaps/behaviour_comparisons.py";
+
+        behaviourComparisonsHeatMapsArgs.add(pythonExe);
+        behaviourComparisonsHeatMapsArgs.add(behaviourComparisonsHeatMapsPath);
+        behaviourComparisonsHeatMapsArgs.add(folderName);
+        behaviourComparisonsHeatMapsArgs.add(Arrays.toString(evolvingAgentsArray));
+        behaviourComparisonsHeatMapsArgs.add(Arrays.toString(exchangesArray));
+        behaviourComparisonsHeatMapsArgs.add(startingRatiosArray.toString());
+        behaviourComparisonsHeatMapsArgs.add(Arrays.toString(daysToVisualise));
+
+        ProcessBuilder behaviourComparisonsHeatMapsBuilder = new ProcessBuilder(behaviourComparisonsHeatMapsArgs);
+
+        // IO from the Python is shared with the same terminal as the Java code.
+        behaviourComparisonsHeatMapsBuilder.inheritIO();
+        behaviourComparisonsHeatMapsBuilder.redirectErrorStream(true);
+
+        Process behaviourComparisonsHeatMapsProcess = behaviourComparisonsHeatMapsBuilder.start();
+        try {
+            behaviourComparisonsHeatMapsProcess.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Behaviour comparison heat maps created.");
+
         if (comparisonLevel != 0) {
-            // Here we create csv files summarising the satisfaction levels for each agent type with and without social capital.
-            // This is completed for each simulation version.
-            List<String> compMergedSummaryArgs = new ArrayList<>();
+            // // Here we create csv files summarising the satisfaction levels for each agent type with and without social capital.
+            // // This is completed for each simulation version.
+            // List<String> compMergedSummaryArgs = new ArrayList<>();
 
-            String compMergedSummaryPath = pythonPath + "summarise_data/collect_comp_merged.py";
+            // String compMergedSummaryPath = pythonPath + "summarise_data/collect_comp_merged.py";
 
-            compMergedSummaryArgs.add(pythonExe);
-            compMergedSummaryArgs.add(compMergedSummaryPath);
-            compMergedSummaryArgs.add(folderName);
-            compMergedSummaryArgs.add(Arrays.toString(evolvingAgentsArray));
-            compMergedSummaryArgs.add(Arrays.toString(exchangesArray));
-            compMergedSummaryArgs.add(startingRatiosArray.toString());
-            compMergedSummaryArgs.add(Arrays.toString(daysToVisualise));
+            // compMergedSummaryArgs.add(pythonExe);
+            // compMergedSummaryArgs.add(compMergedSummaryPath);
+            // compMergedSummaryArgs.add(folderName);
+            // compMergedSummaryArgs.add(Arrays.toString(evolvingAgentsArray));
+            // compMergedSummaryArgs.add(Arrays.toString(exchangesArray));
+            // compMergedSummaryArgs.add(startingRatiosArray.toString());
+            // compMergedSummaryArgs.add(Arrays.toString(daysToVisualise));
 
-            ProcessBuilder compMergedSummaryBuilder = new ProcessBuilder(compMergedSummaryArgs);
+            // ProcessBuilder compMergedSummaryBuilder = new ProcessBuilder(compMergedSummaryArgs);
 
-            // IO from the Python is shared with the same terminal as the Java code.
-            compMergedSummaryBuilder.inheritIO();
-            compMergedSummaryBuilder.redirectErrorStream(true);
+            // // IO from the Python is shared with the same terminal as the Java code.
+            // compMergedSummaryBuilder.inheritIO();
+            // compMergedSummaryBuilder.redirectErrorStream(true);
 
-            Process compMergedSummaryProcess = compMergedSummaryBuilder.start();
-            try {
-                compMergedSummaryProcess.waitFor();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Comp merged summary files created.");
+            // Process compMergedSummaryProcess = compMergedSummaryBuilder.start();
+            // try {
+            //     compMergedSummaryProcess.waitFor();
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+            // System.out.println("Comp merged summary files created.");
+
+            // // Here we create heat maps summarising the satisfaction levels for each agent type with and without social capital.
+            // // This is completed for each simulation version.
+            // List<String> compMergedSummaryHeatMapsArgs = new ArrayList<>();
+
+            // String compMergedSummaryHeatMapsPath = pythonPath + "create_heatmaps/behaviour_comparisons.py";
+
+            // compMergedSummaryHeatMapsArgs.add(pythonExe);
+            // compMergedSummaryHeatMapsArgs.add(compMergedSummaryHeatMapsPath);
+            // compMergedSummaryHeatMapsArgs.add(folderName);
+            // compMergedSummaryHeatMapsArgs.add(Arrays.toString(evolvingAgentsArray));
+            // compMergedSummaryHeatMapsArgs.add(Arrays.toString(exchangesArray));
+            // compMergedSummaryHeatMapsArgs.add(startingRatiosArray.toString());
+            // compMergedSummaryHeatMapsArgs.add(Arrays.toString(daysToVisualise));
+
+            // ProcessBuilder compMergedSummaryHeatMapsBuilder = new ProcessBuilder(compMergedSummaryHeatMapsArgs);
+
+            // // IO from the Python is shared with the same terminal as the Java code.
+            // compMergedSummaryHeatMapsBuilder.inheritIO();
+            // compMergedSummaryHeatMapsBuilder.redirectErrorStream(true);
+
+            // Process compMergedSummaryHeatMapsProcess = compMergedSummaryHeatMapsBuilder.start();
+            // try {
+            //     compMergedSummaryHeatMapsProcess.waitFor();
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+            // System.out.println("Comp merged summary files created.");
+
 
             // Here we create csv files summarising the mean satisfaction levels for each agent type with and without social capital.
             // This is completed for each simulation version.
@@ -178,6 +235,34 @@ class HeatMapsInitiator {
                 e.printStackTrace();
             }
             System.out.println("Comp mean satisfaction files created.");
+
+            // Here we create heat maps summarising the mean satisfaction levels for each agent type with and without social capital.
+            // This is completed for each simulation version.
+            List<String> compMeanSatisfactionHeatMapsArgs = new ArrayList<>();
+
+            String compMeanSatisfactionHeatMapsPath = pythonPath + "create_heatmaps/social_capital_comparisons.py";
+
+            compMeanSatisfactionHeatMapsArgs.add(pythonExe);
+            compMeanSatisfactionHeatMapsArgs.add(compMeanSatisfactionHeatMapsPath);
+            compMeanSatisfactionHeatMapsArgs.add(folderName);
+            compMeanSatisfactionHeatMapsArgs.add(Arrays.toString(evolvingAgentsArray));
+            compMeanSatisfactionHeatMapsArgs.add(Arrays.toString(exchangesArray));
+            compMeanSatisfactionHeatMapsArgs.add(startingRatiosArray.toString());
+            compMeanSatisfactionHeatMapsArgs.add(Arrays.toString(daysToVisualise));
+
+            ProcessBuilder compMeanSatisfactionHeatMapsBuilder = new ProcessBuilder(compMeanSatisfactionHeatMapsArgs);
+
+            // IO from the Python is shared with the same terminal as the Java code.
+            compMeanSatisfactionHeatMapsBuilder.inheritIO();
+            compMeanSatisfactionHeatMapsBuilder.redirectErrorStream(true);
+
+            Process compMeanSatisfactionHeatMapsProcess = compMeanSatisfactionHeatMapsBuilder.start();
+            try {
+                compMeanSatisfactionHeatMapsProcess.waitFor();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Comp mean satisfaction heat maps created.");
         }
 
         if (comparisonLevel == 2) {
@@ -190,9 +275,7 @@ class HeatMapsInitiator {
             indiPopSummaryArgs.add(pythonExe);
             indiPopSummaryArgs.add(indiPopSummaryPath);
             indiPopSummaryArgs.add(folderName);
-            indiPopSummaryArgs.add(Arrays.toString(evolvingAgentsArray));
             indiPopSummaryArgs.add(Arrays.toString(exchangesArray));
-            indiPopSummaryArgs.add(startingRatiosArray.toString());
             indiPopSummaryArgs.add(Arrays.toString(daysToVisualise));
 
             ProcessBuilder indiPopSummaryBuilder = new ProcessBuilder(indiPopSummaryArgs);
@@ -208,6 +291,32 @@ class HeatMapsInitiator {
                 e.printStackTrace();
             }
             System.out.println("Individual populations summary files created.");
+
+            // Here we create heat maps summarising the satisfaction levels for each agent type when they make up 100% of the population.
+            // This is completed for each simulation version.
+            List<String> indiPopHeatMapsArgs = new ArrayList<>();
+
+            String indiPopHeatMapsPath = pythonPath + "create_heatmaps/individual_populations_performance.py";
+
+            indiPopHeatMapsArgs.add(pythonExe);
+            indiPopHeatMapsArgs.add(indiPopHeatMapsPath);
+            indiPopHeatMapsArgs.add(folderName);
+            indiPopHeatMapsArgs.add(Arrays.toString(exchangesArray));
+            indiPopHeatMapsArgs.add(Arrays.toString(daysToVisualise));
+
+            ProcessBuilder indiPopHeatMapsBuilder = new ProcessBuilder(indiPopHeatMapsArgs);
+
+            // IO from the Python is shared with the same terminal as the Java code.
+            indiPopHeatMapsBuilder.inheritIO();
+            indiPopHeatMapsBuilder.redirectErrorStream(true);
+
+            Process indiPopHeatMapsProcess = indiPopHeatMapsBuilder.start();
+            try {
+                indiPopHeatMapsProcess.waitFor();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Individual populations heat maps created.");
         }
     }
 }

@@ -61,7 +61,7 @@ for v in simulationVersions:
                     path = v + "/EX_" + str(e) +"_AE_" + str(l) + "_SR_" + r + "/data/endOfDayAverages.csv"
                     df = pd.read_csv(path)
                     for d in daysOfInterest:
-                        df_day = df.loc[df['Day'] == d]                        
+                        df_day = df.loc[df['Day'] == d]
                         ln.append(l)
                         ex.append(e)
                         dy.append(d)
