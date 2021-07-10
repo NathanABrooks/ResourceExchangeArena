@@ -194,7 +194,7 @@ public class ResourceExchangeArena extends UserParameters {
 
         // Percentage of learning agents converted to actual number of agents that can learn each day.
         int[] numberOfLearningAgents = new int[PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY.length];
-        float onePercent = POPULATION_SIZE / 100.0f;1
+        float onePercent = POPULATION_SIZE / 100.0f;
         for (int i = 0; i < PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY.length; i++) {
             int learningAgents = Math.round(onePercent * PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY[i]);
             numberOfLearningAgents[i] = learningAgents;
