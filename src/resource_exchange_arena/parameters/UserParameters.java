@@ -30,16 +30,16 @@ public abstract class UserParameters extends FixedParameters {
     public static final int SLOTS_PER_AGENT = 4;
 
     // Alter the length of time to be simulated.
-    public static final int DAYS = 100;
+    public static final int DAYS = 500;
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 2;
+    public static final int SIMULATION_RUNS = 5;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
     // the end of the day visualised.
-    public static final int[] DAYS_OF_INTEREST = {1, 100};
+    public static final int[] DAYS_OF_INTEREST = {1, 100, 200, 300, 400, 500};
     // Example: "{1, 100, 200, 300, 400, 500}"
 
     // Specify whether only a single agent type should exist in the simulation, used for establishing baseline results.
@@ -55,18 +55,18 @@ public abstract class UserParameters extends FixedParameters {
     // the following arrays. All possible combinations will be simulated.
     // ################################################################################################################
     // Number of exchange rounds per day. 
-    public static final int[] EXCHANGES_ARRAY = {1,100,200};
+    public static final int[] EXCHANGES_ARRAY = {1,50,100,150,200};
     // Example: "{1,50,100,150,200};"
 
     // Percentage of agents that will evolve their strategy per day.
-    public static final int[] PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY = {0,100};
+    public static final int[] PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY = {0,50,100};
     // Example: "{0,50,100}"
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
     // selfish agents for each social agent.
     // Note that both types of agents need to exist, for testing with a single agent type set 'SINGLE_AGENT_TYPE'
     // to 'true' and set the 'SELECTED_SINGLE_AGENT_TYPE' as required.
-    public static final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL},{SELFISH, SELFISH, SOCIAL}};
+    public static final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
     // Example: "{{SELFISH, SOCIAL}}"
     // ################################################################################################################
 

@@ -44,7 +44,7 @@ class Exchange {
             if (!unlockedTimeSlots.isEmpty()) {
                 ArrayList<Integer> advert = new ArrayList<>();
                 advert.add(a.agentID);
-                advert.addAll(unlockedTimeSlots);
+                advert.addAll(a.publishUnlockedTimeSlots());
                 advertisingBoard.add(advert);
             }
         }
@@ -58,25 +58,56 @@ class Exchange {
                 if (!chosenAdvert.isEmpty()) {
                     // Select an unwanted time slot to offer in the exchange.
                     ArrayList<Integer> unwantedTimeSlots = a.publishUnlockedTimeSlots();
-                    Collections.shuffle(unwantedTimeSlots);
+                    int selector = ResourceExchangeArena.random.nextInt(unwantedTimeSlots.size());
+                    int unwantedTimeSlot = unwantedTimeSlots.get(selector);
 
                     ArrayList<Integer> request = new ArrayList<>();
                     request.add(a.agentID);
                     request.add(chosenAdvert.get(1));
-                    request.add(unwantedTimeSlots.get(0));
+                    request.add(unwantedTimeSlot);
 
                     // The agent who offered the requested time slot receives the exchange request.
                     for (Agent b : agents) {
                         if (b.agentID == chosenAdvert.get(0)) {
+                            b.receiveExchangeRequest(request);
                             b.setMadeInteraction(true);
-                            if (b.approveRequest(request)) {
-                                a.completeRequestedExchange(request, a.agentID);
-                                b.completeReceivedExchange(request);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Agents who have received a request consider it.
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
+            if (!a.getExchangeRequestReceived().isEmpty()) {
+                a.considerRequest();
+            }
+        }
+
+        // Agents confirm and complete approved requests if they are able to do so, and update their relations with
+        // other Agents accordingly.
+        Collections.shuffle(agents, ResourceExchangeArena.random);
+        for (Agent a : agents) {
+            if (a.getExchangeRequestApproved()) {
+                ArrayList<Integer> offer = a.getExchangeRequestReceived();
+                if (a.finalCheck(offer.get(1))) {
+                    for (Agent b : agents) {
+                        if (b.agentID == offer.get(0)) {
+                            if (b.finalCheck(offer.get(2))) {
+                                b.completeRequestedExchange(offer, a.agentID);
+                                a.completeReceivedExchange(offer);
                             }
                             break;
                         }
                     }
                 }
+                a.setExchangeRequestApproved(false);
+            }
+            // Clear the agents accepted offers list before the next exchange round.
+            if (!a.getExchangeRequestReceived().isEmpty()) {
+                a.setExchangeRequestReceived();
             }
         }
 
