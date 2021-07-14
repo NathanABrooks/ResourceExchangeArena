@@ -53,7 +53,18 @@ bottom1 = cm.get_cmap('Greens', 128)
 newcolors1 = np.vstack((top1(np.linspace(0, 1, 128)),
                        bottom1(np.linspace(0, 1, 128))))
 newcmp1 = ListedColormap(newcolors1, name='GreenPurple')
-     
+
+columns = len(learningPercentages)
+
+width: float = 0
+height: float = 0
+for d in range(len(daysOfInterest) + 1):
+    height += 0.5
+for e in range(len(exchangesArray) + 2):
+    width += 0.5
+width = (width * columns) + 0.5
+height = (height * 2.5) + 0.5
+
 for v in simulationVersions:
     if v.endswith('mixed'):
         socialCapital: bool = strtobool((v.split('useSC_')[1]).split('_')[0])
@@ -88,46 +99,43 @@ for v in simulationVersions:
                 population_summary.append(population_pivot)
 
             columns = len(learningPercentages)
-            fig, axs = plt.subplots(nrows=3, ncols=columns, sharex='col', sharey='row')
+            fig, axs = plt.subplots(nrows=3, ncols=columns, sharex='col', sharey='row', figsize=(width, height))
 
             for index, s in enumerate(selfish_subplots):
                 #seaborn heatmap per pivot table
-                sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 8})
+                sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
                 title: str = "Learning " + str(learningPercentages[index]) + "%"
-                axs[0][index].set_title(title, fontsize=6)
+                axs[0][index].set_title(title, fontsize=12, y=1.11)
                 axs[0][index].invert_yaxis()
                 axs[0][index].set_ylabel('')
                 axs[0][index].set_xlabel('')
 
             for index, s in enumerate(social_subplots):
                 #seaborn heatmap per pivot table
-                sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[1][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 8})
-                title: str = "Learning " + str(learningPercentages[index]) + "%"
-                axs[1][index].set_title(title, fontsize=6)
+                sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[1][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
                 axs[1][index].invert_yaxis()
                 axs[1][index].set_ylabel('')
                 axs[1][index].set_xlabel('')
             
             for index, s in enumerate(population_summary):
                 #seaborn heatmap per pivot table
-                sns.heatmap(s, cmap=newcmp1, center= 50, vmin=0, vmax=100, ax=axs[2][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 8})
-                title: str = "Learning " + str(learningPercentages[index]) + "%"
-                axs[2][index].set_title(title, fontsize=6)
+                sns.heatmap(s, cmap=newcmp1, center= 50, vmin=0, vmax=100, ax=axs[2][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
                 axs[2][index].invert_yaxis()
                 axs[2][index].set_ylabel('')
                 axs[2][index].set_xlabel('')
+                axs[2][index].set_xticklabels(axs[2][index].get_xticklabels(), rotation = 0)
 
             #adjust position of subplot
-            plt.subplots_adjust(hspace = .2)
             plt.subplots_adjust(wspace = .2)
-            plt.subplots_adjust(top = .8)
-            plt.subplots_adjust(bottom = .2)
             plt.subplots_adjust(left = .12)
             plt.subplots_adjust(right = .95)
 
             #set x and y axis labels and plot title
-            fig.text(0.5, 0.02, 'Exchanges', ha='center', fontsize=14)
-            fig.text(0.04, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+            fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
+            fig.text(0.07, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+            fig.text(0.5, 0.89, 'Average Selfish Satisfaction', ha='center', fontsize=14, weight='bold')
+            fig.text(0.5, 0.62, 'Average Social Satisfaction', ha='center', fontsize=14, weight='bold')
+            fig.text(0.5, 0.35, '% Population Using Social Strategy', ha='center', fontsize=14, weight='bold')
 
             title: str = "Social Capital Populations"
             if socialCapital:
@@ -143,9 +151,9 @@ for v in simulationVersions:
                 dpi=None,
                 facecolor='w',
                 edgecolor='w',
-                orientation='portrait',
+                orientation='landscape',
                 format=None,
                 transparent=False,
                 bbox_inches=None,
-                pad_inches=0.1,
+                pad_inches=0,
                 metadata=None)

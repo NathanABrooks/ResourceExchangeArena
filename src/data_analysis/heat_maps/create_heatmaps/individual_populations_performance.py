@@ -36,36 +36,46 @@ if not os.path.exists(imageDir):
 
 df = pd.read_csv(dataDir + "individual_populations_summary.csv")
 
-i_name = df[(~df['Day'].isin(daysOfInterest)) | (~df['Exchanges'].isin(exchangesArray))].index
-df = df.drop(i_name)
-
 selfish = df.pivot("Day", "Exchanges", "Selfish")
 social = df.pivot("Day", "Exchanges", "SC_Social")
 social_AE = df.pivot("Day", "Exchanges", "WSC_Social")
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, sharex='col', sharey='row')
+width: float = 0
+height: float = 0
+for d in range(len(daysOfInterest) + 1):
+    height += 0.5
+for e in range(len(exchangesArray) + 2):
+    width += 0.5
+width = (width * 3) + 0.5
+height += 0.5
+
+fig, (ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=3, sharex='col', sharey='row', figsize=(width, height))
 
 sns.heatmap(selfish, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=ax1, linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
 ax1.set_title(r"$\bf{Selfish}$", fontsize=12)
 ax1.invert_yaxis()
 ax1.set_ylabel('')
 ax1.set_xlabel('')
+ax1.set_xticklabels(ax1.get_xticklabels(), rotation = 0)
 
 sns.heatmap(social_AE, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=ax2, linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
 ax2.set_title(r"$\bf{Social}$" + " " + r"$\bf{without}$" + " " + r"$\bf{Social}$" + " " + r"$\bf{Capital}$", fontsize=12)
 ax2.invert_yaxis()
 ax2.set_ylabel('')
 ax2.set_xlabel('')
+ax2.set_xticklabels(ax1.get_xticklabels(), rotation = 0)
 
 sns.heatmap(social, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=ax3, linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
 ax3.set_title(r"$\bf{Social}$" + " " + r"$\bf{with}$" + " " + r"$\bf{Social}$" + " " + r"$\bf{Capital}$", fontsize=12)
 ax3.invert_yaxis()
 ax3.set_ylabel('')
 ax3.set_xlabel('')
+ax3.set_xticklabels(ax1.get_xticklabels(), rotation = 0)
 
-fig.text(0.5, 0.02, 'Exchanges', ha='center', fontsize=14)
-fig.text(0.04, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
+fig.text(0.07, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
 fig.suptitle('Average Satisfaction in Single Strategy Populations', fontsize=14)
+
 plt.subplots_adjust(hspace = .2)
 plt.subplots_adjust(wspace = .2)
 plt.subplots_adjust(top = .8)
@@ -79,9 +89,9 @@ plt.savefig(fname,
         dpi=None,
         facecolor='w',
         edgecolor='w',
-        orientation='portrait',
+        orientation='landscape',
         format=None,
         transparent=False,
         bbox_inches=None,
-        pad_inches=0.1,
+        pad_inches=0,
         metadata=None)

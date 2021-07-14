@@ -45,6 +45,17 @@ imageDir = baseOutputDirectory + "/comparativeHeatMaps/images/"
 if not os.path.exists(imageDir):
     os.makedirs(imageDir)
 
+columns = len(learningPercentages)
+
+width: float = 0
+height: float = 0
+for d in range(len(daysOfInterest) + 1):
+    height += 0.5
+for e in range(len(exchangesArray) + 2):
+    width += 0.5
+width = (width * columns) + 0.5
+height += 0.5
+
 for r in startingRatiosArray:
 
     #reads a .csv I created to provide an overview of mean Popultion Satisfaction for runs with and without social captial
@@ -52,9 +63,6 @@ for r in startingRatiosArray:
 
     #rounds all value to 2 decimal places (for the sake of the heatmap visualisation
     df = df.round(2)
-
-    i_name = df[(~df['Day'].isin(daysOfInterest)) | (~df['Exchanges'].isin(exchangesArray))].index
-    df = df.drop(i_name)
 
     subplots = []
     for l in learningPercentages:
@@ -66,9 +74,7 @@ for r in startingRatiosArray:
         df_l_pivot = df_l.pivot("Day", "Exchanges", "Difference")
         subplots.append(df_l_pivot)
 
-
-    columns = len(learningPercentages)
-    fig, axs = plt.subplots(nrows=1, ncols=columns, sharex='col', sharey='row')
+    fig, axs = plt.subplots(nrows=1, ncols=columns, sharex='col', sharey='row', figsize=(width, height))
 
     for index, s in enumerate(subplots):
         #seaborn heatmap per pivot table
@@ -78,6 +84,7 @@ for r in startingRatiosArray:
         axs[index].invert_yaxis()
         axs[index].set_ylabel('')
         axs[index].set_xlabel('')
+        axs[index].set_xticklabels(axs[index].get_xticklabels(), rotation = 0)
 
     #adjust position of subplot
     plt.subplots_adjust(hspace = .2)
@@ -88,8 +95,9 @@ for r in startingRatiosArray:
     plt.subplots_adjust(right = .95)
 
     #set x and y axis labels and plot title
-    fig.text(0.5, 0.02, 'Exchanges', ha='center', fontsize=14)
-    fig.text(0.04, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+    fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
+    fig.text(0.07, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+
     fig.suptitle('With and Without Social Capital Comparisons', fontsize=14)
 
     fname = imageDir + r + "_social_capital_comparison"
@@ -98,9 +106,9 @@ for r in startingRatiosArray:
         dpi=None,
         facecolor='w',
         edgecolor='w',
-        orientation='portrait',
+        orientation='landscape',
         format=None,
         transparent=False,
         bbox_inches=None,
-        pad_inches=0.1,
+        pad_inches=0,
         metadata=None)
