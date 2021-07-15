@@ -81,7 +81,7 @@ for v in simulationVersions:
 
             #rounds all value to 2 decimal places (for the sake of the heatmap visualisation
             df_sat = df_sat.round(2)
-            df_pop = df_pop.round(2)
+            df_pop = df_pop.round(0)
 
             selfish_subplots = []
             social_subplots = []
@@ -119,7 +119,7 @@ for v in simulationVersions:
             
             for index, s in enumerate(population_summary):
                 #seaborn heatmap per pivot table
-                sns.heatmap(s, cmap=newcmp1, center= 50, vmin=0, vmax=100, ax=axs[2][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
+                sns.heatmap(s, cmap=newcmp1, center= 50, vmin=0, vmax=100, ax=axs[2][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, fmt='g', annot_kws={"size": 10})
                 axs[2][index].invert_yaxis()
                 axs[2][index].set_ylabel('')
                 axs[2][index].set_xlabel('')
