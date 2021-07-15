@@ -437,33 +437,6 @@ class Agent {
                 }
             }
         }
-
-
-
-        // if (Double.compare(newSatisfaction, previousSatisfaction) <= 0) {
-        //     System.out.println("Error - requester   " + previousSatisfaction + "   " + newSatisfaction);
-        //     System.out.print("requested: ");
-        //     for(Integer i: requestedTimeSlots) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.print("   ");
-        //     System.out.print("allocated: ");
-        //     for(Integer i: oldAllocated) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.print("   ");
-        //     System.out.print("offer: ");
-        //     for(Integer i: offer) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.print("   ");
-        //     System.out.print("new allocated: ");
-        //     for(Integer i: allocatedTimeSlots) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.println("");
-        //     System.out.println("");
-        // }
     }
 
     /**
@@ -493,31 +466,6 @@ class Agent {
                 }
             }
         }
-
-        // if (Double.compare(newSatisfaction, previousSatisfaction) < 0) {
-        //     System.out.println("Error - receiver   " + previousSatisfaction + "   " + newSatisfaction);
-        //     System.out.print("requested: ");
-        //     for(Integer i: requestedTimeSlots) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.print("   "); 
-        //     System.out.print("allocated: ");
-        //     for(Integer i: oldAllocated) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.print("   ");
-        //     System.out.print("offer: ");
-        //     for(Integer i: offer) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.print("   ");
-        //     System.out.print("new allocated: ");
-        //     for(Integer i: allocatedTimeSlots) {
-        //         System.out.print(i + " ");
-        //     }
-        //     System.out.println("");
-        //     System.out.println("");
-        // }
     }
 
     /**
@@ -527,16 +475,16 @@ class Agent {
      * @param allocatedTimeSlots The set of time slots to consider.
      * @return Double The Agents satisfaction with the time slots given.
      */
-    double calculateSatisfaction(ArrayList<Integer> allocatedTimeSlots) {
-        if (allocatedTimeSlots == null) {
-            allocatedTimeSlots = this.allocatedTimeSlots;
+    double calculateSatisfaction(ArrayList<Integer> timeSlots) {
+        if (timeSlots == null) {
+            timeSlots = this.allocatedTimeSlots;
         }
 
         ArrayList<Integer> tempRequestedTimeSlots = new ArrayList<>(requestedTimeSlots);
 
         // Count the number of the given time slots that match the Agents requested time slots.
         double satisfiedSlots = 0;
-        for (int timeSlot : allocatedTimeSlots) {
+        for (int timeSlot : timeSlots) {
             if (tempRequestedTimeSlots.contains(timeSlot)) {
                 tempRequestedTimeSlots.remove(Integer.valueOf(timeSlot));
                 satisfiedSlots++;

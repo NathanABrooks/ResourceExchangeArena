@@ -44,7 +44,7 @@ class Exchange {
             if (!unlockedTimeSlots.isEmpty()) {
                 ArrayList<Integer> advert = new ArrayList<>();
                 advert.add(a.agentID);
-                advert.addAll(a.publishUnlockedTimeSlots());
+                advert.addAll(unlockedTimeSlots);
                 advertisingBoard.add(advert);
             }
         }
@@ -69,9 +69,11 @@ class Exchange {
                     // The agent who offered the requested time slot receives the exchange request.
                     for (Agent b : agents) {
                         if (b.agentID == chosenAdvert.get(0)) {
-                            b.receiveExchangeRequest(request);
-                            b.setMadeInteraction(true);
-                            break;
+                            if (b.madeInteraction() == false) {
+                                b.receiveExchangeRequest(request);
+                                b.setMadeInteraction(true);
+                                break;
+                            }
                         }
                     }
                 }
