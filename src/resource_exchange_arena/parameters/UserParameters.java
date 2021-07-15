@@ -54,7 +54,7 @@ public abstract class UserParameters extends FixedParameters {
     // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
     // the following arrays. All possible combinations will be simulated.
     // ################################################################################################################
-    // Number of exchange rounds per day. 
+    // Number of exchange rounds per day.
     public static final int[] EXCHANGES_ARRAY = {1,50,100,150,200};
     // Example: "{1,50,100,150,200};"
 
