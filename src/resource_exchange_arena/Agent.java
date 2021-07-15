@@ -417,7 +417,6 @@ class Agent {
      */
     void completeRequestedExchange(ArrayList<Integer> offer, int agentID) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
-        ArrayList<Integer> oldAllocated = new ArrayList<>(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(2));
         allocatedTimeSlots.add(offer.get(1));
@@ -447,7 +446,6 @@ class Agent {
      */
     void completeReceivedExchange(ArrayList<Integer> offer) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
-        ArrayList<Integer> oldAllocated = new ArrayList<>(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(1));
         allocatedTimeSlots.add(offer.get(2));
