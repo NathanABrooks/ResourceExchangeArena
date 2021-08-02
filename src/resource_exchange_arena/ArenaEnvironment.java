@@ -65,7 +65,7 @@ public class ArenaEnvironment {
             String pythonPath
     ) throws IOException {
 
-		System.out.println("Starting simulation...");
+        System.out.println("Starting simulation...");
 
         // Array of the unique agent types used in the simulation.
         ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();

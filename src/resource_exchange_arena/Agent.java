@@ -42,30 +42,6 @@ class Agent {
     }
 
     /**
-     * Extended initialisation for clones.
-     *
-     * @param agentID This is an integer value that is unique to the individual agent and used to identify it to others
-     *                in the ExchangeArena.
-     * @param agentType Integer value denoting the agent type, and thus how it will behave.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @param socialCapital determines whether the agent uses socialCapital.
-     */
-    Agent(int agentID, int agentType, boolean usesSocialCapital, boolean madeInteraction, int numberOfTimeSlotsWanted, ArrayList<Integer>requestedTimeSlots, ArrayList<Integer>allocatedTimeSlots, ArrayList<ArrayList<Integer>>favoursOwed, ArrayList<ArrayList<Integer>>favoursGiven, ArrayList<Integer> exchangeRequestReceived, boolean exchangeRequestApproved){
-        this.agentID = agentID;
-        this.agentType = agentType;
-        this.usesSocialCapital = usesSocialCapital;
-        this.madeInteraction = madeInteraction;
-        this.numberOfTimeSlotsWanted = numberOfTimeSlotsWanted;
-        this.requestedTimeSlots = requestedTimeSlots;
-        this.allocatedTimeSlots = allocatedTimeSlots;
-        this.favoursOwed = favoursOwed;
-        this.favoursGiven = favoursGiven;
-        this.exchangeRequestReceived = exchangeRequestReceived;
-        this.exchangeRequestApproved = exchangeRequestApproved;
-    }
-
-    /**
      * Getter for whether the Agent uses social capital.
      *
      * @return boolean Returns whether the Agent uses social capital.
@@ -362,7 +338,7 @@ class Agent {
             if (agentType == ResourceExchangeArena.SOCIAL) {
                 // Social Agents accept offers that improve their satisfaction or if they have negative social capital
                 // with the Agent who made the request.
-                if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0){
+                if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0) {
                     exchangeRequestApproved = true;
                 } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
                     if (usesSocialCapital) {

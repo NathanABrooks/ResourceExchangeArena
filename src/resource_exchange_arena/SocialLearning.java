@@ -17,46 +17,43 @@ class SocialLearning {
      */
     SocialLearning(ArrayList<Agent> agents, int slotsPerAgent, int numberOfAgentsToEvolve) {
         // Copy agents to store previous results, this needs to be a deep copy and so a new cloned agent is made.
-        ArrayList<Agent> previousResults = new ArrayList<>();
+        int totalAgents = agents.size();
+        double[][] previousPerformances = new double[totalAgents][3];
         for(Agent a: agents) {
-            Agent newA = new Agent(a.agentID, a.getAgentType(), a.usesSocialCapital(), a.madeInteraction(), a.numberOfTimeSlotsWanted(), a.publishRequestedTimeSlots(), a.publishAllocatedTimeSlots(), a.getFavoursOwed(), a.getFavoursGiven(), a.getExchangeRequestReceived(), a.getExchangeRequestApproved());
-            previousResults.add(newA);
+            double type = (double) a.getAgentType();
+            double sat = a.calculateSatisfaction(null);
+
+            previousPerformances[a.agentID-1][0] = type;
+            previousPerformances[a.agentID-1][1] = sat;
         }
 
         // Copy agents to store all agents that haven't yet been selected for social learning.
         ArrayList<Agent> unselectedAgents = new ArrayList<>(agents);
 
         for (int i = 0; i < numberOfAgentsToEvolve; i++) {
-            // Assign the selected agent another agent to 'retrospectively' observe.
-            Agent observedAgent = previousResults.get(ResourceExchangeArena.random.nextInt(previousResults.size()));
+            // Assign the selected agent another agents performance to 'retrospectively' observe.
+            int observedPerformance = ResourceExchangeArena.random.nextInt(totalAgents);
 
             // Select an agent to learn.
-            int learningAgentID = unselectedAgents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size())).agentID;
-            Agent learningAgent = observedAgent; // This is just for initialisation (not optimal as not used)
-            for (Agent a : agents) {
-                if (a.agentID == learningAgentID) {
-                    learningAgent = a;
-                    break;
-                }
-            }
-            unselectedAgents.remove(learningAgent);
+            Agent learningAgent = unselectedAgents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size()));
 
             // Ensure the agent altering its strategy doesnt copy itself.
-            while (learningAgent.agentID == observedAgent.agentID) {
-                observedAgent = previousResults.get(ResourceExchangeArena.random.nextInt(previousResults.size()));
+            while (learningAgent.agentID == observedPerformance) {
+                observedPerformance = ResourceExchangeArena.random.nextInt(totalAgents);
             }
 
             // Copy the observed agents strategy if it is better than its own, with likelihood dependent on the
             // difference between the agents satisfaction and the observed satisfaction.
             double learningAgentSatisfaction = learningAgent.calculateSatisfaction(null);
-            double observedAgentSatisfaction = observedAgent.calculateSatisfaction(null);
+            double observedAgentSatisfaction = previousPerformances[observedPerformance][1];
             if (Math.round(learningAgentSatisfaction * slotsPerAgent) < Math.round(observedAgentSatisfaction * slotsPerAgent)) {
                 double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                 double threshold = ResourceExchangeArena.random.nextDouble();
                 if (difference > threshold) {
-                    learningAgent.setType(observedAgent.getAgentType());
+                    learningAgent.setType((int) Math.round(previousPerformances[observedPerformance][0]));
                 }
             }
+            unselectedAgents.remove(learningAgent);
         }
     }
 }
