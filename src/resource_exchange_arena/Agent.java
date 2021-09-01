@@ -198,11 +198,11 @@ class Agent {
             Random random = ResourceExchangeArena.random;
 
             // Selects a time slot based on the demand curve.
-            int wheelSelector = random.nextInt((int)totalDemand * 10);
+            int wheelSelector = random.nextInt((int)(totalDemand * 10));
             int wheelCalculator = 0;
             int timeSlot = 0;
             while (wheelCalculator < wheelSelector) {
-                wheelCalculator = wheelCalculator + ((int)demandCurve[timeSlot] * 10);
+                wheelCalculator = wheelCalculator + ((int)(demandCurve[timeSlot] * 10));
                 timeSlot++;
             }
 

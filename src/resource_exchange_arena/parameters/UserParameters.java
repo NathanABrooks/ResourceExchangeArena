@@ -34,7 +34,7 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 10;
+    public static final int SIMULATION_RUNS = 50;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
@@ -46,10 +46,10 @@ public abstract class UserParameters extends FixedParameters {
     public static boolean SINGLE_AGENT_TYPE = false;
 
     // Specify the single agent type to be simulated when 'SINGLE_AGENT_TYPE = true', e.g. 'SELFISH' or 'SOCIAL'.
-    public static int SELECTED_SINGLE_AGENT_TYPE = SELFISH;
+    public static int SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
 
     // Specify whether social capital  should be used by the social agents.
-    public static boolean USE_SOCIAL_CAPITAL = false;
+    public static boolean USE_SOCIAL_CAPITAL = true;
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
     // the end of the day visualised.
@@ -81,5 +81,5 @@ public abstract class UserParameters extends FixedParameters {
     //     be compared.
     // 2 = The above combinations will be ran both with and without social capital enabled and with only selfish agents
     //     and with only social agents so that a baseline comparison can be made between the agents types.
-    public static int COMPARISON_LEVEL = 1;
+    public static int COMPARISON_LEVEL = 2;
 }
