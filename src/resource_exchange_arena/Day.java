@@ -14,6 +14,8 @@ public class Day {
      * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
      *
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param demandCurve Double array representing the demand curve that agents should base their requests around.
+     * @param totalDemand Double value represeneting the sum of all values in the demand curve.
      * @param day Integer value representing the current day being simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
@@ -34,6 +36,8 @@ public class Day {
      */
     Day(
             int[] daysOfInterest,
+            double[] demandCurve,
+            double totalDemand,
             int day,
             int exchanges,
             int populationSize,
@@ -74,7 +78,7 @@ public class Day {
         // Agents start the day by requesting and receiving an allocation of time slots.
         Collections.shuffle(agents, ResourceExchangeArena.random);
         for (Agent a : agents) {
-            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(uniqueTimeSlots);
+            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(demandCurve, totalDemand);
             ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
             a.receiveAllocatedTimeSlots(allocatedTimeSlots);
         }

@@ -34,7 +34,7 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 50;
+    public static final int SIMULATION_RUNS = 10;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
@@ -49,7 +49,11 @@ public abstract class UserParameters extends FixedParameters {
     public static int SELECTED_SINGLE_AGENT_TYPE = SELFISH;
 
     // Specify whether social capital  should be used by the social agents.
-    public static boolean USE_SOCIAL_CAPITAL = true;
+    public static boolean USE_SOCIAL_CAPITAL = false;
+
+    // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
+    // the end of the day visualised.
+    public static final double[] DEMAND_CURVE = {375.4,374.6,350.2,334.5,305.0,285.5,277.2,275.1,273.1,268.1,264.4,262.4,255.3,251.0,244.3,242.1,237.1,236.4,230.3,230.7,223.6,222.5,232.9,241.9,251.2,250.6,239.9,231.6,228.2,220.0,224.8,231.1,231.8,232.1,248.1,253.3,262.5,276.8,283.1,289.0,320.0,361.1,394.1,415.2,432.8,449.4,459.5,480.8,496.4,498.9,506.7,497.4,491.4,497.0,494.0,494.8,495.1,498.0,490.6,488.5,482.0,485.3,480.0,476.2,464.6,468.2,468.4,473.6,482.2,471.9,471.2,476.5,490.3,498.8,490.7,496.9,496.1,490.4,474.6,475.4,472.7,464.2,462.4,458.0,449.8,447.0,440.9,445.5,451.3,455.5,463.9,462.1,470.7,472.6,483.3,489.9,502.5,528.9,543.1,568.6,593.5,610.7,643.0,655.4,664.9,683.1,696.4,711.7,716.5,725.5,712.5,707.1,714.1,709.9,713.5,720.1,705.0,709.0,696.0,701.3,691.9,689.3,681.0,675.8,664.7,656.6,652.1,646.8,631.8,622.3,606.0,594.2,579.6,571.0,553.3,538.4,538.1,518.4,500.0,473.9,445.3,429.2,423.7,406.1};
 
     // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
     // the following arrays. All possible combinations will be simulated.
@@ -77,5 +81,5 @@ public abstract class UserParameters extends FixedParameters {
     //     be compared.
     // 2 = The above combinations will be ran both with and without social capital enabled and with only selfish agents
     //     and with only social agents so that a baseline comparison can be made between the agents types.
-    public static int COMPARISON_LEVEL = 2;
+    public static int COMPARISON_LEVEL = 1;
 }

@@ -21,6 +21,7 @@ public class ArenaEnvironment {
      * @param folderName String representing the output destination folder, used to organise output data.
      * @param environmentTag String detailing specifics about the simulation environment.
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param demandCurve Double array representing the demand curve that agents should base their requests around.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
      * @param days Integer value representing the number of days to be simulated.
@@ -48,6 +49,7 @@ public class ArenaEnvironment {
             String folderName,
             String environmentTag,
             int[] daysOfInterest,
+            double[] demandCurve,
             boolean socialCapital,
             int simulationRuns,
             int days,
@@ -190,6 +192,28 @@ public class ArenaEnvironment {
             }
         }
 
+        // The demand curve is bucketed before the simulations for efficiency, as they will all use the same bucketed values.
+        double[] bucketedDemandCurve = new double[uniqueTimeSlots];
+        int bucket = 0;
+        int bucketFill = 0;
+        for (int i = 0; i < demandCurve.length; i++) {
+            bucketedDemandCurve[bucket] = bucketedDemandCurve[bucket] + demandCurve[i];
+            bucketFill++;
+            if (bucketFill == 6) {
+                // Rounding to fix precision errors.
+                bucketedDemandCurve[bucket] = Math.round(bucketedDemandCurve[bucket] * 10.0) / 10.0;
+                bucketFill = 0;
+                bucket++;
+            }
+        }
+
+        // The total demand is also calculated here for efficiency.
+        double totalDemand = 0;
+        for (int i = 0; i < bucketedDemandCurve.length; i++) {
+            totalDemand = totalDemand + bucketedDemandCurve[i];
+        }
+        totalDemand = Math.round(totalDemand * 10.0) / 10.0;
+
         // Run as many simulations as has been requested.
         for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
             /*
@@ -197,6 +221,8 @@ public class ArenaEnvironment {
              * a single location.
              *
              * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+             * @param demandCurve Double array representing the demand curve that agents should base their requests around.
+             * @param totalDemand Double value represeneting the sum of all values in the demand curve.
              * @param days Integer value representing the number of days to be simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
@@ -227,6 +253,8 @@ public class ArenaEnvironment {
              */
             new SimulationRun(
                     daysOfInterest,
+                    bucketedDemandCurve,
+                    totalDemand,
                     days,
                     exchanges,
                     populationSize,

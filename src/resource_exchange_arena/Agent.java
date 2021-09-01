@@ -181,13 +181,13 @@ class Agent {
     }
 
     /**
-     * Checks the time slots that exist in the simulations and makes a new request for a number of unique time slots
-     * according to how many slots the Agent wants.
+     * Checks the time slots that exist in the simulation and makes a new request for a number of unique time slots
+     * according to how many slots the Agent wants and the given demand curve.
      *
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
+     * @param demandCurve Double array representing the demand curve that the agent should base its requests around.
      * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
      */
-    ArrayList<Integer> requestTimeSlots(int uniqueTimeSlots) {
+    ArrayList<Integer> requestTimeSlots(double[] demandCurve, double totalDemand) {
 
         if (!requestedTimeSlots.isEmpty()) {
             requestedTimeSlots.clear();
@@ -197,9 +197,14 @@ class Agent {
             // Get the simulations seeded Random object.
             Random random = ResourceExchangeArena.random;
 
-            // Selects a random integer representing the time slot between 1 and the total number of available slots
-            // that exist in the simulation.
-            int timeSlot = random.nextInt(uniqueTimeSlots) + 1;
+            // Selects a time slot based on the demand curve.
+            int wheelSelector = random.nextInt((int)totalDemand * 10);
+            int wheelCalculator = 0;
+            int timeSlot = 0;
+            while (wheelCalculator < wheelSelector) {
+                wheelCalculator = wheelCalculator + ((int)demandCurve[timeSlot] * 10);
+                timeSlot++;
+            }
 
             // Ensures all requested time slots are unique.
             if (requestedTimeSlots.contains(timeSlot)) {
