@@ -10,8 +10,9 @@ class SimulationRun {
      * location.
      *
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-     * @param demandCurve Double array representing the demand curve that agents should base their requests around.
-     * @param totalDemand Double value represeneting the sum of all values in the demand curve.
+     * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
+     *                    are split equally between the curves.
+     * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
@@ -38,8 +39,8 @@ class SimulationRun {
      */
     SimulationRun(
             int[] daysOfInterest,
-            double[] demandCurve,
-            double totalDemand,
+            double[][] demandCurves,
+            double[] totalDemandValues,
             int days,
             int exchanges,
             int populationSize,
@@ -106,8 +107,9 @@ class SimulationRun {
              * single location.
              *
              * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
-             * @param demandCurve Double array representing the demand curve that agents should base their requests around.
-             * @param totalDemand Double value represeneting the sum of all values in the demand curve.
+             * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
+             *                    are split equally between the curves.
+             * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
              * @param day Integer value representing the current day being simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
@@ -131,8 +133,8 @@ class SimulationRun {
              */
             new Day(
                     daysOfInterest,
-                    demandCurve,
-                    totalDemand,
+                    demandCurves,
+                    totalDemandValues,
                     day,
                     exchanges,
                     populationSize,

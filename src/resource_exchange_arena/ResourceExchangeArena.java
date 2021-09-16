@@ -299,8 +299,8 @@ public class ResourceExchangeArena extends UserParameters {
                      * @param environmentTag String detailing specifics about the simulation environment.
                      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the
                      *                       simulation.
-                     * @param demandCurve Double array representing the demand curve that agents should base their
-                     *                    requests around.
+                     * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used
+                     *                     the agents are split equally between the curves.
                      * @param socialCapital Boolean value that determines whether or not social agents will utilise
                      *                      social capital.
                      * @param simulationRuns Integer value representing the number of simulations to be ran and
@@ -333,7 +333,7 @@ public class ResourceExchangeArena extends UserParameters {
                             dataOutputFolder,
                             environmentTag,
                             DAYS_OF_INTEREST,
-                            DEMAND_CURVE,
+                            DEMAND_CURVES,
                             USE_SOCIAL_CAPITAL,
                             SIMULATION_RUNS,
                             DAYS,
