@@ -38,6 +38,7 @@ public class ArenaEnvironment {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
+     * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
      * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population distributions summary
      *                                                  file.
@@ -62,6 +63,7 @@ public class ArenaEnvironment {
             int[] agentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
+            double[] agentFlexibility,
             FileWriter comparingExchangesCSVWriter,
             FileWriter comparingPopulationDistributionsCSVWriter,
             String pythonExe,
@@ -250,6 +252,7 @@ public class ArenaEnvironment {
              *                        establishing baseline results.
              * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
              *                                singleAgentType is true.
+             * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
              * @param socialCapital Boolean value that determines whether or not social agents will utilise
              *                      social capital.
              * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
@@ -275,6 +278,7 @@ public class ArenaEnvironment {
                     uniqueAgentTypes,
                     singleAgentType,
                     selectedSingleAgentType,
+                    agentFlexibility,
                     socialCapital,
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,

@@ -321,6 +321,8 @@ public class ResourceExchangeArena extends UserParameters {
                      *                        used for establishing baseline results.
                      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled
                      *                                when singleAgentType is true.
+                     * @param agentFlexibility Double array which determines the satisfaction gained from timeslots
+                     *                         other than preferred.
                      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
                      * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population
                      *                                                  distributions summary file.
@@ -345,6 +347,7 @@ public class ResourceExchangeArena extends UserParameters {
                             AGENT_TYPES,
                             SINGLE_AGENT_TYPE,
                             SELECTED_SINGLE_AGENT_TYPE,
+                            AGENT_FLEXIBILITY,
                             comparingExchangesCSVWriter,
                             comparingPopulationDistributionsCSVWriter,
                             PYTHON_EXE,

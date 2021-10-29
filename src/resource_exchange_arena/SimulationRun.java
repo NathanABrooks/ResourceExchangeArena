@@ -28,6 +28,7 @@ class SimulationRun {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
+     * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
@@ -51,6 +52,7 @@ class SimulationRun {
             ArrayList<Integer> uniqueAgentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
+            double[] agentFlexibility,
             boolean socialCapital,
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
@@ -72,13 +74,15 @@ class SimulationRun {
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
                  * @param agents Array List of all the agents that exist in the current simulation.
                  * @param socialCapital determines whether the agent uses socialCapital.
+                 * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
                  */
                 new Agent(
                         agentNumber,
                         agentTypes[agentNumber % agentTypes.length],
                         slotsPerAgent,
                         agents,
-                        socialCapital
+                        socialCapital,
+                        agentFlexibility
                 );
         }
         Collections.shuffle(agents, ResourceExchangeArena.random);
