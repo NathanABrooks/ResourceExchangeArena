@@ -23,6 +23,7 @@ public class ArenaEnvironment {
      * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents are
      *                     split equally between the curves.
+     * @param availabilityCurve Integer array of energy availability used by the simulation.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
      * @param days Integer value representing the number of days to be simulated.
@@ -38,7 +39,6 @@ public class ArenaEnvironment {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
-     * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
      * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
      * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population distributions summary
      *                                                  file.
@@ -52,6 +52,7 @@ public class ArenaEnvironment {
             String environmentTag,
             int[] daysOfInterest,
             double[][] demandCurves,
+            int[] availabilityCurve,
             boolean socialCapital,
             int simulationRuns,
             int days,
@@ -63,7 +64,6 @@ public class ArenaEnvironment {
             int[] agentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
-            double[] agentFlexibility,
             FileWriter comparingExchangesCSVWriter,
             FileWriter comparingPopulationDistributionsCSVWriter,
             String pythonExe,
@@ -225,6 +225,28 @@ public class ArenaEnvironment {
 
         }
 
+        // The availability curve is bucketed before the simulations for efficiency, as they will all use the same bucketed values.
+        int[] bucketedAvailabilityCurve = new int[uniqueTimeSlots];
+        int totalAvailability = 0;
+        
+        int bucket = 0;
+        int bucketFill = 0;
+        int bucketValue = 0;
+        for (int i = 0; i < availabilityCurve.length; i++) {
+            totalAvailability += availabilityCurve[i];
+            bucketValue += availabilityCurve[i];
+            bucketFill++;
+
+            if (bucketFill == 2) {
+                bucketedAvailabilityCurve[bucket] = bucketValue;
+                bucket++;
+                bucketValue = 0;
+                bucketFill = 0;
+            }
+        }
+
+
+
         // Run as many simulations as has been requested.
         for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
             /*
@@ -235,6 +257,8 @@ public class ArenaEnvironment {
              * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
              *                    are split equally between the curves.
              * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
+             * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+             * @param totalAvailability Integer value representing the total energy available throughout the day.
              * @param days Integer value representing the number of days to be simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
@@ -252,7 +276,6 @@ public class ArenaEnvironment {
              *                        establishing baseline results.
              * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
              *                                singleAgentType is true.
-             * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
              * @param socialCapital Boolean value that determines whether or not social agents will utilise
              *                      social capital.
              * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
@@ -268,6 +291,8 @@ public class ArenaEnvironment {
                     daysOfInterest,
                     bucketedDemandCurves,
                     totalDemandValues,
+                    bucketedAvailabilityCurve,
+                    totalAvailability,
                     days,
                     exchanges,
                     populationSize,
@@ -278,7 +303,6 @@ public class ArenaEnvironment {
                     uniqueAgentTypes,
                     singleAgentType,
                     selectedSingleAgentType,
-                    agentFlexibility,
                     socialCapital,
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,

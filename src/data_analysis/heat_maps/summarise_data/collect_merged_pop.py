@@ -68,7 +68,7 @@ for v in simulationVersions:
                                 selPop += float(df_day['Population'][i])
                             elif int(df_day['Agent Type'][i]) == 2:
                                 socPop += float(df_day['Population'][i])
-                            totalPop += int(df_day['Population'][i])
+                            totalPop += float(df_day['Population'][i])
                         ln.append(l)
                         ex.append(e)
                         dy.append(d)

@@ -12,7 +12,6 @@ class Agent {
     private final boolean usesSocialCapital;
     private boolean madeInteraction;
     private final int numberOfTimeSlotsWanted;
-    private final double[] agentFlexibility;
     private ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
@@ -29,13 +28,12 @@ class Agent {
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param agents Array List of all the agents that exist in the current simulation.
      * @param socialCapital determines whether the agent uses socialCapital.
-     * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
      */
-    Agent(int agentID, int agentType, int slotsPerAgent, ArrayList<Agent> agents, boolean socialCapital, double[] agentFlexibility){
+    Agent(int agentID, int agentType, int slotsPerAgent, ArrayList<Agent> agents, boolean socialCapital){
         this.agentID = agentID;
         this.agentType = agentType;
         this.usesSocialCapital = socialCapital;
-        this.agentFlexibility = agentFlexibility;
+
         madeInteraction = false;
         numberOfTimeSlotsWanted = slotsPerAgent;
 
@@ -300,88 +298,19 @@ class Agent {
         if (!targetTimeSlots.isEmpty()) {
             // Search the advertising board for a potential exchange.
             advertSelection:
-            for (int i = 0; i < agentFlexibility.length; i++) {
-
-                if (i == 0) {
-                    for (ArrayList<Integer> advert : advertisingBoard) {
-                        for (int j = 1; j < advert.size(); j++) {
-                            if (targetTimeSlots.contains(advert.get(j))) {
-
-
-                                // Only take the part of the advert that is relevant, and split adverts with multiple
-                                // exchangeable time slots into multiple adverts.
-                                ArrayList<Integer> selectedAdvert = new ArrayList<>();
-                                selectedAdvert.add(advert.get(0));
-                                selectedAdvert.add(advert.get(j));
-
-                                ArrayList<Integer> unwantedTimeSlots = publishUnlockedTimeSlots();
-                                double currentSatisfaction = calculateSatisfaction(null);
-                                int slotToExchange = 0;
-                                for (Integer timeSlot: unwantedTimeSlots) {
-                                    ArrayList<Integer> potentialSwitch = new ArrayList<>(this.allocatedTimeSlots);
-                                    potentialSwitch.remove(Integer.valueOf(timeSlot));
-                                    potentialSwitch.add(advert.get(j));
-                                    double calculatedSatisfaction = calculateSatisfaction(potentialSwitch);
-                                    if (calculatedSatisfaction > currentSatisfaction) {
-                                        slotToExchange = timeSlot;
-                                    }
-                                }
-                                selectedAdvert.add(slotToExchange);
-                                if (slotToExchange != 0) {
-                                    potentialExchange = selectedAdvert;
-                                }
-                                break advertSelection;
-  
-                            }
-                        }
+            for (ArrayList<Integer> advert : advertisingBoard) {
+                for (int j = 1; j < advert.size(); j++) {
+                    if (targetTimeSlots.contains(advert.get(j))) {
+                        // Only take the part of the advert that is relevant, and split adverts with multiple
+                        // exchangeable time slots into multiple adverts.
+                        ArrayList<Integer> selectedAdvert = new ArrayList<>();
+                        selectedAdvert.add(advert.get(0));
+                        selectedAdvert.add(advert.get(j));
+                        potentialExchange = selectedAdvert;
+                        break advertSelection;
                     }
-                } else {
-                    ArrayList<Integer> newTargetTimeSlots = new ArrayList<>();
-                    for (Integer potentialSlot : targetTimeSlots) {
-                        int temp1 = potentialSlot + i;
-                        if (temp1 > 24) {
-                            temp1 -= 24;
-                        }
-                        int temp2 = potentialSlot - i;
-                        if (temp2 < 1) {
-                            temp2 += 24;
-                        }
-                        newTargetTimeSlots.add(temp1);
-                        newTargetTimeSlots.add(temp2);
-                    }
-
-                    for (ArrayList<Integer> advert : advertisingBoard) {
-                        for (int j = 1; j < advert.size(); j++) {
-                            if (newTargetTimeSlots.contains(advert.get(j))) {
-                                // Only take the part of the advert that is relevant, and split adverts with multiple
-                                // exchangeable time slots into multiple adverts.
-                                ArrayList<Integer> selectedAdvert = new ArrayList<>();
-                                selectedAdvert.add(advert.get(0));
-                                selectedAdvert.add(advert.get(j));
-
-                                ArrayList<Integer> unwantedTimeSlots = publishUnlockedTimeSlots();
-                                double currentSatisfaction = calculateSatisfaction(null);
-                                int slotToExchange = 0;
-                                for (Integer timeSlot: unwantedTimeSlots) {
-                                    ArrayList<Integer> potentialSwitch = new ArrayList<>(this.allocatedTimeSlots);
-                                    potentialSwitch.remove(Integer.valueOf(timeSlot));
-                                    potentialSwitch.add(advert.get(j));
-                                    double calculatedSatisfaction = calculateSatisfaction(potentialSwitch);
-                                    if (calculatedSatisfaction > currentSatisfaction) {
-                                        slotToExchange = timeSlot;
-                                    }
-                                }
-                                selectedAdvert.add(slotToExchange);
-                                if (slotToExchange != 0) {
-                                    potentialExchange = selectedAdvert;
-                                }
-                                break advertSelection;
-                            }
-                        }
-                    }                 
-                    
                 }
-            }   
+            }
         }
         return potentialExchange;
     }
@@ -391,8 +320,9 @@ class Agent {
      *
      * @param request An Agent's agentID, the time slot that it wants and the time slot that it is willing to exchange.
      */
-    void receiveExchangeRequest(ArrayList<Integer> request) {
+    void receiveExchangeRequest(ArrayList<Integer> request, int partnersAgentType) {
         exchangeRequestReceived = request;
+        exchangeRequestReceived.add(partnersAgentType);
     }
 
     /**
@@ -411,7 +341,10 @@ class Agent {
             potentialAllocatedTimeSlots.add(exchangeRequestReceived.get(2));
 
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
-            if (agentType == ResourceExchangeArena.SOCIAL) {
+            
+
+            if (agentType == ResourceExchangeArena.SOCIAL && exchangeRequestReceived.get(3) == ResourceExchangeArena.SOCIAL) {
+            // if (agentType == ResourceExchangeArena.SOCIAL) {
                 // Social Agents accept offers that improve their satisfaction or if they have negative social capital
                 // with the Agent who made the request.
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0) {
@@ -466,8 +399,9 @@ class Agent {
      *
      * @param offer The exchange that is to be completed.
      * @param agentID The agentID of the agent that has fulfilled the exchange request.
+     * @param agentType The strategy being used by the agent that has fulfilled the exchange request.
      */
-    void completeRequestedExchange(ArrayList<Integer> offer, int agentID) {
+    void completeRequestedExchange(ArrayList<Integer> offer, int agentID, int partnersAgentType) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(2));
@@ -478,7 +412,7 @@ class Agent {
         // Update the Agents relationship with the other Agent involved in the exchange.
         if (usesSocialCapital) {
             if (Double.compare(newSatisfaction, previousSatisfaction) > 0
-                    && agentType == ResourceExchangeArena.SOCIAL) {
+                    && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
                 for (ArrayList<Integer> favours : favoursOwed) {
                     if (favours.get(0).equals(agentID)) {
                         int currentFavour = favours.get(1);
@@ -495,8 +429,9 @@ class Agent {
      * Agents relationship with the other Agent involved.
      *
      * @param offer The exchange that is to be completed.
+     * @param agentType The strategy being used by the agent that requested the exchange request.
      */
-    void completeReceivedExchange(ArrayList<Integer> offer) {
+    void completeReceivedExchange(ArrayList<Integer> offer, int partnersAgentType) {
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(1));
@@ -506,7 +441,7 @@ class Agent {
         // Update the Agents relationship with the other Agent involved in the exchange.
         if (usesSocialCapital) {
             if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
-                    && agentType == ResourceExchangeArena.SOCIAL) {
+                    && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
                 for (ArrayList<Integer> favours : favoursGiven) {
                     if (favours.get(0).equals(offer.get(0))) {
                         int currentFavour = favours.get(1);
@@ -529,56 +464,18 @@ class Agent {
         if (timeSlots == null) {
             timeSlots = this.allocatedTimeSlots;
         }
+
         ArrayList<Integer> tempRequestedTimeSlots = new ArrayList<>(requestedTimeSlots);
-        ArrayList<Integer> tempAllocatedTimeSlots = new ArrayList<>(timeSlots);
 
         // Count the number of the given time slots that match the Agents requested time slots.
-        double totalSatisfaction = 0;
-
-        flexibility:
-        for (int i = 0; i < agentFlexibility.length; i++) {
-            ArrayList<Integer> tempAllocatedTimeSlotsCopy = new ArrayList<>(tempAllocatedTimeSlots);
-            for (int allocatedSlot : tempAllocatedTimeSlotsCopy) {
-                if (tempRequestedTimeSlots.size() == 0) {
-                    break flexibility;
-                }
-                if (i == 0) {
-                    if (tempRequestedTimeSlots.contains(allocatedSlot)) {
-                        tempRequestedTimeSlots.remove(Integer.valueOf(allocatedSlot));
-                        tempAllocatedTimeSlots.remove(Integer.valueOf(allocatedSlot));
-                        totalSatisfaction += agentFlexibility[i];
-                    }
-                } else {
-                    for (Integer requestedSlot : tempRequestedTimeSlots) {
-                        int temp1 = requestedSlot + i;
-                        if (temp1 > 24) {
-                            temp1 -= 24;
-                        }
-                        int temp2 = requestedSlot - i;
-                        if (temp2 < 1) {
-                            temp2 += 24;
-                        }
-
-                        if (allocatedSlot == temp1) {
-                            tempRequestedTimeSlots.remove(Integer.valueOf(requestedSlot));
-                            tempAllocatedTimeSlots.remove(Integer.valueOf(allocatedSlot));
-                            totalSatisfaction += agentFlexibility[i];
-                            break;
-                        } else if (allocatedSlot == temp2) {
-                            tempRequestedTimeSlots.remove(Integer.valueOf(requestedSlot));
-                            tempAllocatedTimeSlots.remove(Integer.valueOf(allocatedSlot));
-                            totalSatisfaction += agentFlexibility[i];
-                            break;
-                        }
-                    }
-                }
+        double satisfiedSlots = 0;
+        for (int timeSlot : timeSlots) {
+            if (tempRequestedTimeSlots.contains(timeSlot)) {
+                tempRequestedTimeSlots.remove(Integer.valueOf(timeSlot));
+                satisfiedSlots++;
             }
         }
         // Return the Agents satisfaction with the given time slots, between 1 and 0.
-        return totalSatisfaction / numberOfTimeSlotsWanted;
-    }
-
-    void satisfactionCheck() {
-
+        return satisfiedSlots / numberOfTimeSlotsWanted;
     }
 }

@@ -13,6 +13,8 @@ class SimulationRun {
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
      *                    are split equally between the curves.
      * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
+     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+     * @param totalAvailability Integer value representing the total energy available throughout the day.
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
@@ -28,7 +30,6 @@ class SimulationRun {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
-     * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
@@ -42,6 +43,8 @@ class SimulationRun {
             int[] daysOfInterest,
             double[][] demandCurves,
             double[] totalDemandValues,
+            int [] availabilityCurve,
+            int totalAvailability,
             int days,
             int exchanges,
             int populationSize,
@@ -52,7 +55,6 @@ class SimulationRun {
             ArrayList<Integer> uniqueAgentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
-            double[] agentFlexibility,
             boolean socialCapital,
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
@@ -74,15 +76,13 @@ class SimulationRun {
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
                  * @param agents Array List of all the agents that exist in the current simulation.
                  * @param socialCapital determines whether the agent uses socialCapital.
-                 * @param agentFlexibility Double array which determines the satisfaction gained from timeslots other than preferred.
                  */
                 new Agent(
                         agentNumber,
                         agentTypes[agentNumber % agentTypes.length],
                         slotsPerAgent,
                         agents,
-                        socialCapital,
-                        agentFlexibility
+                        socialCapital
                 );
         }
         Collections.shuffle(agents, ResourceExchangeArena.random);
@@ -114,6 +114,8 @@ class SimulationRun {
              * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
              *                    are split equally between the curves.
              * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
+             * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+             * @param totalAvailability Integer value representing the total energy available throughout the day.
              * @param day Integer value representing the current day being simulated.
              * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
              *                  per day.
@@ -139,6 +141,8 @@ class SimulationRun {
                     daysOfInterest,
                     demandCurves,
                     totalDemandValues,
+                    availabilityCurve,
+                    totalAvailability,
                     day,
                     exchanges,
                     populationSize,

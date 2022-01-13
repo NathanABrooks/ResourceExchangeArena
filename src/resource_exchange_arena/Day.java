@@ -3,6 +3,7 @@ package resource_exchange_arena;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 public class Day {
@@ -17,6 +18,8 @@ public class Day {
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
      *                    are split equally between the curves.
      * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
+     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+     * @param totalAvailability Integer value representing the total energy available throughout the day.
      * @param day Integer value representing the current day being simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
@@ -39,6 +42,8 @@ public class Day {
             int[] daysOfInterest,
             double[][] demandCurves,
             double[] totalDemandValues,
+            int [] availabilityCurve,
+            int totalAvailability,
             int day,
             int exchanges,
             int populationSize,
@@ -53,28 +58,28 @@ public class Day {
             ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions
     ) throws IOException{
 
+        if(!availableTimeSlots.isEmpty()) {
+            availableTimeSlots.clear();
+        }
+
         // Fill the available time slots with all the slots that exist each day.
         int requiredTimeSLots = populationSize * slotsPerAgent;
-        ArrayList<Integer> possibleTimeSlots = new ArrayList<>();
 
-        while(availableTimeSlots.size() < requiredTimeSLots){
-            for (int timeSlot = 1; timeSlot <= uniqueTimeSlots; timeSlot++) {
-                possibleTimeSlots.add(timeSlot);
+        for (int i = 1; i <= requiredTimeSLots; i++) {
+            // Get the simulations seeded Random object.
+            Random random = ResourceExchangeArena.random;
+
+            // Selects a time slot based on the demand curve.
+            int wheelSelector = random.nextInt(totalAvailability);
+            int wheelCalculator = 0;
+            int timeSlot = 0;
+            while (wheelCalculator < wheelSelector) {
+                wheelCalculator = wheelCalculator + (availabilityCurve[timeSlot]);
+                timeSlot++;
             }
-
-            while(!possibleTimeSlots.isEmpty()){
-                if (availableTimeSlots.size() < requiredTimeSLots) {
-                    int selector = ResourceExchangeArena.random.nextInt(possibleTimeSlots.size());
-                    int timeSlot = possibleTimeSlots.get(selector);
-
-                    availableTimeSlots.add(timeSlot);
-                    possibleTimeSlots.remove(selector);
-                } else {
-                    possibleTimeSlots.clear();
-                    break;
-                }
-            }
+            availableTimeSlots.add(timeSlot);
         }
+
 
         // Agents start the day by requesting and receiving an allocation of time slots.
         Collections.shuffle(agents, ResourceExchangeArena.random);

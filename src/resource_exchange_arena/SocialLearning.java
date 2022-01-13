@@ -50,7 +50,27 @@ class SocialLearning {
                 double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                 double threshold = ResourceExchangeArena.random.nextDouble();
                 if (difference > threshold) {
-                    learningAgent.setType((int) Math.round(previousPerformances[observedPerformance][0]));
+                    int newType = (int) Math.round(previousPerformances[observedPerformance][0]); 
+                    learningAgent.setType(newType);
+
+                    // if (newType == ResourceExchangeArena.SELFISH) {
+                    //     learningAgent.initializeFavoursStore(agents);
+
+                    //     for (Agent a: agents) {
+                    //         for (ArrayList<Integer> favours : a.getFavoursGiven()) {
+                    //             if (favours.get(0).equals(learningAgent.agentID)) {
+                    //                 favours.set(1,0);
+                    //                 break;
+                    //             }
+                    //         }
+                    //         for (ArrayList<Integer> favours : a.getFavoursOwed()) {
+                    //             if (favours.get(0).equals(learningAgent.agentID)) {
+                    //                 favours.set(1,0);
+                    //                 break;
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
             }
             unselectedAgents.remove(learningAgent);

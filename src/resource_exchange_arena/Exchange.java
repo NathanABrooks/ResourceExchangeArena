@@ -56,17 +56,21 @@ class Exchange {
                 ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
                 a.setMadeInteraction(true);
                 if (!chosenAdvert.isEmpty()) {
+                    // Select an unwanted time slot to offer in the exchange.
+                    ArrayList<Integer> unwantedTimeSlots = a.publishUnlockedTimeSlots();
+                    int selector = ResourceExchangeArena.random.nextInt(unwantedTimeSlots.size());
+                    int unwantedTimeSlot = unwantedTimeSlots.get(selector);
 
                     ArrayList<Integer> request = new ArrayList<>();
                     request.add(a.agentID);
                     request.add(chosenAdvert.get(1));
-                    request.add(chosenAdvert.get(2));
+                    request.add(unwantedTimeSlot);
 
                     // The agent who offered the requested time slot receives the exchange request.
                     for (Agent b : agents) {
                         if (b.agentID == chosenAdvert.get(0)) {
                             if (b.madeInteraction() == false) {
-                                b.receiveExchangeRequest(request);
+                                b.receiveExchangeRequest(request, a.getAgentType());
                                 b.setMadeInteraction(true);
                                 break;
                             }
@@ -94,8 +98,8 @@ class Exchange {
                     for (Agent b : agents) {
                         if (b.agentID == offer.get(0)) {
                             if (b.finalCheck(offer.get(2))) {
-                                b.completeRequestedExchange(offer, a.agentID);
-                                a.completeReceivedExchange(offer);
+                                b.completeRequestedExchange(offer, a.agentID, a.getAgentType());
+                                a.completeReceivedExchange(offer, b.getAgentType());
                             }
                             break;
                         }
