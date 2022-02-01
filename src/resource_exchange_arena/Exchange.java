@@ -84,7 +84,15 @@ class Exchange {
         Collections.shuffle(agents, ResourceExchangeArena.random);
         for (Agent a : agents) {
             if (!a.getExchangeRequestReceived().isEmpty()) {
-                a.considerRequest();
+                boolean accepted = a.considerRequest();
+                if (!accepted) {
+                    for (Agent b : agents) {
+                        if (b.agentID == a.getExchangeRequest().get(0)) {
+                            b.requestRejected();
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -98,8 +106,14 @@ class Exchange {
                     for (Agent b : agents) {
                         if (b.agentID == offer.get(0)) {
                             if (b.finalCheck(offer.get(2))) {
-                                b.completeRequestedExchange(offer, a.agentID, a.getAgentType());
-                                a.completeReceivedExchange(offer, b.getAgentType());
+                                boolean scgain = b.completeRequestedExchange(offer, a.agentID, a.getAgentType());
+                                boolean scloss = a.completeReceivedExchange(offer, b.getAgentType());
+                                if (scgain) {
+                                    a.gainedSocialCapital();
+                                }
+                                if (scloss) {
+                                    b.lostSocialCapital();
+                                }
                             }
                             break;
                         }

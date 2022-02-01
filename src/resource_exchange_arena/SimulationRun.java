@@ -31,6 +31,9 @@ class SimulationRun {
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
+     * @param socialCapitalTracking Stores the amount of social capital per agent for each agent type.
+     * @param exchangeTypeTracking Stores how many exchanges used social capital and how many did not.
+     * @param exchangeSuccessTracking Stores how many potential exchanges were accepted.
      * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
@@ -56,6 +59,9 @@ class SimulationRun {
             boolean singleAgentType,
             int selectedSingleAgentType,
             boolean socialCapital,
+            ArrayList<ArrayList<Integer>>  socialCapitalTracking,
+            ArrayList<ArrayList<Integer>>  exchangeTypeTracking,
+            ArrayList<ArrayList<Integer>>  exchangeSuccessTracking,
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
@@ -128,6 +134,9 @@ class SimulationRun {
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
              * @param agents Array List of all the agents that exist in the current simulation.
+             * @param socialCapitalTracking Stores the amount of social capital per agent for each agent type.
+             * @param exchangeTypeTracking Stores how many exchanges used social capital and how many did not.
+             * @param exchangeSuccessTracking Stores how many potential exchanges were accepted.
              * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
@@ -151,6 +160,9 @@ class SimulationRun {
                     numberOfAgentsToEvolve,
                     uniqueAgentTypes,
                     agents,
+                    socialCapitalTracking,
+                    exchangeTypeTracking,
+                    exchangeSuccessTracking,
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,

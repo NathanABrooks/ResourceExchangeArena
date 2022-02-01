@@ -30,6 +30,9 @@ public class Day {
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
      * @param agents Array List of all the agents that exist in the current simulation.
+     * @param socialCapitalTracking Stores the amount of social capital per agent for each agent type.
+     * @param exchangeTypeTracking Stores how many exchanges used social capital and how many did not.
+     * @param exchangeSuccessTracking Stores how many potential exchanges were accepted.
      * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
      * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
      *                                       round.
@@ -52,6 +55,9 @@ public class Day {
             int numberOfAgentsToEvolve,
             ArrayList<Integer> uniqueAgentTypes,
             ArrayList<Agent> agents,
+            ArrayList<ArrayList<Integer>>  socialCapitalTracking,
+            ArrayList<ArrayList<Integer>>  exchangeTypeTracking,
+            ArrayList<ArrayList<Integer>>  exchangeSuccessTracking,
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
@@ -85,6 +91,7 @@ public class Day {
         Collections.shuffle(agents, ResourceExchangeArena.random);
         int curve = 0;
         for (Agent a : agents) {
+            a.resetDailyTracking();
             ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(demandCurves[curve], totalDemandValues[curve]);
             ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
             a.receiveAllocatedTimeSlots(allocatedTimeSlots);
@@ -157,6 +164,7 @@ public class Day {
         }
 
         // On days of interest, store the satisfaction for each agent at the end of the day to be added to violin plots.
+        // Also store information about average social capital and the exchanges that occured that day.
         if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
             for (Agent a : agents) {
                 ArrayList<Double> endOfDaySatisfaction = new ArrayList<>();
@@ -164,6 +172,28 @@ public class Day {
                 endOfDaySatisfaction.add((double) a.getAgentType());
                 endOfDaySatisfaction.add(a.calculateSatisfaction(null));
                 endOfDaySatisfactions.add(endOfDaySatisfaction);
+
+                ArrayList<Integer> socialCapitalTracked = new ArrayList<>();
+                socialCapitalTracked.add(day);
+                socialCapitalTracked.add(a.getAgentType());
+                socialCapitalTracked.add(a.getUnspentSocialCapital());
+                socialCapitalTracking.add(socialCapitalTracked);
+
+                ArrayList<Integer> exchangeTypeTracked = new ArrayList<>();
+                exchangeTypeTracked.add(day);
+                exchangeTypeTracked.add(a.getAgentType());
+                exchangeTypeTracked.add(a.getSocialCapitalExchanges());
+                exchangeTypeTracked.add(a.getNoSocialCapitalExchanges());
+                exchangeTypeTracking.add(exchangeTypeTracked);
+
+                ArrayList<Integer> exchangeSuccessTracked = new ArrayList<>();
+                exchangeSuccessTracked.add(day);
+                exchangeSuccessTracked.add(a.getAgentType());
+                exchangeSuccessTracked.add(a.getRejectedReceivedExchanges());
+                exchangeSuccessTracked.add(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges());
+                exchangeSuccessTracked.add(a.getRejectedRequestedExchanges());
+                exchangeSuccessTracked.add(a.getAcceptedRequestedExchanges());
+                exchangeSuccessTracking.add(exchangeSuccessTracked);
             }
         }
 

@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class ArenaEnvironment {
@@ -14,6 +13,10 @@ public class ArenaEnvironment {
     ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
+
+    ArrayList<ArrayList<Integer>>  socialCapitalTracking = new ArrayList<>();
+    ArrayList<ArrayList<Integer>>  exchangeTypeTracking = new ArrayList<>();
+    ArrayList<ArrayList<Integer>>  exchangeSuccessTracking = new ArrayList<>();
 
     /**
      * The arena is the environment in which all simulations take place.
@@ -85,8 +88,58 @@ public class ArenaEnvironment {
 
         // Create a directory to store the data output by the simulation.
         String dataOutputFolder = folderName + "/" + environmentTag + "/data";
-        Path dataOutputPath = Paths.get(dataOutputFolder);
+        Path dataOutputPath = Path.of(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
+
+        // Stores the amount of unspent social capital each agent has accumulated.
+        File socialCapitalData = new File(dataOutputFolder, "socialCapitalTracking.csv");
+
+        FileWriter socialCapitalDataCSVWriter = new FileWriter(socialCapitalData);
+        
+        socialCapitalDataCSVWriter.append("Day");
+        socialCapitalDataCSVWriter.append(",");
+        socialCapitalDataCSVWriter.append("Agent Type");
+        socialCapitalDataCSVWriter.append(",");
+        socialCapitalDataCSVWriter.append("Unspent Social Capital");
+        socialCapitalDataCSVWriter.append("\n");
+
+        // Stores the amount of exchanges that used social capital and those that did not.
+        File exchangeTypeData = new File(dataOutputFolder, "exchangeTypeTracking.csv");
+
+        FileWriter exchangeTypeDataCSVWriter = new FileWriter(exchangeTypeData);
+
+        exchangeTypeDataCSVWriter.append("Day");
+        exchangeTypeDataCSVWriter.append(",");
+        exchangeTypeDataCSVWriter.append("Agent Type");
+        exchangeTypeDataCSVWriter.append(",");
+        exchangeTypeDataCSVWriter.append("Social Capital Exchanges");
+        exchangeTypeDataCSVWriter.append(",");
+        exchangeTypeDataCSVWriter.append("No Social Capital Exchanges");
+        exchangeTypeDataCSVWriter.append("\n");
+
+        // Stores the amount of exchange requests that were considered and accepted and considered and rejected.
+        File exchangeSuccessData = new File(dataOutputFolder, "exchangeSuccessTracking.csv");
+
+        FileWriter exchangeSuccessDataCSVWriter = new FileWriter(exchangeSuccessData);
+
+        exchangeSuccessDataCSVWriter.append("Day");
+        exchangeSuccessDataCSVWriter.append(",");
+        exchangeSuccessDataCSVWriter.append("Agent Type");
+        exchangeSuccessDataCSVWriter.append(",");
+        exchangeSuccessDataCSVWriter.append("Rejected Received Exchanges");
+        exchangeSuccessDataCSVWriter.append(",");
+        exchangeSuccessDataCSVWriter.append("Accepted Received Exchanges");
+        exchangeSuccessDataCSVWriter.append(",");
+        exchangeSuccessDataCSVWriter.append("Rejected Requested Exchanges");
+        exchangeSuccessDataCSVWriter.append(",");
+        exchangeSuccessDataCSVWriter.append("Accepted Requested Exchanges");
+        exchangeSuccessDataCSVWriter.append("\n");
+
+        // Stores a summary of various tracked stats.
+        File trackingSummaryData = new File(dataOutputFolder, "trackingSummary.txt");
+
+        FileWriter statsSummaryDataWriter = new FileWriter(trackingSummaryData);
+        
 
         // Stores the average satisfaction of each Agent type at the end of each day, as well as the optimum average
         // satisfaction and the satisfaction if allocations remained random. Values are averaged over multiple
@@ -246,7 +299,9 @@ public class ArenaEnvironment {
         }
 
 
-
+        ArrayList<ArrayList<Integer>>  socialCapitalTracking = new ArrayList<>();
+        ArrayList<ArrayList<Integer>>  exchangeTypeTracking = new ArrayList<>();
+        ArrayList<ArrayList<Integer>>  exchangeSuccessTracking = new ArrayList<>();
         // Run as many simulations as has been requested.
         for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
             /*
@@ -278,6 +333,9 @@ public class ArenaEnvironment {
              *                                singleAgentType is true.
              * @param socialCapital Boolean value that determines whether or not social agents will utilise
              *                      social capital.
+             * @param socialCapitalTracking Stores the amount of social capital per agent for each agent type.
+             * @param exchangeTypeTracking Stores how many exchanges used social capital and how many did not.
+             * @param exchangeSuccessTracking Stores how many potential exchanges were accepted.
              * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
              * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
              *                                       each round.
@@ -304,6 +362,9 @@ public class ArenaEnvironment {
                     singleAgentType,
                     selectedSingleAgentType,
                     socialCapital,
+                    socialCapitalTracking,
+                    exchangeTypeTracking,
+                    exchangeSuccessTracking,
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
@@ -388,8 +449,13 @@ public class ArenaEnvironment {
 
         // Individual satisfaction levels for days of interest are sorted into a csv file so that they can be added to
         // violin plots.
+        // Data saved to track unspent social capital, the types of exchanges that occur and rejected exchanges is
+        // also handled here.
         for (int day : daysOfInterest) {
+            statsSummaryDataWriter.append("Day: " + (String.valueOf(day)) + "\n");
             for (int agentType : uniqueAgentTypes) {
+                statsSummaryDataWriter.append("Agent Type: " + Inflect.getHumanReadableAgentType(agentType) + "\n");
+
                 for (ArrayList<Double> endOfDaySatisfaction : endOfDaySatisfactions) {
                     if ((endOfDaySatisfaction.get(0) == (double) day) &&
                             (endOfDaySatisfaction.get(1) == (double) agentType)) {
@@ -401,6 +467,76 @@ public class ArenaEnvironment {
                         individualSatisfactionsCSVWriter.append("\n");
                     }
                 }
+
+                ArrayList<Integer> unspentSocialCapital = new ArrayList<>();
+                for (ArrayList<Integer> sct : socialCapitalTracking) {
+                    if ((sct.get(0) == day) && (sct.get(1) == agentType)) {
+                        socialCapitalDataCSVWriter.append(String.valueOf(day));
+                        socialCapitalDataCSVWriter.append(",");
+                        socialCapitalDataCSVWriter.append(String.valueOf(agentType));
+                        socialCapitalDataCSVWriter.append(",");
+                        socialCapitalDataCSVWriter.append(String.valueOf(sct.get(2)));
+                        socialCapitalDataCSVWriter.append("\n");
+                        unspentSocialCapital.add(sct.get(2));
+                    }
+                }
+                double usc = unspentSocialCapital.stream().mapToDouble(val -> val).average().orElse(0.0);
+                statsSummaryDataWriter.append("Unspent Social Capital: " + (String.valueOf(usc))+ "\n");
+
+                ArrayList<Integer> socialCapitalExchanges = new ArrayList<>();
+                ArrayList<Integer> noSocialCapitalExchanges = new ArrayList<>();
+                for (ArrayList<Integer> ett : exchangeTypeTracking) {
+                    if ((ett.get(0) == day) && (ett.get(1) == agentType)) {
+                        exchangeTypeDataCSVWriter.append(String.valueOf(day));
+                        exchangeTypeDataCSVWriter.append(",");
+                        exchangeTypeDataCSVWriter.append(String.valueOf(agentType));
+                        exchangeTypeDataCSVWriter.append(",");
+                        exchangeTypeDataCSVWriter.append(String.valueOf(ett.get(2)));
+                        exchangeTypeDataCSVWriter.append(",");
+                        exchangeTypeDataCSVWriter.append(String.valueOf(ett.get(3)));
+                        exchangeTypeDataCSVWriter.append("\n");
+                        socialCapitalExchanges.add(ett.get(2));
+                        noSocialCapitalExchanges.add(ett.get(3));
+                    }
+                }
+                double sce = socialCapitalExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
+                double nsce = noSocialCapitalExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
+                statsSummaryDataWriter.append("Social Capital Exchanges: " + (String.valueOf(sce))+ "\n");
+                statsSummaryDataWriter.append("No Social Capital Exchanges: " + (String.valueOf(nsce))+ "\n");
+
+                ArrayList<Integer> rejectedReceivedExchanges = new ArrayList<>();
+                ArrayList<Integer> acceptedReceivedExchanges = new ArrayList<>();
+                ArrayList<Integer> rejectedRequestedExchanges = new ArrayList<>();
+                ArrayList<Integer> acceptedRequestedExchanges = new ArrayList<>();
+                for (ArrayList<Integer> est : exchangeSuccessTracking) {
+                    if ((est.get(0) == day) && (est.get(1) == agentType)) {
+                        exchangeSuccessDataCSVWriter.append(String.valueOf(day));
+                        exchangeSuccessDataCSVWriter.append(",");
+                        exchangeSuccessDataCSVWriter.append(String.valueOf(agentType));
+                        exchangeSuccessDataCSVWriter.append(",");
+                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(2)));
+                        exchangeSuccessDataCSVWriter.append(",");
+                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(3)));
+                        exchangeSuccessDataCSVWriter.append(",");
+                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(4)));
+                        exchangeSuccessDataCSVWriter.append(",");
+                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(5)));
+                        exchangeSuccessDataCSVWriter.append("\n");
+                        rejectedReceivedExchanges.add(est.get(2));
+                        acceptedReceivedExchanges.add(est.get(3));
+                        rejectedRequestedExchanges.add(est.get(4));
+                        acceptedRequestedExchanges.add(est.get(5));
+                    }
+                }
+                double rec = rejectedReceivedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
+                double aerec = acceptedReceivedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
+                double req = rejectedRequestedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
+                double aereq = acceptedRequestedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
+                statsSummaryDataWriter.append("Rejected Received Exchanges: " + (String.valueOf(rec))+ "\n");
+                statsSummaryDataWriter.append("Accepted Received Exchanges: " + (String.valueOf(aerec))+ "\n");
+                statsSummaryDataWriter.append("Rejected Requested Exchanges: " + (String.valueOf(req))+ "\n");
+                statsSummaryDataWriter.append("Accepted Requested Exchanges: " + (String.valueOf(aereq))+ "\n");
+                statsSummaryDataWriter.append("\n");
             }
         }
 
@@ -443,6 +579,10 @@ public class ArenaEnvironment {
         }
 
         // Close the csv file writers once the simulation is complete.
+        socialCapitalDataCSVWriter.close();
+        exchangeTypeDataCSVWriter.close();
+        exchangeSuccessDataCSVWriter.close();
+        statsSummaryDataWriter.close();
         averageSatisfactionsCSVWriter.close();
         individualSatisfactionsCSVWriter.close();
         individualsDataCSVWriter.close();

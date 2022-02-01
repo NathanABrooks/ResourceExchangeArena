@@ -72,8 +72,6 @@ public class ResourceExchangeArena extends UserParameters {
                 runSimulationSet();
         }
 
-        String resultsFolder = "results/" + FOLDER_NAME;
-
         // String version of starting ratios for file names.
         ArrayList<String> startingRatiosArray = new ArrayList<String>();
 
@@ -108,7 +106,7 @@ public class ResourceExchangeArena extends UserParameters {
         new HeatMapsInitiator(
                 PYTHON_EXE,
                 PYTHON_PATH,
-                resultsFolder,
+                FOLDER_NAME,
                 COMPARISON_LEVEL,
                 USE_SOCIAL_CAPITAL,
                 PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY,
@@ -134,7 +132,7 @@ public class ResourceExchangeArena extends UserParameters {
             new significanceTestInitiator(
                     PYTHON_EXE,
                     PYTHON_PATH,
-                    resultsFolder,
+                    FOLDER_NAME,
                     PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY,
                     EXCHANGES_ARRAY,
                     startingRatiosArray,
@@ -148,7 +146,7 @@ public class ResourceExchangeArena extends UserParameters {
         random.setSeed(seed);
 
         // Create a directory to store the data output by all simulations being run.
-        String dataOutputFolder = "results/" + FOLDER_NAME + "/useSC_" + USE_SOCIAL_CAPITAL + "_AType_";
+        String dataOutputFolder = FOLDER_NAME + "/useSC_" + USE_SOCIAL_CAPITAL + "_AType_";
         if (!SINGLE_AGENT_TYPE) {
             dataOutputFolder += "mixed";
         } else {

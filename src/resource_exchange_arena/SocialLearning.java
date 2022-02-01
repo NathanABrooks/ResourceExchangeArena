@@ -30,7 +30,25 @@ class SocialLearning {
         // Copy agents to store all agents that haven't yet been selected for social learning.
         ArrayList<Agent> unselectedAgents = new ArrayList<>(agents);
 
-        for (int i = 0; i < numberOfAgentsToEvolve; i++) {
+        // Mutation
+        // for (Agent a : agents) {
+        //     double mutation = ResourceExchangeArena.random.nextDouble();
+        //     if (mutation < 0.01) {
+        //         if (a.getAgentType() == ResourceExchangeArena.SOCIAL) {
+        //             a.setType(ResourceExchangeArena.SELFISH);
+        //         } else if (a.getAgentType() == ResourceExchangeArena.SELFISH) {
+        //             a.setType(ResourceExchangeArena.SOCIAL);
+        //         }
+        //         unselectedAgents.remove(a);
+        //     }
+        // }
+
+        // Agents who mutated can't do social learning.
+        int learningSize = numberOfAgentsToEvolve;
+        if (unselectedAgents.size() < learningSize) {
+            learningSize = unselectedAgents.size();
+        }
+        for (int i = 0; i < learningSize; i++) {
             // Assign the selected agent another agents performance to 'retrospectively' observe.
             int observedPerformance = ResourceExchangeArena.random.nextInt(totalAgents);
 

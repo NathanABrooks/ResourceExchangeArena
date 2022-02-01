@@ -1,6 +1,7 @@
 package resource_exchange_arena;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 class Agent {
@@ -18,6 +19,12 @@ class Agent {
     private ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
     private ArrayList<Integer> exchangeRequestReceived = new ArrayList<>();
     private boolean exchangeRequestApproved;
+    private int totalSocialCapital;
+    private int dailySocialCapitalExchanges;
+    private int dailyNoSocialCapitalExchanges;
+    private int dailyRejectedReceivedExchanges;
+    private int dailyRejectedRequestedExchanges;
+    private int dailyAcceptedRequestedExchanges;
 
     /**
      * Agents represent the individual consumers in the simulation.
@@ -36,6 +43,12 @@ class Agent {
 
         madeInteraction = false;
         numberOfTimeSlotsWanted = slotsPerAgent;
+        totalSocialCapital = 0;
+        dailySocialCapitalExchanges = 0;
+        dailyNoSocialCapitalExchanges = 0;
+        dailyRejectedReceivedExchanges = 0;
+        dailyRejectedRequestedExchanges = 0;
+        dailyAcceptedRequestedExchanges = 0;
 
         // Add the Agent to the ExchangeArenas list of participating Agents.
         agents.add(this);
@@ -168,7 +181,39 @@ class Agent {
                     favoursGiven.add(favoursGivenRelation);
                 }
             }
+
+            totalSocialCapital = 0;
         }
+    }
+
+    /**
+     * Getter for the current amount of unspent social capital the agent has.
+     *
+     * @return boolean Returns the current amount of unspent social capital the agent has.
+     */
+    int getUnspentSocialCapital() {
+        return totalSocialCapital;
+    }
+
+    /**
+     * Increases the total social capital tracker by 1.
+     */
+    void gainedSocialCapital() {
+        totalSocialCapital++;
+    }
+
+    /**
+     * Reduces the total social capital tracker by 1.
+     */
+    void lostSocialCapital() {
+        totalSocialCapital--;
+    }
+
+    /**
+     * Increases the daily counter for exchange requests rejected.
+     */
+    void requestRejected() {
+        dailyRejectedRequestedExchanges++;
     }
 
     /**
@@ -178,6 +223,62 @@ class Agent {
      */
     int getAgentType() {
         return agentType;
+    }
+
+    /**
+     * Resets the daily information being tracked, called once per day.
+     */
+    void resetDailyTracking() {
+        dailySocialCapitalExchanges = 0;
+        dailyNoSocialCapitalExchanges = 0;
+        dailyRejectedReceivedExchanges = 0;
+        dailyRejectedRequestedExchanges = 0;
+        dailyAcceptedRequestedExchanges = 0;
+    }
+
+    /**
+     * Getter method for retrieving the number of exchanges approved due to social capital.
+     *
+     * @return int Return the number of exchanges approved due to social capital.
+     */
+    int getSocialCapitalExchanges() {
+        return dailySocialCapitalExchanges;
+    }
+
+    /**
+     * Getter method for retrieving the number of exchanges approved without social capital.
+     *
+     * @return int Return the the number of exchanges approved without social capital.
+     */
+    int getNoSocialCapitalExchanges() {
+        return dailyNoSocialCapitalExchanges;
+    }
+
+    /**
+     * Getter method for retrieving the number of exchanges rejected by this agent.
+     *
+     * @return int Return the number of exchanges rejected by this agent.
+     */
+    int getRejectedReceivedExchanges() {
+        return dailyRejectedReceivedExchanges;
+    }
+
+    /**
+     * Getter method for retrieving the number of exchanges requested by this agent that were rejected.
+     *
+     * @return int Return the number of exchanges requested by this agent that were rejected.
+     */
+    int getRejectedRequestedExchanges() {
+        return dailyRejectedRequestedExchanges;
+    }
+
+    /**
+     * Getter method for retrieving the number of exchanges requested by this agent that were accepted.
+     *
+     * @return int Return the number of exchanges requested by this agent that were accepted.
+     */
+    int getAcceptedRequestedExchanges() {
+        return dailyAcceptedRequestedExchanges;
     }
 
     /**
@@ -297,6 +398,7 @@ class Agent {
         // If all requested have been allocated, the Agent has no need to request an exchange.
         if (!targetTimeSlots.isEmpty()) {
             // Search the advertising board for a potential exchange.
+            Collections.shuffle(advertisingBoard, ResourceExchangeArena.random);
             advertSelection:
             for (ArrayList<Integer> advert : advertisingBoard) {
                 for (int j = 1; j < advert.size(); j++) {
@@ -325,10 +427,22 @@ class Agent {
         exchangeRequestReceived.add(partnersAgentType);
     }
 
+        
+    /**
+     * Returns the most recent received from another Agent.
+     *
+     * @return ArrayList<Integer> request The most recent received from another Agent.
+     */
+    ArrayList<Integer> getExchangeRequest() {
+        return exchangeRequestReceived;
+    }
+
     /**
      * Determine whether the Agent will be willing to accept a received exchange request.
+     * 
+     * @return Boolean Whether or not the request was accepted.
      */
-    void considerRequest() {
+    boolean considerRequest() {
         double currentSatisfaction = calculateSatisfaction(null);
         // Create a new local list of time slots in order to test how the Agents satisfaction would change after the
         // potential exchange.
@@ -343,12 +457,13 @@ class Agent {
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
             
 
-            if (agentType == ResourceExchangeArena.SOCIAL && exchangeRequestReceived.get(3) == ResourceExchangeArena.SOCIAL) {
-            // if (agentType == ResourceExchangeArena.SOCIAL) {
+            // if (agentType == ResourceExchangeArena.SOCIAL && exchangeRequestReceived.get(3) == ResourceExchangeArena.SOCIAL) {
+            if (agentType == ResourceExchangeArena.SOCIAL) {
                 // Social Agents accept offers that improve their satisfaction or if they have negative social capital
                 // with the Agent who made the request.
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0) {
                     exchangeRequestApproved = true;
+                    dailyNoSocialCapitalExchanges++;
                 } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
                     if (usesSocialCapital) {
                         int favoursOwedToRequester = 0;
@@ -367,10 +482,12 @@ class Agent {
                         }
                         if (favoursOwedToRequester > favoursGivenToRequester) {
                             exchangeRequestApproved = true;
+                            dailySocialCapitalExchanges++;
                         }
                     } else {
                         // When social capital isn't used, social agents always accept neutral exchanges.
                         exchangeRequestApproved = true;
+                        dailyNoSocialCapitalExchanges++;
                     }
                 }
             } else {
@@ -378,9 +495,15 @@ class Agent {
                 // Selfish Agents only accept offers that improve their individual satisfaction.
                 if (Double.compare(potentialSatisfaction, currentSatisfaction) > 0) {
                     exchangeRequestApproved = true;
+                    dailyNoSocialCapitalExchanges++;
                 }
             }
+            if (exchangeRequestApproved == false) {
+                dailyRejectedReceivedExchanges++;
+            }
         }
+
+        return exchangeRequestApproved;
     }
 
     /**
@@ -400,8 +523,11 @@ class Agent {
      * @param offer The exchange that is to be completed.
      * @param agentID The agentID of the agent that has fulfilled the exchange request.
      * @param agentType The strategy being used by the agent that has fulfilled the exchange request.
+     * @return Boolean Whether or not the other agent gained social capital.
      */
-    void completeRequestedExchange(ArrayList<Integer> offer, int agentID, int partnersAgentType) {
+    boolean completeRequestedExchange(ArrayList<Integer> offer, int agentID, int partnersAgentType) {
+        boolean SCGain = false;
+
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(2));
@@ -411,8 +537,11 @@ class Agent {
 
         // Update the Agents relationship with the other Agent involved in the exchange.
         if (usesSocialCapital) {
-            if (Double.compare(newSatisfaction, previousSatisfaction) > 0
-                    && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
+            // if (Double.compare(newSatisfaction, previousSatisfaction) > 0
+            //         && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
+                if (Double.compare(newSatisfaction, previousSatisfaction) > 0
+                    && agentType == ResourceExchangeArena.SOCIAL) {
+
                 for (ArrayList<Integer> favours : favoursOwed) {
                     if (favours.get(0).equals(agentID)) {
                         int currentFavour = favours.get(1);
@@ -420,8 +549,11 @@ class Agent {
                         break;
                     }
                 }
+                SCGain = true;
             }
         }
+        dailyAcceptedRequestedExchanges++;
+        return SCGain;
     }
 
     /**
@@ -430,8 +562,11 @@ class Agent {
      *
      * @param offer The exchange that is to be completed.
      * @param agentType The strategy being used by the agent that requested the exchange request.
+     * @return Boolean Whether or not the other agent gained social capital.
      */
-    void completeReceivedExchange(ArrayList<Integer> offer, int partnersAgentType) {
+    boolean completeReceivedExchange(ArrayList<Integer> offer, int partnersAgentType) {
+        boolean SCLoss = false;
+
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time slots.
         allocatedTimeSlots.remove(offer.get(1));
@@ -440,17 +575,23 @@ class Agent {
 
         // Update the Agents relationship with the other Agent involved in the exchange.
         if (usesSocialCapital) {
+            // if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
+            //         && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
+                
             if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
-                    && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
+                    && agentType == ResourceExchangeArena.SOCIAL) {
+
                 for (ArrayList<Integer> favours : favoursGiven) {
                     if (favours.get(0).equals(offer.get(0))) {
                         int currentFavour = favours.get(1);
                         favours.set(1, currentFavour + 1);
                         break;
                     }
-                }
+                }     
+                SCLoss = true;
             }
         }
+        return SCLoss;
     }
 
     /**

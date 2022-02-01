@@ -12,7 +12,7 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "System.currentTimeMillis()"
 
     // Name of the folder that will contain the set of simulations currently being ran.
-    public static final String FOLDER_NAME = "Set_" + seed;
+    public static final String FOLDER_NAME = "/home/brooks/code/ResourceExchangeArena/results/Set_" + seed;
 
     // Conda env. location.
     public static final String PYTHON_EXE =
@@ -34,7 +34,7 @@ public abstract class UserParameters extends FixedParameters {
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 10;
+    public static final int SIMULATION_RUNS = 50;
     // Example: "50"
 
     // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
@@ -53,7 +53,7 @@ public abstract class UserParameters extends FixedParameters {
 
     // Arrays of demand used by the agents, when multiple curves are used the agents are split equally between the curves.
     // The arrays should have 1 value for each 10 minute segment of the day.
-    public static final double[][] DEMAND_CURVES = {{31.6,32.9,27.7,24.6,24.0,19.5,16.4,14.6,15.2,11.5,9.3,8.6,7.4,6.4,7.4,10.4,9.9,7.4,6.7,10.1,6.2,7.8,7.0,7.6,5.5,6.7,5.2,4.7,4.9,4.2,5.3,4.3,3.8,4.7,5.5,6.0,7.0,5.4,6.7,13.2,17.9,21.2,23.8,28.7,28.8,36.4,41.3,49.0,55.0,58.1,59.5,66.2,72.7,78.3,79.6,78.7,81.4,82.2,84.0,86.0,82.9,87.4,83.1,88.1,85.1,83.1,82.1,82.9,81.2,81.9,81.2,79.2,77.8,79.1,77.6,76.7,73.8,71.9,72.6,73.0,70.4,69.9,71.7,67.6,65.7,68.2,63.8,68.0,67.1,68.5,68.3,67.7,70.1,67.7,68.2,65.2,64.1,65.8,68.4,64.4,61.0,57.4,64.2,66.1,57.3,55.9,55.7,58.9,61.6,64.4,63.3,61.3,58.4,62.8,70.3,74.3,75.2,76.7,71.9,73.5,73.9,69.3,67.9,68.2,69.2,65.5,61.1,63.3,60.3,53.6,51.3,44.4,45.1,42.3,44.1,44.9,46.3,42.1,41.8,39.7,36.3,37.1,35.7,32.1}};
+    public static final double[][] DEMAND_CURVES = {{1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0}};
 
     // The proportion of energy available for each hour of the of day.
     // The arrays should have 1 value for each 30 minute segment of the day.
@@ -68,7 +68,7 @@ public abstract class UserParameters extends FixedParameters {
 
     // Percentage of agents that will evolve their strategy per day.
     // CURRENTLY MUST HAVE MORE THAN 1 VALUE
-    public static final int[] PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY = {0, 10, 25, 50,100};
+    public static final int[] PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY = {0,100};
     // Example: "{0,50,100}" {0, 10, 25, 50,100}
 
     // Ratio of starting agent types, i.e. {SELFISH, SELFISH, SOCIAL} would cause the simulation to start with two
@@ -86,5 +86,5 @@ public abstract class UserParameters extends FixedParameters {
     //     be compared.
     // 2 = The above combinations will be ran both with and without social capital enabled and with only selfish agents
     //     and with only social agents so that a baseline comparison can be made between the agents types.
-    public static int COMPARISON_LEVEL = 0;
+    public static int COMPARISON_LEVEL = 1;
 }
