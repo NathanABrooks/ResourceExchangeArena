@@ -1,4 +1,5 @@
 import ast
+from pickle import FALSE, TRUE
 import sys
 import os
 import re
@@ -65,6 +66,12 @@ for e in range(len(exchangesArray) + 2):
 width = (width * columns) + 0.5
 height = (height * 2.5) + 0.5
 
+learningOnOrOff: List[str] = ["No Learning","Social Learning"]
+noPercentages: bool = FALSE
+
+if learningPercentages == [0, 100]:
+    noPercentages = TRUE
+
 for v in simulationVersions:
     if v.endswith('mixed'):
         socialCapital: bool = strtobool((v.split('useSC_')[1]).split('_')[0])
@@ -101,14 +108,24 @@ for v in simulationVersions:
             columns = len(learningPercentages)
             fig, axs = plt.subplots(nrows=3, ncols=columns, sharex='col', sharey='row', figsize=(width, height))
 
-            for index, s in enumerate(selfish_subplots):
-                #seaborn heatmap per pivot table
-                sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
-                title: str = "Learning " + str(learningPercentages[index]) + "%"
-                axs[0][index].set_title(title, fontsize=12, y=1.11)
-                axs[0][index].invert_yaxis()
-                axs[0][index].set_ylabel('')
-                axs[0][index].set_xlabel('')
+            if noPercentages:
+                for index, s in enumerate(selfish_subplots):
+                    #seaborn heatmap per pivot table
+                    sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
+                    title: str = learningOnOrOff[index]
+                    axs[0][index].set_title(title, fontsize=12, y=1.11)
+                    axs[0][index].invert_yaxis()
+                    axs[0][index].set_ylabel('')
+                    axs[0][index].set_xlabel('')
+            else:
+                for index, s in enumerate(selfish_subplots):
+                    #seaborn heatmap per pivot table
+                    sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
+                    title: str = "Learning " + str(learningPercentages[index]) + "%"
+                    axs[0][index].set_title(title, fontsize=12, y=1.11)
+                    axs[0][index].invert_yaxis()
+                    axs[0][index].set_ylabel('')
+                    axs[0][index].set_xlabel('')
 
             for index, s in enumerate(social_subplots):
                 #seaborn heatmap per pivot table
@@ -132,7 +149,7 @@ for v in simulationVersions:
 
             #set x and y axis labels and plot title
             fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
-            fig.text(0.07, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+            fig.text(0.05, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
             fig.text(0.5, 0.89, 'Average Selfish Satisfaction', ha='center', fontsize=14, weight='bold')
             fig.text(0.5, 0.62, 'Average Social Satisfaction', ha='center', fontsize=14, weight='bold')
             fig.text(0.5, 0.35, '% Population Using Social Strategy', ha='center', fontsize=14, weight='bold')

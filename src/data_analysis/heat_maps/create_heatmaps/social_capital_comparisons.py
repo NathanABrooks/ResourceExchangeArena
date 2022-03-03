@@ -1,4 +1,5 @@
 import ast
+from pickle import FALSE, TRUE
 import sys
 import os
 import re
@@ -56,6 +57,12 @@ for e in range(len(exchangesArray) + 2):
 width = (width * columns) + 0.5
 height += 0.5
 
+learningOnOrOff: List[str] = ["No Learning","Social Learning"]
+noPercentages: bool = FALSE
+
+if learningPercentages == [0, 100]:
+    noPercentages = TRUE
+
 for r in startingRatiosArray:
 
     #reads a .csv I created to provide an overview of mean Popultion Satisfaction for runs with and without social captial
@@ -76,15 +83,26 @@ for r in startingRatiosArray:
 
     fig, axs = plt.subplots(nrows=1, ncols=columns, sharex='col', sharey='row', figsize=(width, height))
 
-    for index, s in enumerate(subplots):
-        #seaborn heatmap per pivot table
-        sns.heatmap(s, cmap="PuOr", center= 0, vmin=-0.4, vmax=0.4, ax=axs[index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
-        title: str = "Learning " + str(learningPercentages[index]) + "%"
-        axs[index].set_title(title, fontsize=12)
-        axs[index].invert_yaxis()
-        axs[index].set_ylabel('')
-        axs[index].set_xlabel('')
-        axs[index].set_xticklabels(axs[index].get_xticklabels(), rotation = 0)
+    if noPercentages:
+        for index, s in enumerate(subplots):
+            #seaborn heatmap per pivot table
+            sns.heatmap(s, cmap="PuOr", center= 0, vmin=-0.4, vmax=0.4, ax=axs[index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
+            title: str = learningOnOrOff[index]
+            axs[index].set_title(title, fontsize=12)
+            axs[index].invert_yaxis()
+            axs[index].set_ylabel('')
+            axs[index].set_xlabel('')
+            axs[index].set_xticklabels(axs[index].get_xticklabels(), rotation = 0)
+    else:
+        for index, s in enumerate(subplots):
+            #seaborn heatmap per pivot table
+            sns.heatmap(s, cmap="PuOr", center= 0, vmin=-0.4, vmax=0.4, ax=axs[index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
+            title: str = "Learning " + str(learningPercentages[index]) + "%"
+            axs[index].set_title(title, fontsize=12)
+            axs[index].invert_yaxis()
+            axs[index].set_ylabel('')
+            axs[index].set_xlabel('')
+            axs[index].set_xticklabels(axs[index].get_xticklabels(), rotation = 0)
 
     #adjust position of subplot
     plt.subplots_adjust(hspace = .2)
@@ -96,7 +114,7 @@ for r in startingRatiosArray:
 
     #set x and y axis labels and plot title
     fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
-    fig.text(0.07, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+    fig.text(0.05, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
 
     fig.suptitle('With and Without Social Capital Comparisons', fontsize=14)
 

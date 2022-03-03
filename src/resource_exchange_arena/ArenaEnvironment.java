@@ -391,9 +391,7 @@ public class ArenaEnvironment {
                 ArrayList<Double> allSatisfactions = new ArrayList<>();
                 for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
                     if (endOfDayAverageSatisfaction.get(0) == (double) day) {
-                        if (!Double.isNaN(endOfDayAverageSatisfaction.get(agentType))) {
-                            allSatisfactions.add(endOfDayAverageSatisfaction.get(agentType));
-                        }
+                        allSatisfactions.add(endOfDayAverageSatisfaction.get(agentType));
                     }
                 }
                 double averageOverSims = allSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
