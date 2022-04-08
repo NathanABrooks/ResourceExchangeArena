@@ -106,17 +106,17 @@ for r in startingRatiosArray:
 
     #adjust position of subplot
     plt.subplots_adjust(hspace = .2)
-    plt.subplots_adjust(wspace = .2)
+    plt.subplots_adjust(wspace = .15)
     plt.subplots_adjust(top = .8)
     plt.subplots_adjust(bottom = .2)
     plt.subplots_adjust(left = .12)
     plt.subplots_adjust(right = .95)
 
     #set x and y axis labels and plot title
-    fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
-    fig.text(0.05, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+    fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=16)
+    fig.text(0.05, 0.5, 'Day', va='center', rotation='vertical', fontsize=16)
 
-    fig.suptitle('With and Without Social Capital Comparisons', fontsize=14)
+    fig.suptitle('With and Without Social Capital Comparisons', fontsize=18)
 
     fname = imageDir + r + "_social_capital_comparison"
 

@@ -263,6 +263,41 @@ class HeatMapsInitiator {
                 e.printStackTrace();
             }
             System.out.println("Comp mean satisfaction heat maps created.");
+
+
+
+
+            // Here we create heat maps summarising the mean satisfaction levels for each agent type with and without social capital.
+            // This is completed for each simulation version, these are compact versions of the heat maps to fit neater in some journal layouts.
+            List<String> smallCompMeanSatisfactionHeatMapsArgs = new ArrayList<>();
+
+            String smallCompMeanSatisfactionHeatMapsPath = pythonPath + "create_heatmaps/compact_sc_comparisons.py";
+
+            smallCompMeanSatisfactionHeatMapsArgs.add(pythonExe);
+            smallCompMeanSatisfactionHeatMapsArgs.add(smallCompMeanSatisfactionHeatMapsPath);
+            smallCompMeanSatisfactionHeatMapsArgs.add(folderName);
+            smallCompMeanSatisfactionHeatMapsArgs.add(Arrays.toString(evolvingAgentsArray));
+            smallCompMeanSatisfactionHeatMapsArgs.add(Arrays.toString(exchangesArray));
+            smallCompMeanSatisfactionHeatMapsArgs.add(startingRatiosArray.toString());
+            smallCompMeanSatisfactionHeatMapsArgs.add(Arrays.toString(daysToVisualise));
+
+            ProcessBuilder smallCompMeanSatisfactionHeatMapsBuilder = new ProcessBuilder(smallCompMeanSatisfactionHeatMapsArgs);
+
+            // IO from the Python is shared with the same terminal as the Java code.
+            smallCompMeanSatisfactionHeatMapsBuilder.inheritIO();
+            smallCompMeanSatisfactionHeatMapsBuilder.redirectErrorStream(true);
+
+            Process smallCompMeanSatisfactionHeatMapsProcess = smallCompMeanSatisfactionHeatMapsBuilder.start();
+            try {
+                smallCompMeanSatisfactionHeatMapsProcess.waitFor();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Compact Comp mean satisfaction heat maps created.");
+
+
+
+
         }
 
         if (comparisonLevel == 2) {

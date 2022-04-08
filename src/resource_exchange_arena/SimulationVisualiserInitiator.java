@@ -47,6 +47,7 @@ class SimulationVisualiserInitiator {
 
         String simulationPythonPath = pythonPath + "simulation_data_analysis/";
         String duringDayPythonPath = pythonPath + "during_day_data_analysis/";
+        String deepPythonPath = pythonPath + "deep/";
 
         // Pass average satisfaction levels data to python to be visualised.
         List<String> satisfactionPythonArgs = new ArrayList<>();
@@ -156,6 +157,39 @@ class SimulationVisualiserInitiator {
         Process dailyDistributionProcess = dailyDistributionBuilder.start();
         try {
             dailyDistributionProcess.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("End of day satisfaction distributions data visualisation complete.");
+
+
+
+
+
+
+
+        List<String> deepPythonArgs = new ArrayList<>();
+
+        String deepERPythonPath = deepPythonPath + "endResultComparison.py";
+
+        deepPythonArgs.add(pythonExe);
+        deepPythonArgs.add(deepERPythonPath);
+        deepPythonArgs.add(folderName);
+        deepPythonArgs.add(environmentTag);
+        deepPythonArgs.add(endOfDaySatisfactionsFile.getAbsolutePath());
+        deepPythonArgs.add(Integer.toString(days));
+        deepPythonArgs.add(Integer.toString(exchanges));
+        deepPythonArgs.add(Arrays.toString(daysToVisualise));
+
+        ProcessBuilder deepBuilder = new ProcessBuilder(deepPythonArgs);
+
+        // IO from the Python is shared with the same terminal as the Java code.
+        deepBuilder.inheritIO();
+        deepBuilder.redirectErrorStream(true);
+
+        Process deepProcess = deepBuilder.start();
+        try {
+            deepProcess.waitFor();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -68,7 +68,7 @@ if not os.path.exists(baseOutputDirectory):
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
 baseFileName: str = populationDistributions.split('/')[-1]
-convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
+convertedBaseFileName: str = baseFileName.split('.')[0] + '.png'
 
 # Store the scope of the data.
 days: List[int] = []
@@ -159,11 +159,11 @@ with open(populationDistributions) as populationData:
         paper_bgcolor='rgb(255, 255, 255)',
         plot_bgcolor='rgb(255, 255, 255)',
         font=dict(
-            size=19
+            size=16
         ),
     )
 
     # Create the graph and save the file
     fig: Dict[any, any] = dict(data=data, layout=layout)
     fullPath: str = os.path.join(baseOutputDirectory, convertedBaseFileName)
-    py.io.write_image(fig, fullPath)
+    py.io.write_image(fig, fullPath, format="png")

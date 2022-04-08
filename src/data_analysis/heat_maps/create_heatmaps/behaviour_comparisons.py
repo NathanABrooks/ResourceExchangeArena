@@ -113,7 +113,7 @@ for v in simulationVersions:
                     #seaborn heatmap per pivot table
                     sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
                     title: str = learningOnOrOff[index]
-                    axs[0][index].set_title(title, fontsize=12, y=1.11)
+                    axs[0][index].set_title(title, fontsize=16, y=1.11)
                     axs[0][index].invert_yaxis()
                     axs[0][index].set_ylabel('')
                     axs[0][index].set_xlabel('')
@@ -122,7 +122,7 @@ for v in simulationVersions:
                     #seaborn heatmap per pivot table
                     sns.heatmap(s, cmap="Reds", center= 0.5, vmin=0, vmax=1.0, ax=axs[0][index], linewidths=0.1, linecolor="white", cbar=True, annot=True, annot_kws={"size": 10})
                     title: str = "Learning " + str(learningPercentages[index]) + "%"
-                    axs[0][index].set_title(title, fontsize=12, y=1.11)
+                    axs[0][index].set_title(title, fontsize=16, y=1.11)
                     axs[0][index].invert_yaxis()
                     axs[0][index].set_ylabel('')
                     axs[0][index].set_xlabel('')
@@ -143,13 +143,13 @@ for v in simulationVersions:
                 axs[2][index].set_xticklabels(axs[2][index].get_xticklabels(), rotation = 0)
 
             #adjust position of subplot
-            plt.subplots_adjust(wspace = .2)
-            plt.subplots_adjust(left = .12)
+            plt.subplots_adjust(wspace = .15)
+            plt.subplots_adjust(left = .1)
             plt.subplots_adjust(right = .95)
 
             #set x and y axis labels and plot title
-            fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=14)
-            fig.text(0.05, 0.5, 'Day', va='center', rotation='vertical', fontsize=14)
+            fig.text(0.5, 0.06, 'Exchanges', ha='center', fontsize=16)
+            fig.text(0.05, 0.5, 'Day', va='center', rotation='vertical', fontsize=16)
             fig.text(0.5, 0.89, 'Average Selfish Satisfaction', ha='center', fontsize=14, weight='bold')
             fig.text(0.5, 0.62, 'Average Social Satisfaction', ha='center', fontsize=14, weight='bold')
             fig.text(0.5, 0.35, '% Population Using Social Strategy', ha='center', fontsize=14, weight='bold')
@@ -160,7 +160,7 @@ for v in simulationVersions:
             else:
                 title = "Without " + title
 
-            fig.suptitle(title, fontsize=14)
+            fig.suptitle(title, fontsize=18)
 
             fname = resultDir + "/mergedSummary"
 

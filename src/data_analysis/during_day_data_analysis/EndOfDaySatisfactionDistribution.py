@@ -62,7 +62,7 @@ if not os.path.exists(duringDayOutputDirectory):
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
 baseFileName: str = individualSatisfactions.split('/')[-1]
-convertedBaseFileName: str = baseFileName.split('.')[0] + '.pdf'
+convertedBaseFileName: str = baseFileName.split('.')[0] + '.png'
 
 # Store the scope of the data.
 days: List[str] = []
@@ -183,6 +183,6 @@ with open(individualSatisfactions) as individualSatisfactionDeviations:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            '.pdf', '_day_' + str(daysToVisualise[i]) + '.pdf')
+            '.png', '_day_' + str(daysToVisualise[i]) + '.png')
         fullPath: str = os.path.join(duringDayOutputDirectory, fileName)
-        py.io.write_image(fig, fullPath)
+        py.io.write_image(fig, fullPath, format="png")

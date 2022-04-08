@@ -1,5 +1,6 @@
 package resource_exchange_arena;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +66,9 @@ class SimulationRun {
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
-            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions
+            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
+            FileWriter dailyDataWriter,
+            int run
     ) throws IOException {
 
         // List of all the Agents that are part of the current simulation.
@@ -166,7 +169,9 @@ class SimulationRun {
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
-                    endOfDayPopulationDistributions
+                    endOfDayPopulationDistributions,
+                    dailyDataWriter,
+                    run
             );
         }
     }

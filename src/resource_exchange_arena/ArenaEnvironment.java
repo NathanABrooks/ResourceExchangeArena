@@ -91,6 +91,54 @@ public class ArenaEnvironment {
         Path dataOutputPath = Path.of(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
 
+
+
+        // Stores the amount of unspent social capital each agent has accumulated.
+        File allDailyData = new File(dataOutputFolder, "allDailyData.csv");
+
+        FileWriter allDailyDataCSVWriter = new FileWriter(allDailyData);
+        
+        allDailyDataCSVWriter.append("Simulation Run");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Day");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Pop");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Pop");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Sat");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Sat");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social SD");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish SD");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Upper Quartile");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Upper Quartile");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Lower Quartile");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Lower Quartile");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social 95th Percentile");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish 95th Percentile");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Max");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Max");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Min");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Min");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Social Median");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Selfish Median");
+        allDailyDataCSVWriter.append("\n");
+
         // Stores the amount of unspent social capital each agent has accumulated.
         File socialCapitalData = new File(dataOutputFolder, "socialCapitalTracking.csv");
 
@@ -368,7 +416,9 @@ public class ArenaEnvironment {
                     endOfDaySatisfactions,
                     endOfRoundAverageSatisfactions,
                     endOfDayAverageSatisfactions,
-                    endOfDayPopulationDistributions
+                    endOfDayPopulationDistributions,
+                    allDailyDataCSVWriter,
+                    simulationRun
             );
             System.out.println("RUNS COMPLETED: " + simulationRun);
         }
@@ -577,6 +627,7 @@ public class ArenaEnvironment {
         }
 
         // Close the csv file writers once the simulation is complete.
+        allDailyDataCSVWriter.close();
         socialCapitalDataCSVWriter.close();
         exchangeTypeDataCSVWriter.close();
         exchangeSuccessDataCSVWriter.close();

@@ -1,5 +1,6 @@
 package resource_exchange_arena;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +62,9 @@ public class Day {
             ArrayList<ArrayList<Double>> endOfDaySatisfactions,
             ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
             ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
-            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions
+            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
+            FileWriter dailyDataWriter,
+            int run
     ) throws IOException{
 
         if(!availableTimeSlots.isEmpty()) {
@@ -196,6 +199,80 @@ public class Day {
                 exchangeSuccessTracking.add(exchangeSuccessTracked);
             }
         }
+
+        int socPop = 0;
+        int selPop = 0;
+        for (Agent a : agents) {
+            if (a.getAgentType() == ResourceExchangeArena.SOCIAL) {
+                socPop++;
+            } else if (a.getAgentType() == ResourceExchangeArena.SELFISH) {
+                selPop++;
+            }
+        }
+
+        double[] socialStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SOCIAL);
+        double[] selfishStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SELFISH);
+
+        dailyDataWriter.append(String.valueOf(run));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(day));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(socPop));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selPop));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageAgentSatisfaction(agents, ResourceExchangeArena.SOCIAL)));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageAgentSatisfaction(agents, ResourceExchangeArena.SELFISH)));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, ResourceExchangeArena.SOCIAL)));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, ResourceExchangeArena.SELFISH)));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(socialStatValues[0]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selfishStatValues[0]));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(socialStatValues[1]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selfishStatValues[1]));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(socialStatValues[2]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selfishStatValues[2]));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(socialStatValues[3]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selfishStatValues[3]));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(socialStatValues[4]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selfishStatValues[4]));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(socialStatValues[5]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(selfishStatValues[5]));
+        dailyDataWriter.append("\n");
+
 
         /*
          * To facilitate social learning, for the number of the agents who are able to consider changing their strategy,

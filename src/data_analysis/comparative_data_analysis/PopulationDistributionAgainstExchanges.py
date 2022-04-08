@@ -61,7 +61,7 @@ if not os.path.exists(baseOutputDirectory):
 
 # Get suitable filenames format for the graphs that will be produced from existing raw data files.
 baseFileName: str = populationDistributionsFile.split('/')[-1]
-convertedBaseFileName: str = (baseFileName.split('.')[0] + '.pdf').replace('Data', '')
+convertedBaseFileName: str = (baseFileName.split('.')[0] + '.png').replace('Data', '')
 
 # Store the scope of the data.
 exchanges: List[str] = []
@@ -178,6 +178,6 @@ with open(populationDistributionsFile) as summaryData:
         # Create the graph and save the file
         fig: Dict[any, any] = dict(data=data, layout=layout)
         fileName: str = convertedBaseFileName.replace(
-            '.pdf', '_day_' + str(daysToVisualise[i]) + '.pdf')
+            '.png', '_day_' + str(daysToVisualise[i]) + '.png')
         fullPath: str = os.path.join(baseOutputDirectory, fileName)
-        py.io.write_image(fig, fullPath)
+        py.io.write_image(fig, fullPath, format="png")
