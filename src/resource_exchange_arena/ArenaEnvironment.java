@@ -652,6 +652,7 @@ public class ArenaEnvironment {
          * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the
          *                                    simulation, influenced by social learning.
          * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
+         * @param allDataFile Stores all the data that can be analysed for the day.
          * @param days Integer value representing the number of days to be simulated.
          * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
          *                  per day.
@@ -669,6 +670,7 @@ public class ArenaEnvironment {
                 individualsDataFile,
                 populationDistributionsFile,
                 endOfDaySatisfactionsFile,
+                allDailyData,
                 days,
                 exchanges,
                 daysOfInterest,

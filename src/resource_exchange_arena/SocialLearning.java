@@ -66,10 +66,17 @@ class SocialLearning {
             double observedAgentSatisfaction = previousPerformances[observedPerformance][1];
             if (Math.round(learningAgentSatisfaction * slotsPerAgent) < Math.round(observedAgentSatisfaction * slotsPerAgent)) {
                 double difference = observedAgentSatisfaction - learningAgentSatisfaction;
-                double threshold = ResourceExchangeArena.random.nextDouble();
-                if (difference > threshold) {
-                    int newType = (int) Math.round(previousPerformances[observedPerformance][0]); 
-                    learningAgent.setType(newType);
+                if (difference >= 0) {
+                    double beta = 1.0;
+                    double learningChance = 1 / (1 + (Math.exp(-beta * difference)));
+                    double normalisedLearningChance = (learningChance * 2) - 1;
+
+                    double threshold = ResourceExchangeArena.random.nextDouble();
+
+                    if (normalisedLearningChance > threshold) {
+                        int newType = (int) Math.round(previousPerformances[observedPerformance][0]);
+                        learningAgent.setType(newType);
+                    }
 
                     // if (newType == ResourceExchangeArena.SELFISH) {
                     //     learningAgent.initializeFavoursStore(agents);

@@ -22,6 +22,7 @@ class SimulationVisualiserInitiator {
      * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the simulation,
      *                                    influenced by social learning.
      * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
+     * @param allDataFile Stores all the data that can be analysed for the day.
      * @param days Integer value representing the number of days to be simulated.
      * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
@@ -38,6 +39,7 @@ class SimulationVisualiserInitiator {
             File individualsDataFile,
             File populationDistributionsFile,
             File endOfDaySatisfactionsFile,
+            File allDataFile,
             int days,
             int exchanges,
             int[] daysToVisualise,
@@ -163,7 +165,33 @@ class SimulationVisualiserInitiator {
         System.out.println("End of day satisfaction distributions data visualisation complete.");
 
 
+        // Pass Box Plots data to python to be visualised.
+        List<String> boxPlotsPythonArgs = new ArrayList<>();
 
+        String boxPlotsPythonPath = duringDayPythonPath + "BoxPlots.py";
+
+        boxPlotsPythonArgs.add(pythonExe);
+        boxPlotsPythonArgs.add(boxPlotsPythonPath);
+        boxPlotsPythonArgs.add(folderName);
+        boxPlotsPythonArgs.add(environmentTag);
+        boxPlotsPythonArgs.add(allDataFile.getAbsolutePath());
+        boxPlotsPythonArgs.add(Integer.toString(days));
+        boxPlotsPythonArgs.add(Integer.toString(exchanges));
+        boxPlotsPythonArgs.add(Arrays.toString(daysToVisualise));
+
+        ProcessBuilder boxPlotsBuilder = new ProcessBuilder(boxPlotsPythonArgs);
+
+        // IO from the Python is shared with the same terminal as the Java code.
+        boxPlotsBuilder.inheritIO();
+        boxPlotsBuilder.redirectErrorStream(true);
+
+        Process boxPlotsProcess = boxPlotsBuilder.start();
+        try {
+            boxPlotsProcess.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Box plots visualisation complete.");
 
 
 

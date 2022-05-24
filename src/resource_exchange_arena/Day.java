@@ -92,16 +92,24 @@ public class Day {
 
         // Agents start the day by requesting and receiving an allocation of time slots.
         Collections.shuffle(agents, ResourceExchangeArena.random);
+        ArrayList<Integer> curves = new ArrayList<>();
+
         int curve = 0;
         for (Agent a : agents) {
-            a.resetDailyTracking();
-            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(demandCurves[curve], totalDemandValues[curve]);
-            ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
-            a.receiveAllocatedTimeSlots(allocatedTimeSlots);
+            curves.add(curve);
             curve++;
             if (curve >= demandCurves.length) {
                 curve = 0;
             }
+        }
+        Collections.shuffle(curves);
+
+        for (Agent a : agents) {
+            a.resetDailyTracking();
+            int selector = curves.remove(0);
+            ArrayList<Integer> requestedTimeSlots = a.requestTimeSlots(demandCurves[selector], totalDemandValues[selector]);
+            ArrayList<Integer> allocatedTimeSlots = getRandomInitialAllocation(requestedTimeSlots);
+            a.receiveAllocatedTimeSlots(allocatedTimeSlots);
         }
 
         // The random and optimum average satisfaction scores are calculated before exchanges take place.
