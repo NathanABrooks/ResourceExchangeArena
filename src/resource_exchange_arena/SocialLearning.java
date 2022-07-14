@@ -30,19 +30,6 @@ class SocialLearning {
         // Copy agents to store all agents that haven't yet been selected for social learning.
         ArrayList<Agent> unselectedAgents = new ArrayList<>(agents);
 
-        // Mutation
-        // for (Agent a : agents) {
-        //     double mutation = ResourceExchangeArena.random.nextDouble();
-        //     if (mutation < 0.01) {
-        //         if (a.getAgentType() == ResourceExchangeArena.SOCIAL) {
-        //             a.setType(ResourceExchangeArena.SELFISH);
-        //         } else if (a.getAgentType() == ResourceExchangeArena.SELFISH) {
-        //             a.setType(ResourceExchangeArena.SOCIAL);
-        //         }
-        //         unselectedAgents.remove(a);
-        //     }
-        // }
-
         // Agents who mutated can't do social learning.
         int learningSize = numberOfAgentsToEvolve;
         if (unselectedAgents.size() < learningSize) {
@@ -77,25 +64,6 @@ class SocialLearning {
                         int newType = (int) Math.round(previousPerformances[observedPerformance][0]);
                         learningAgent.setType(newType);
                     }
-
-                    // if (newType == ResourceExchangeArena.SELFISH) {
-                    //     learningAgent.initializeFavoursStore(agents);
-
-                    //     for (Agent a: agents) {
-                    //         for (ArrayList<Integer> favours : a.getFavoursGiven()) {
-                    //             if (favours.get(0).equals(learningAgent.agentID)) {
-                    //                 favours.set(1,0);
-                    //                 break;
-                    //             }
-                    //         }
-                    //         for (ArrayList<Integer> favours : a.getFavoursOwed()) {
-                    //             if (favours.get(0).equals(learningAgent.agentID)) {
-                    //                 favours.set(1,0);
-                    //                 break;
-                    //             }
-                    //         }
-                    //     }
-                    // }
                 }
             }
             unselectedAgents.remove(learningAgent);

@@ -9,28 +9,20 @@ import java.util.*;
 
 public class ArenaEnvironment {
     // Data that is collected over simulation runs is held within the arenaEnvironment.
-    ArrayList<ArrayList<Double>> endOfDaySatisfactions = new ArrayList<>();
-    ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions = new ArrayList<>();
-    ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions = new ArrayList<>();
-    ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions = new ArrayList<>();
-
-    ArrayList<ArrayList<Integer>>  socialCapitalTracking = new ArrayList<>();
-    ArrayList<ArrayList<Integer>>  exchangeTypeTracking = new ArrayList<>();
-    ArrayList<ArrayList<Integer>>  exchangeSuccessTracking = new ArrayList<>();
+    ArrayList<ArrayList<Double>> keyDaysData = new ArrayList<>();
+    ArrayList<Integer>  maxExchanges = new ArrayList<>();
 
     /**
      * The arena is the environment in which all simulations take place.
      *
      * @param folderName String representing the output destination folder, used to organise output data.
      * @param environmentTag String detailing specifics about the simulation environment.
-     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents are
      *                     split equally between the curves.
      * @param availabilityCurve Integer array of energy availability used by the simulation.
      * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
      * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
      * @param days Integer value representing the number of days to be simulated.
-     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
      * @param populationSize Integer value representing the size of the initial agent population.
      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
@@ -42,9 +34,6 @@ public class ArenaEnvironment {
      *                        establishing baseline results.
      * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
      *                                singleAgentType is true.
-     * @param comparingExchangesCSVWriter FileWriter used to add data to summaryGraphs file.
-     * @param comparingPopulationDistributionsCSVWriter FileWriter used to add data to population distributions summary
-     *                                                  file.
      * @param pythonExe String representing the system path to python environment executable.
      * @param pythonPath String representing the system path to the python data visualiser.
      * @exception IOException On input error.
@@ -53,13 +42,11 @@ public class ArenaEnvironment {
     ArenaEnvironment(
             String folderName,
             String environmentTag,
-            int[] daysOfInterest,
             double[][] demandCurves,
             int[] availabilityCurve,
             boolean socialCapital,
             int simulationRuns,
             int days,
-            int exchanges,
             int populationSize,
             int uniqueTimeSlots,
             int slotsPerAgent,
@@ -67,8 +54,6 @@ public class ArenaEnvironment {
             int[] agentTypes,
             boolean singleAgentType,
             int selectedSingleAgentType,
-            FileWriter comparingExchangesCSVWriter,
-            FileWriter comparingPopulationDistributionsCSVWriter,
             String pythonExe,
             String pythonPath
     ) throws IOException {
@@ -91,10 +76,8 @@ public class ArenaEnvironment {
         Path dataOutputPath = Path.of(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
 
-
-
         // Stores the amount of unspent social capital each agent has accumulated.
-        File allDailyData = new File(dataOutputFolder, "allDailyData.csv");
+        File allDailyData = new File(dataOutputFolder, "dailyData.csv");
 
         FileWriter allDailyDataCSVWriter = new FileWriter(allDailyData);
         
@@ -137,119 +120,55 @@ public class ArenaEnvironment {
         allDailyDataCSVWriter.append("Social Median");
         allDailyDataCSVWriter.append(",");
         allDailyDataCSVWriter.append("Selfish Median");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Random Allocation Sat");
+        allDailyDataCSVWriter.append(",");
+        allDailyDataCSVWriter.append("Optimum ALlocation Sat");
         allDailyDataCSVWriter.append("\n");
 
         // Stores the amount of unspent social capital each agent has accumulated.
-        File socialCapitalData = new File(dataOutputFolder, "socialCapitalTracking.csv");
+        File perAgentData = new File(dataOutputFolder, "agentData.csv");
 
-        FileWriter socialCapitalDataCSVWriter = new FileWriter(socialCapitalData);
+        FileWriter perAgentDataCSVWriter = new FileWriter(perAgentData);
         
-        socialCapitalDataCSVWriter.append("Day");
-        socialCapitalDataCSVWriter.append(",");
-        socialCapitalDataCSVWriter.append("Agent Type");
-        socialCapitalDataCSVWriter.append(",");
-        socialCapitalDataCSVWriter.append("Unspent Social Capital");
-        socialCapitalDataCSVWriter.append("\n");
-
-        // Stores the amount of exchanges that used social capital and those that did not.
-        File exchangeTypeData = new File(dataOutputFolder, "exchangeTypeTracking.csv");
-
-        FileWriter exchangeTypeDataCSVWriter = new FileWriter(exchangeTypeData);
-
-        exchangeTypeDataCSVWriter.append("Day");
-        exchangeTypeDataCSVWriter.append(",");
-        exchangeTypeDataCSVWriter.append("Agent Type");
-        exchangeTypeDataCSVWriter.append(",");
-        exchangeTypeDataCSVWriter.append("Social Capital Exchanges");
-        exchangeTypeDataCSVWriter.append(",");
-        exchangeTypeDataCSVWriter.append("No Social Capital Exchanges");
-        exchangeTypeDataCSVWriter.append("\n");
-
-        // Stores the amount of exchange requests that were considered and accepted and considered and rejected.
-        File exchangeSuccessData = new File(dataOutputFolder, "exchangeSuccessTracking.csv");
-
-        FileWriter exchangeSuccessDataCSVWriter = new FileWriter(exchangeSuccessData);
-
-        exchangeSuccessDataCSVWriter.append("Day");
-        exchangeSuccessDataCSVWriter.append(",");
-        exchangeSuccessDataCSVWriter.append("Agent Type");
-        exchangeSuccessDataCSVWriter.append(",");
-        exchangeSuccessDataCSVWriter.append("Rejected Received Exchanges");
-        exchangeSuccessDataCSVWriter.append(",");
-        exchangeSuccessDataCSVWriter.append("Accepted Received Exchanges");
-        exchangeSuccessDataCSVWriter.append(",");
-        exchangeSuccessDataCSVWriter.append("Rejected Requested Exchanges");
-        exchangeSuccessDataCSVWriter.append(",");
-        exchangeSuccessDataCSVWriter.append("Accepted Requested Exchanges");
-        exchangeSuccessDataCSVWriter.append("\n");
-
-        // Stores a summary of various tracked stats.
-        File trackingSummaryData = new File(dataOutputFolder, "trackingSummary.txt");
-
-        FileWriter statsSummaryDataWriter = new FileWriter(trackingSummaryData);
-        
-
-        // Stores the average satisfaction of each Agent type at the end of each day, as well as the optimum average
-        // satisfaction and the satisfaction if allocations remained random. Values are averaged over multiple
-        // simulation runs rather than stored separately.
-        File averageSatisfactionsFile = new File(dataOutputFolder,"endOfDayAverages.csv");
-
-        FileWriter averageSatisfactionsCSVWriter = new FileWriter(averageSatisfactionsFile);
-
-        averageSatisfactionsCSVWriter.append("Day");
-        averageSatisfactionsCSVWriter.append(",");
-        averageSatisfactionsCSVWriter.append("Random (No exchange)");
-        averageSatisfactionsCSVWriter.append(",");
-        averageSatisfactionsCSVWriter.append("Optimum (No exchange)");
-        for (Integer type : uniqueAgentTypes) {
-            averageSatisfactionsCSVWriter.append(",");
-            averageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type));
-        }
-        for (Integer type : uniqueAgentTypes) {
-            averageSatisfactionsCSVWriter.append(",");
-            averageSatisfactionsCSVWriter.append(Inflect.getHumanReadableAgentType(type)).append(" Standard Deviation");
-        }
-
-        averageSatisfactionsCSVWriter.append("\n");
+        perAgentDataCSVWriter.append("Simulation Run");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Day");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Agent Type");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Satisfaction");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Rejected Received Exchanges");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Accepted Received Exchanges");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Rejected Requested Exchanges");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Accepted Requested Exchanges");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Social Capital Exchanges");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("No Social Capital Exchanges");
+        perAgentDataCSVWriter.append(",");
+        perAgentDataCSVWriter.append("Unspent Social Capital");
+        perAgentDataCSVWriter.append("\n");
 
         // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
-        // Only stores data for days in the daysOfInterest array and averages data over multiple simulation runs.
-        File individualsDataFile = new File(dataOutputFolder,"duringDayAverages.csv");
+        File exchangeData = new File(dataOutputFolder,"exchangeData.csv");
 
-        FileWriter individualsDataCSVWriter = new FileWriter(individualsDataFile);
+        FileWriter eachRoundDataCSVWriter = new FileWriter(exchangeData);
 
-        individualsDataCSVWriter.append("Day");
-        individualsDataCSVWriter.append(",");
-        individualsDataCSVWriter.append("Round");
-        individualsDataCSVWriter.append(",");
-        individualsDataCSVWriter.append("Agent Type");
-        individualsDataCSVWriter.append(",");
-        individualsDataCSVWriter.append("Satisfaction");
-        individualsDataCSVWriter.append("\n");
-
-        // Shows how the population of each Agent type varies throughout the simulation, influenced by social learning.
-        File populationDistributionsFile = new File(dataOutputFolder,"populationDistributions.csv");
-
-        FileWriter populationDistributionsCSVWriter = new FileWriter(populationDistributionsFile);
-
-        populationDistributionsCSVWriter.append("Day");
-        populationDistributionsCSVWriter.append(",");
-        populationDistributionsCSVWriter.append("Agent Type");
-        populationDistributionsCSVWriter.append(",");
-        populationDistributionsCSVWriter.append("Population");
-        populationDistributionsCSVWriter.append("\n");
-
-        // Shows how the population's satisfaction levels vary on days of interest..
-        File endOfDaySatisfactionsFile = new File(dataOutputFolder,"endOfDaySatisfactions.csv");
-
-        FileWriter individualSatisfactionsCSVWriter = new FileWriter(endOfDaySatisfactionsFile);
-
-        individualSatisfactionsCSVWriter.append("Day");
-        individualSatisfactionsCSVWriter.append(",");
-        individualSatisfactionsCSVWriter.append("Agent Type");
-        individualSatisfactionsCSVWriter.append(",");
-        individualSatisfactionsCSVWriter.append("Satisfaction");
-        individualSatisfactionsCSVWriter.append("\n");
+        eachRoundDataCSVWriter.append("Simulation Run");
+        eachRoundDataCSVWriter.append(",");
+        eachRoundDataCSVWriter.append("Day");
+        eachRoundDataCSVWriter.append(",");
+        eachRoundDataCSVWriter.append("Round");
+        eachRoundDataCSVWriter.append(",");
+        eachRoundDataCSVWriter.append("Agent Type");
+        eachRoundDataCSVWriter.append(",");
+        eachRoundDataCSVWriter.append("Satisfaction");
+        eachRoundDataCSVWriter.append("\n");
 
         // Stores the key data about the simulation about to begin in the data output location.
         File simulationData = new File(folderName + "/" + environmentTag,"simulationData.txt");
@@ -265,12 +184,10 @@ public class ArenaEnvironment {
         }
         simulationDataWriter.append("Use social capital: ").append(String.valueOf(socialCapital)).append("\n");
         simulationDataWriter.append("Simulation runs: ").append(String.valueOf(simulationRuns)).append("\n");
-        simulationDataWriter.append("Days: ").append(String.valueOf(days)).append("\n");
-        simulationDataWriter.append("Days of interest: ").append(Arrays.toString(daysOfInterest)).append("\n");
+        simulationDataWriter.append("Days after strategy takeover: ").append(String.valueOf(days)).append("\n");
         simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
         simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
-        simulationDataWriter.append("Exchanges: ").append(String.valueOf(exchanges)).append("\n");
         simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve))
                 .append("\n");
         simulationDataWriter.append("Starting ratio of agent types: ");
@@ -282,19 +199,7 @@ public class ArenaEnvironment {
             typesListed++;
             simulationDataWriter.append(Inflect.getHumanReadableAgentType(type));
         }
-        simulationDataWriter.close();
-
-        // Array lists used to temporarily store data before averaging and adding it to csv files.
-        for (int day = 1; day <= days; day++) {
-            ArrayList<ArrayList<Integer>> endOfDayPopulationDistribution = new ArrayList<>();
-            endOfDayPopulationDistributions.add(endOfDayPopulationDistribution);
-        }
-        for (ArrayList<ArrayList<Integer>> day : endOfDayPopulationDistributions) {
-            for (int agentType = 1; agentType <= uniqueAgentTypes.size(); agentType++) {
-                ArrayList<Integer> populations = new ArrayList<>();
-                day.add(populations);
-            }
-        }
+        simulationDataWriter.append("\n\n");
 
         // The demand curves are bucketed before the simulations for efficiency, as they will all use the same bucketed values.
         double[][] bucketedDemandCurves = new double[demandCurves.length][uniqueTimeSlots];
@@ -346,25 +251,19 @@ public class ArenaEnvironment {
             }
         }
 
-
-        ArrayList<ArrayList<Integer>>  socialCapitalTracking = new ArrayList<>();
-        ArrayList<ArrayList<Integer>>  exchangeTypeTracking = new ArrayList<>();
-        ArrayList<ArrayList<Integer>>  exchangeSuccessTracking = new ArrayList<>();
         // Run as many simulations as has been requested.
         for (int simulationRun = 1; simulationRun <= simulationRuns; simulationRun++) {
             /*
              * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in
              * a single location.
              *
-             * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
              * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
              *                    are split equally between the curves.
              * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
              * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
              * @param totalAvailability Integer value representing the total energy available throughout the day.
              * @param days Integer value representing the number of days to be simulated.
-             * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
-             *                  per day.
+             * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
              * @param populationSize Integer value representing the size of the initial agent population.
              * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
              *                        simulation.
@@ -381,26 +280,20 @@ public class ArenaEnvironment {
              *                                singleAgentType is true.
              * @param socialCapital Boolean value that determines whether or not social agents will utilise
              *                      social capital.
-             * @param socialCapitalTracking Stores the amount of social capital per agent for each agent type.
-             * @param exchangeTypeTracking Stores how many exchanges used social capital and how many did not.
-             * @param exchangeSuccessTracking Stores how many potential exchanges were accepted.
-             * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
-             * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
-             *                                       each round.
-             * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of
-             *                                      each day.
-             * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
+             * @param keyDaysData Stores the state of the simulation when a population takes over and when the simulation ends.
+             * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
+             * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
+             * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
              * @exception IOException On input error.
              * @see IOException
              */
             new SimulationRun(
-                    daysOfInterest,
                     bucketedDemandCurves,
                     totalDemandValues,
                     bucketedAvailabilityCurve,
                     totalAvailability,
                     days,
-                    exchanges,
+                    maxExchanges,
                     populationSize,
                     uniqueTimeSlots,
                     slotsPerAgent,
@@ -410,254 +303,176 @@ public class ArenaEnvironment {
                     singleAgentType,
                     selectedSingleAgentType,
                     socialCapital,
-                    socialCapitalTracking,
-                    exchangeTypeTracking,
-                    exchangeSuccessTracking,
-                    endOfDaySatisfactions,
-                    endOfRoundAverageSatisfactions,
-                    endOfDayAverageSatisfactions,
-                    endOfDayPopulationDistributions,
+                    keyDaysData,
                     allDailyDataCSVWriter,
+                    perAgentDataCSVWriter,
+                    eachRoundDataCSVWriter,
                     simulationRun
             );
             System.out.println("RUNS COMPLETED: " + simulationRun);
         }
 
-        // The end of day satisfactions for each agent type, as well as for random and optimum allocations,
-        // are averaged over simulation runs and appended to the averageSatisfactionsFile.
-        int types = (uniqueAgentTypes.size() * 2) + 2;
-        for (int day = 1; day <= days; day++) {
-            averageSatisfactionsCSVWriter.append(String.valueOf(day));
+        ArrayList<ArrayList<Double>> socialTakeoverDays = new ArrayList<>();
+        ArrayList<ArrayList<Double>> selfishTakeoverDays = new ArrayList<>();
 
-            for(int element: daysOfInterest) {
-                if (day == element) {
-                    comparingExchangesCSVWriter.append(String.valueOf(exchanges));
-                    comparingExchangesCSVWriter.append(",");
-                    comparingExchangesCSVWriter.append(String.valueOf(day));
+        ArrayList<ArrayList<Double>> socialFinalDays = new ArrayList<>();
+        ArrayList<ArrayList<Double>> selfishFinalDays = new ArrayList<>();
+
+        int socialRunsTotal = 0;
+        int selfishRunsTotal = 0;
+
+        for (ArrayList<Double> data: keyDaysData) {
+            ArrayList<Double> newData = new ArrayList<>();
+            newData.add(data.get(0));
+            newData.add(data.get(1));
+
+            if (data.get(data.size() - 1) == 0.0) {
+                if(data.get(3) == 0) {
+                    newData.add(data.get(4));
+                    newData.add(data.get(6));
+
+                    socialTakeoverDays.add(newData);
+                    socialRunsTotal++;
+                } else {
+                    newData.add(data.get(5));
+                    newData.add(data.get(7));
+
+                    selfishTakeoverDays.add(newData);
+                    selfishRunsTotal++;
                 }
-            }
+            } else {
+                if(data.get(3) == 0) {
+                    newData.add(data.get(4));
+                    newData.add(data.get(6));
 
-            for (int agentType = 1; agentType <= types; agentType++) {
-                ArrayList<Double> allSatisfactions = new ArrayList<>();
-                for (ArrayList<Double> endOfDayAverageSatisfaction : endOfDayAverageSatisfactions) {
-                    if (endOfDayAverageSatisfaction.get(0) == (double) day) {
-                        allSatisfactions.add(endOfDayAverageSatisfaction.get(agentType));
-                    }
-                }
-                double averageOverSims = allSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
-                averageSatisfactionsCSVWriter.append(",");
-                averageSatisfactionsCSVWriter.append(String.valueOf(averageOverSims));
+                    socialFinalDays.add(newData);
+                } else {
+                    newData.add(data.get(5));
+                    newData.add(data.get(7));
 
-                // Data saved for comparing exchanges graph, except for random and optimum allocations.
-                if(agentType > 2) {
-                    for(int element: daysOfInterest) {
-                        if (day == element) {
-                            comparingExchangesCSVWriter.append(",");
-                            comparingExchangesCSVWriter.append(String.valueOf(averageOverSims));
-                        }
-                    }
-                }
-            }
-            averageSatisfactionsCSVWriter.append("\n");
-            for(int element: daysOfInterest) {
-                if (day == element) {
-                    comparingExchangesCSVWriter.append("\n");
-                }
-            }
-        }
-
-        // The average end of round satisfaction is stored for each Agent type for all rounds during the days in the
-        // daysOfInterest array. These end of round averages are themselves averaged over all simulation runs before
-        // being added to the individualsDataFile.
-        for (int day : daysOfInterest) {
-            for (int exchange = 1; exchange <= exchanges; exchange++) {
-                for (int agentType : uniqueAgentTypes) {
-                    ArrayList<Double> allSimsEndOfRoundAverageSatisfaction = new ArrayList<>();
-                    for (ArrayList<Double> endOfRoundAverageSatisfaction : endOfRoundAverageSatisfactions) {
-                        if ((endOfRoundAverageSatisfaction.get(0) == (double) day) &&
-                                (endOfRoundAverageSatisfaction.get(1) == (double) exchange) &&
-                                (endOfRoundAverageSatisfaction.get(2) == (double) agentType)) {
-                            allSimsEndOfRoundAverageSatisfaction.add(endOfRoundAverageSatisfaction.get(3));
-                        }
-                    }
-                    double averageOverSims = allSimsEndOfRoundAverageSatisfaction.stream()
-                            .mapToDouble(val -> val).average().orElse(0.0);
-
-                    individualsDataCSVWriter.append(String.valueOf(day));
-                    individualsDataCSVWriter.append(",");
-                    individualsDataCSVWriter.append(String.valueOf(exchange));
-                    individualsDataCSVWriter.append(",");
-                    individualsDataCSVWriter.append(String.valueOf(agentType));
-                    individualsDataCSVWriter.append(",");
-                    individualsDataCSVWriter.append(String.valueOf(averageOverSims));
-                    individualsDataCSVWriter.append("\n");
+                    selfishFinalDays.add(newData);
                 }
             }
         }
 
-        // Individual satisfaction levels for days of interest are sorted into a csv file so that they can be added to
-        // violin plots.
-        // Data saved to track unspent social capital, the types of exchanges that occur and rejected exchanges is
-        // also handled here.
-        for (int day : daysOfInterest) {
-            statsSummaryDataWriter.append("Day: " + (String.valueOf(day)) + "\n");
-            for (int agentType : uniqueAgentTypes) {
-                statsSummaryDataWriter.append("Agent Type: " + Inflect.getHumanReadableAgentType(agentType) + "\n");
-
-                for (ArrayList<Double> endOfDaySatisfaction : endOfDaySatisfactions) {
-                    if ((endOfDaySatisfaction.get(0) == (double) day) &&
-                            (endOfDaySatisfaction.get(1) == (double) agentType)) {
-                        individualSatisfactionsCSVWriter.append(String.valueOf(day));
-                        individualSatisfactionsCSVWriter.append(",");
-                        individualSatisfactionsCSVWriter.append(String.valueOf(agentType));
-                        individualSatisfactionsCSVWriter.append(",");
-                        individualSatisfactionsCSVWriter.append(String.valueOf(endOfDaySatisfaction.get(2)));
-                        individualSatisfactionsCSVWriter.append("\n");
-                    }
-                }
-
-                ArrayList<Integer> unspentSocialCapital = new ArrayList<>();
-                for (ArrayList<Integer> sct : socialCapitalTracking) {
-                    if ((sct.get(0) == day) && (sct.get(1) == agentType)) {
-                        socialCapitalDataCSVWriter.append(String.valueOf(day));
-                        socialCapitalDataCSVWriter.append(",");
-                        socialCapitalDataCSVWriter.append(String.valueOf(agentType));
-                        socialCapitalDataCSVWriter.append(",");
-                        socialCapitalDataCSVWriter.append(String.valueOf(sct.get(2)));
-                        socialCapitalDataCSVWriter.append("\n");
-                        unspentSocialCapital.add(sct.get(2));
-                    }
-                }
-                double usc = unspentSocialCapital.stream().mapToDouble(val -> val).average().orElse(0.0);
-                statsSummaryDataWriter.append("Unspent Social Capital: " + (String.valueOf(usc))+ "\n");
-
-                ArrayList<Integer> socialCapitalExchanges = new ArrayList<>();
-                ArrayList<Integer> noSocialCapitalExchanges = new ArrayList<>();
-                for (ArrayList<Integer> ett : exchangeTypeTracking) {
-                    if ((ett.get(0) == day) && (ett.get(1) == agentType)) {
-                        exchangeTypeDataCSVWriter.append(String.valueOf(day));
-                        exchangeTypeDataCSVWriter.append(",");
-                        exchangeTypeDataCSVWriter.append(String.valueOf(agentType));
-                        exchangeTypeDataCSVWriter.append(",");
-                        exchangeTypeDataCSVWriter.append(String.valueOf(ett.get(2)));
-                        exchangeTypeDataCSVWriter.append(",");
-                        exchangeTypeDataCSVWriter.append(String.valueOf(ett.get(3)));
-                        exchangeTypeDataCSVWriter.append("\n");
-                        socialCapitalExchanges.add(ett.get(2));
-                        noSocialCapitalExchanges.add(ett.get(3));
-                    }
-                }
-                double sce = socialCapitalExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
-                double nsce = noSocialCapitalExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
-                statsSummaryDataWriter.append("Social Capital Exchanges: " + (String.valueOf(sce))+ "\n");
-                statsSummaryDataWriter.append("No Social Capital Exchanges: " + (String.valueOf(nsce))+ "\n");
-
-                ArrayList<Integer> rejectedReceivedExchanges = new ArrayList<>();
-                ArrayList<Integer> acceptedReceivedExchanges = new ArrayList<>();
-                ArrayList<Integer> rejectedRequestedExchanges = new ArrayList<>();
-                ArrayList<Integer> acceptedRequestedExchanges = new ArrayList<>();
-                for (ArrayList<Integer> est : exchangeSuccessTracking) {
-                    if ((est.get(0) == day) && (est.get(1) == agentType)) {
-                        exchangeSuccessDataCSVWriter.append(String.valueOf(day));
-                        exchangeSuccessDataCSVWriter.append(",");
-                        exchangeSuccessDataCSVWriter.append(String.valueOf(agentType));
-                        exchangeSuccessDataCSVWriter.append(",");
-                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(2)));
-                        exchangeSuccessDataCSVWriter.append(",");
-                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(3)));
-                        exchangeSuccessDataCSVWriter.append(",");
-                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(4)));
-                        exchangeSuccessDataCSVWriter.append(",");
-                        exchangeSuccessDataCSVWriter.append(String.valueOf(est.get(5)));
-                        exchangeSuccessDataCSVWriter.append("\n");
-                        rejectedReceivedExchanges.add(est.get(2));
-                        acceptedReceivedExchanges.add(est.get(3));
-                        rejectedRequestedExchanges.add(est.get(4));
-                        acceptedRequestedExchanges.add(est.get(5));
-                    }
-                }
-                double rec = rejectedReceivedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
-                double aerec = acceptedReceivedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
-                double req = rejectedRequestedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
-                double aereq = acceptedRequestedExchanges.stream().mapToDouble(val -> val).average().orElse(0.0);
-                statsSummaryDataWriter.append("Rejected Received Exchanges: " + (String.valueOf(rec))+ "\n");
-                statsSummaryDataWriter.append("Accepted Received Exchanges: " + (String.valueOf(aerec))+ "\n");
-                statsSummaryDataWriter.append("Rejected Requested Exchanges: " + (String.valueOf(req))+ "\n");
-                statsSummaryDataWriter.append("Accepted Requested Exchanges: " + (String.valueOf(aereq))+ "\n");
-                statsSummaryDataWriter.append("\n");
+        final int column = 1;
+        Comparator<ArrayList<Double>> myComparator = new Comparator<ArrayList<Double>>() {
+            @Override
+            public int compare(ArrayList<Double> o1, ArrayList<Double> o2) {
+                return o1.get(column).compareTo(o2.get(column));
             }
+        };
+
+        Collections.sort(socialTakeoverDays, myComparator);
+        Collections.sort(selfishTakeoverDays, myComparator);
+
+        Collections.sort(socialFinalDays, myComparator);
+        Collections.sort(selfishFinalDays, myComparator);
+
+        int middleSelfish = 0;
+        int middleSocial = 0;
+
+        if (socialRunsTotal > 0) {
+            ArrayList<Double> middleSocialTakeover = socialTakeoverDays.get((int) Math.floor(socialRunsTotal / 2.0f));
+            ArrayList<Double> slowestSocialTakeover = socialTakeoverDays.get(socialRunsTotal - 1);
+            ArrayList<Double> fastestSocialTakeover = socialTakeoverDays.get(0);
+
+            middleSocial = (int) Math.floor(middleSocialTakeover.get(0));
+            int slowSocial = (int) Math.floor(slowestSocialTakeover.get(0));
+            int fastSocial = (int) Math.floor(fastestSocialTakeover.get(0));
+
+            simulationDataWriter.append("Social Takeovers: " + socialRunsTotal).append("\n");
+            simulationDataWriter.append("Fastest Social: Run " + fastSocial).append("\n");
+            simulationDataWriter.append("Slowest Social: Run " + slowSocial).append("\n");
+            simulationDataWriter.append("Typical Social: Run " + middleSocial).append("\n");
+
+            double avgDaysSocial = 0;
+            double avgSatSocial = 0;
+            double avgSDSocial = 0;
+
+            for(ArrayList<Double> run: socialTakeoverDays) {
+                avgDaysSocial += run.get(1);
+                avgSatSocial += run.get(2);
+                avgSDSocial += run.get(3);
+            }
+
+            simulationDataWriter.append("Average Takeover Days (social): " + avgDaysSocial / socialTakeoverDays.size()).append("\n");
+            simulationDataWriter.append("Average Takeover Satisfaction (social): " + avgSatSocial / socialTakeoverDays.size()).append("\n");
+            simulationDataWriter.append("Average Takeover SD (social): " + avgSDSocial / socialTakeoverDays.size()).append("\n");
+
+            
+            avgDaysSocial = 0;
+            avgSatSocial = 0;
+            avgSDSocial = 0;
+            
+            for(ArrayList<Double> run: socialFinalDays) {
+                avgDaysSocial += run.get(1);
+                avgSatSocial += run.get(2);
+                avgSDSocial += run.get(3);
+            }
+
+            simulationDataWriter.append("Average Final Satisfaction (social): " + avgSatSocial / socialFinalDays.size()).append("\n");
+            simulationDataWriter.append("Average Final SD (social): " + avgSDSocial / socialFinalDays.size()).append("\n\n");
         }
 
-        // The population distributions for the simulations are averaged before being added to the population
-        // distributions csv file.
-        for (int day = 1; day <= days; day++) {
-            ArrayList<ArrayList<Integer>> daysPopulations = endOfDayPopulationDistributions.get(day - 1);
-            boolean dayOfInterest = false;
-            for(int element: daysOfInterest) {
-                if (day == element) {
-                    dayOfInterest = true;
-                    comparingPopulationDistributionsCSVWriter.append(String.valueOf(exchanges));
-                    comparingPopulationDistributionsCSVWriter.append(",");
-                    comparingPopulationDistributionsCSVWriter.append(String.valueOf(day));
-                }
-            }
-            for (int agentType = 0; agentType < uniqueAgentTypes.size(); agentType++) {
-                populationDistributionsCSVWriter.append(String.valueOf(day));
-                populationDistributionsCSVWriter.append(",");
-                populationDistributionsCSVWriter.append(String.valueOf(uniqueAgentTypes.get(agentType)));
-                populationDistributionsCSVWriter.append(",");
+        if (selfishRunsTotal > 0) {
+            ArrayList<Double> middleSelfishTakeover = selfishTakeoverDays.get((int) Math.floor(selfishRunsTotal / 2.0f));
+            ArrayList<Double> slowestSelfishTakeover = selfishTakeoverDays.get(selfishRunsTotal - 1);
+            ArrayList<Double> fastestSelfishTakeover = selfishTakeoverDays.get(0);
 
-                ArrayList<Integer> allPopulations = daysPopulations.get(agentType);
-                int sumOfPopulations = 0;
-                for (Integer population : allPopulations) {
-                    sumOfPopulations = sumOfPopulations + population;
-                }
-                double averagePopulation = (double) sumOfPopulations / simulationRuns;
+            middleSelfish = (int) Math.floor(middleSelfishTakeover.get(0));
+            int slowSelfish = (int) Math.floor(slowestSelfishTakeover.get(0));
+            int fastSelfish = (int) Math.floor(fastestSelfishTakeover.get(0));
 
-                populationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
-                populationDistributionsCSVWriter.append("\n");
-                if (dayOfInterest) {
-                    comparingPopulationDistributionsCSVWriter.append(",");
-                    comparingPopulationDistributionsCSVWriter.append(String.valueOf(averagePopulation));
-                }
+            simulationDataWriter.append("Selfish Takeovers: " + selfishRunsTotal).append("\n");
+            simulationDataWriter.append("Fastest selfish: Run " + fastSelfish).append("\n");
+            simulationDataWriter.append("Slowest selfish: Run " + slowSelfish).append("\n");
+            simulationDataWriter.append("Typical selfish: Run " + middleSelfish).append("\n");
+
+            double avgDaysSelfish = 0;
+            double avgSatSelfish = 0;
+            double avgSDSelfish = 0;
+
+            for(ArrayList<Double> run: selfishTakeoverDays) {
+                avgDaysSelfish += run.get(1);
+                avgSatSelfish += run.get(2);
+                avgSDSelfish += run.get(3);
             }
-            if (dayOfInterest) {
-                comparingPopulationDistributionsCSVWriter.append("\n");
+
+            simulationDataWriter.append("Average Takeover Days (selfish): " + avgDaysSelfish / selfishTakeoverDays.size()).append("\n");
+            simulationDataWriter.append("Average Takeover Satisfaction (selfish): " + avgSatSelfish / selfishTakeoverDays.size()).append("\n");
+            simulationDataWriter.append("Average Takeover SD (selfish): " + avgSDSelfish / socialTakeoverDays.size()).append("\n");
+
+            avgDaysSelfish = 0;
+            avgSatSelfish = 0;
+            avgSDSelfish = 0;
+
+            for(ArrayList<Double> run: selfishFinalDays) {
+                avgDaysSelfish += run.get(1);
+                avgSatSelfish += run.get(2);
+                avgSDSelfish += run.get(3);
             }
+
+            simulationDataWriter.append("Average Final Satisfaction (selfish): " + avgSatSelfish / selfishFinalDays.size()).append("\n");
+            simulationDataWriter.append("Average Final SD (selfish): " + avgSDSelfish / selfishFinalDays.size());
         }
-
-        // Close the csv file writers once the simulation is complete.
+        
+        // Close the file writers once the simulation is complete.
         allDailyDataCSVWriter.close();
-        socialCapitalDataCSVWriter.close();
-        exchangeTypeDataCSVWriter.close();
-        exchangeSuccessDataCSVWriter.close();
-        statsSummaryDataWriter.close();
-        averageSatisfactionsCSVWriter.close();
-        individualSatisfactionsCSVWriter.close();
-        individualsDataCSVWriter.close();
-        populationDistributionsCSVWriter.close();
+        perAgentDataCSVWriter.close();
+        eachRoundDataCSVWriter.close();
+        simulationDataWriter.close();
 
-        /*
+        /**
          * Begins python code that visualises the gathered data from the current environment being simulated.
          *
          * @param pythonExe String representing the system path to python environment executable.
          * @param pythonPath String representing the system path to the python data visualiser.
          * @param folderName String representing the output destination folder, used to organise output data.
          * @param environmentTag String detailing specifics about the simulation environment.
-         * @param averageSatisfactionsFile Stores the average satisfaction of each Agent type at the end of each day,
-         *                                 as well as the optimum average satisfaction and the satisfaction if
-         *                                 allocations remained random.
-         * @param individualsDataFile Stores the satisfaction of each individual Agent at the end of every round
-         *                            throughout the simulation.
-         * @param populationDistributionsFile Shows how the population of each Agent type varies throughout the
-         *                                    simulation, influenced by social learning.
-         * @param endOfDaySatisfactionsFile Stores the satisfaction of each agent at the end of days of interest.
-         * @param allDataFile Stores all the data that can be analysed for the day.
-         * @param days Integer value representing the number of days to be simulated.
-         * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges
-         *                  per day.
-         * @param daysToVisualise Integer array containing the days be shown in graphs produced after the simulation.
-         * @param populationSize Integer value representing the size of the initial agent population.
+         * @param dataFile Stores all the data that can be analysed for each day.
+         * @param typicalSocial The most average performing social run.
+         * @param typicalSelfish The most average performing selfish run.
          * @exception IOException On input error.
          * @see IOException
          */
@@ -666,15 +481,9 @@ public class ArenaEnvironment {
                 pythonPath,
                 folderName,
                 environmentTag,
-                averageSatisfactionsFile,
-                individualsDataFile,
-                populationDistributionsFile,
-                endOfDaySatisfactionsFile,
                 allDailyData,
-                days,
-                exchanges,
-                daysOfInterest,
-                populationSize
+                middleSocial,
+                middleSelfish
         );
     }
 }

@@ -1,6 +1,5 @@
 # IDE Files #
-.idea/
-*.iml
+.vscode/
 
 # Compiled Source #
 out/

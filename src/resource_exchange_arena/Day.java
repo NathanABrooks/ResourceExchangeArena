@@ -5,24 +5,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 public class Day {
     // List of all the possible allocations that exist in the current simulation.
     private final ArrayList<Integer> availableTimeSlots = new ArrayList<>();
 
+    int socPop;
+    int selPop;
+    double socSat;
+    double selSat;
+    double socSD;
+    double selSD;
+
+    double[] socialStatValues;
+    double[] selfishStatValues;
+
+    double randomAllocations;
+    double optimumAllocations;
+
     /**
      * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
      * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
      *
-     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
      *                    are split equally between the curves.
      * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
      * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
      * @param totalAvailability Integer value representing the total energy available throughout the day.
      * @param day Integer value representing the current day being simulated.
-     * @param exchanges Integer value representing the number of times all agents perform pairwise exchanges per day.
+     * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
      * @param populationSize Integer value representing the size of the initial agent population.
      * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
@@ -31,41 +42,31 @@ public class Day {
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
      *                         begins.
      * @param agents Array List of all the agents that exist in the current simulation.
-     * @param socialCapitalTracking Stores the amount of social capital per agent for each agent type.
-     * @param exchangeTypeTracking Stores how many exchanges used social capital and how many did not.
-     * @param exchangeSuccessTracking Stores how many potential exchanges were accepted.
-     * @param endOfDaySatisfactions Stores the satisfaction of each agent at the end of days of interest.
-     * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
-     *                                       round.
-     * @param endOfDayAverageSatisfactions Stores the average satisfaction for each agent type at the end of each day.
-     * @param endOfDayPopulationDistributions Stores the population of each agent type at the end of each day.
+     * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
+     * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
+     * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
+     * @param run Integer value identifying the current simulation run.
      * @exception IOException On input error.
      * @see IOException
      */
     Day(
-            int[] daysOfInterest,
-            double[][] demandCurves,
-            double[] totalDemandValues,
-            int [] availabilityCurve,
-            int totalAvailability,
-            int day,
-            int exchanges,
-            int populationSize,
-            int uniqueTimeSlots,
-            int slotsPerAgent,
-            int numberOfAgentsToEvolve,
-            ArrayList<Integer> uniqueAgentTypes,
-            ArrayList<Agent> agents,
-            ArrayList<ArrayList<Integer>>  socialCapitalTracking,
-            ArrayList<ArrayList<Integer>>  exchangeTypeTracking,
-            ArrayList<ArrayList<Integer>>  exchangeSuccessTracking,
-            ArrayList<ArrayList<Double>> endOfDaySatisfactions,
-            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions,
-            ArrayList<ArrayList<Double>> endOfDayAverageSatisfactions,
-            ArrayList<ArrayList<ArrayList<Integer>>> endOfDayPopulationDistributions,
-            FileWriter dailyDataWriter,
-            int run
-    ) throws IOException{
+        double[][] demandCurves,
+        double[] totalDemandValues,
+        int [] availabilityCurve,
+        int totalAvailability,
+        int day,
+        ArrayList<Integer> maxExchanges,
+        int populationSize,
+        int uniqueTimeSlots,
+        int slotsPerAgent,
+        int numberOfAgentsToEvolve,
+        ArrayList<Integer> uniqueAgentTypes,
+        ArrayList<Agent> agents,
+        FileWriter dailyDataWriter,
+        FileWriter perAgentDataCSVWriter,
+        FileWriter eachRoundDataCSVWriter,
+        int run
+    ) throws IOException {
 
         if(!availableTimeSlots.isEmpty()) {
             availableTimeSlots.clear();
@@ -95,7 +96,7 @@ public class Day {
         ArrayList<Integer> curves = new ArrayList<>();
 
         int curve = 0;
-        for (Agent a : agents) {
+        for (int i = 0; i < agents.size(); i++) {
             curves.add(curve);
             curve++;
             if (curve >= demandCurves.length) {
@@ -113,103 +114,54 @@ public class Day {
         }
 
         // The random and optimum average satisfaction scores are calculated before exchanges take place.
-        double randomAllocations = CalculateSatisfaction.averageAgentSatisfaction(agents);
-        double optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
+        randomAllocations = CalculateSatisfaction.averageAgentSatisfaction(agents);
+        optimumAllocations = CalculateSatisfaction.optimumAgentSatisfaction(agents);
 
         // A pre-determined number of pairwise exchanges take place, during each exchange all agents have a chance to
         // trade with another agent.
-        for (int exchange = 1; exchange <= exchanges; exchange++) {
+        int currentExchanges = 0;
+        int timeout = 0;
+        int maxTimeout = 10;
+
+        while(timeout < maxTimeout) {
 
             /*
              * With each exchange all agents form pairwise exchanges and are able to consider a trade with their
              * partner for one time slot.
              *
-             * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+             * @param run Integer value identifying the current simulation run.
              * @param day Integer value representing the current day being simulated.
              * @param exchange Integer value representing the current exchange being simulated.
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
              * @param agents Array List of all the agents that exist in the current simulation.
-             * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of
-             *                                       each round.
+             * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
              * @exception IOException On input error.
              * @see IOException
-             */
-            new Exchange(
-                    daysOfInterest,
+             */ 
+            Exchange current = new Exchange(
+                    run,
                     day,
-                    exchange,
+                    currentExchanges,
                     uniqueAgentTypes,
                     agents,
-                    endOfRoundAverageSatisfactions
+                    eachRoundDataCSVWriter
             );
-        }
-        // The average end of day satisfaction is stored for each agent type to later be averaged and analysed.
-        ArrayList<Double> endOfDayAverageSatisfaction = new ArrayList<>();
-        endOfDayAverageSatisfaction.add((double) day);
-        endOfDayAverageSatisfaction.add(randomAllocations);
-        endOfDayAverageSatisfaction.add(optimumAllocations);
 
-        // Store the end of day average satisfaction for each agent type.
-        for (int uniqueAgentType : uniqueAgentTypes) {
-            double typeAverageSatisfaction = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
-            endOfDayAverageSatisfaction.add(typeAverageSatisfaction);
-        }
-        // Temporarily store the end of day average variance for each agent type.
-        for (int uniqueAgentType : uniqueAgentTypes) {
-            double typeAverageSatisfactionSD =
-                    CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, uniqueAgentType);
-            endOfDayAverageSatisfaction.add(typeAverageSatisfactionSD);
-        }
-        endOfDayAverageSatisfactions.add(endOfDayAverageSatisfaction);
-
-        for (Integer uniqueAgentType : uniqueAgentTypes) {
-            int populationQuantity = 0;
-            for (Agent a : agents) {
-                if (a.getAgentType() == uniqueAgentType) {
-                    populationQuantity++;
-                }
+            if (current.noExchanges == true) {
+                timeout++;
+            } else {
+                timeout = 0;
             }
-            endOfDayPopulationDistributions.get(day - 1)
-                    .get(uniqueAgentTypes.indexOf(uniqueAgentType)).add(populationQuantity);
+
+            currentExchanges++;
         }
 
-        // On days of interest, store the satisfaction for each agent at the end of the day to be added to violin plots.
-        // Also store information about average social capital and the exchanges that occured that day.
-        if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
-            for (Agent a : agents) {
-                ArrayList<Double> endOfDaySatisfaction = new ArrayList<>();
-                endOfDaySatisfaction.add((double) day);
-                endOfDaySatisfaction.add((double) a.getAgentType());
-                endOfDaySatisfaction.add(a.calculateSatisfaction(null));
-                endOfDaySatisfactions.add(endOfDaySatisfaction);
+        maxExchanges.add(currentExchanges);
 
-                ArrayList<Integer> socialCapitalTracked = new ArrayList<>();
-                socialCapitalTracked.add(day);
-                socialCapitalTracked.add(a.getAgentType());
-                socialCapitalTracked.add(a.getUnspentSocialCapital());
-                socialCapitalTracking.add(socialCapitalTracked);
+        socPop = 0;
+        selPop = 0;
 
-                ArrayList<Integer> exchangeTypeTracked = new ArrayList<>();
-                exchangeTypeTracked.add(day);
-                exchangeTypeTracked.add(a.getAgentType());
-                exchangeTypeTracked.add(a.getSocialCapitalExchanges());
-                exchangeTypeTracked.add(a.getNoSocialCapitalExchanges());
-                exchangeTypeTracking.add(exchangeTypeTracked);
-
-                ArrayList<Integer> exchangeSuccessTracked = new ArrayList<>();
-                exchangeSuccessTracked.add(day);
-                exchangeSuccessTracked.add(a.getAgentType());
-                exchangeSuccessTracked.add(a.getRejectedReceivedExchanges());
-                exchangeSuccessTracked.add(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges());
-                exchangeSuccessTracked.add(a.getRejectedRequestedExchanges());
-                exchangeSuccessTracked.add(a.getAcceptedRequestedExchanges());
-                exchangeSuccessTracking.add(exchangeSuccessTracked);
-            }
-        }
-
-        int socPop = 0;
-        int selPop = 0;
         for (Agent a : agents) {
             if (a.getAgentType() == ResourceExchangeArena.SOCIAL) {
                 socPop++;
@@ -218,8 +170,13 @@ public class Day {
             }
         }
 
-        double[] socialStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SOCIAL);
-        double[] selfishStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SELFISH);
+        socSat = CalculateSatisfaction.averageAgentSatisfaction(agents, ResourceExchangeArena.SOCIAL);
+        selSat = CalculateSatisfaction.averageAgentSatisfaction(agents, ResourceExchangeArena.SELFISH);
+        socSD = CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, ResourceExchangeArena.SOCIAL);
+        selSD = CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, ResourceExchangeArena.SELFISH);
+
+        socialStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SOCIAL);
+        selfishStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SELFISH);
 
         dailyDataWriter.append(String.valueOf(run));
         dailyDataWriter.append(",");
@@ -233,16 +190,16 @@ public class Day {
         dailyDataWriter.append(String.valueOf(selPop));
         dailyDataWriter.append(",");
         
-        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageAgentSatisfaction(agents, ResourceExchangeArena.SOCIAL)));
+        dailyDataWriter.append(String.valueOf(socSat));
         dailyDataWriter.append(",");
         
-        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageAgentSatisfaction(agents, ResourceExchangeArena.SELFISH)));
+        dailyDataWriter.append(String.valueOf(selSat));
         dailyDataWriter.append(",");
 
-        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, ResourceExchangeArena.SOCIAL)));
+        dailyDataWriter.append(String.valueOf(socSD));
         dailyDataWriter.append(",");
         
-        dailyDataWriter.append(String.valueOf(CalculateSatisfaction.averageSatisfactionStandardDeviation(agents, ResourceExchangeArena.SELFISH)));
+        dailyDataWriter.append(String.valueOf(selSD));
         dailyDataWriter.append(",");
 
         dailyDataWriter.append(String.valueOf(socialStatValues[0]));
@@ -279,8 +236,49 @@ public class Day {
         dailyDataWriter.append(",");
         
         dailyDataWriter.append(String.valueOf(selfishStatValues[5]));
+        dailyDataWriter.append(",");
+        
+        dailyDataWriter.append(String.valueOf(randomAllocations));
+        dailyDataWriter.append(",");
+
+        dailyDataWriter.append(String.valueOf(optimumAllocations));
         dailyDataWriter.append("\n");
 
+
+        for (Agent a: agents) {
+            perAgentDataCSVWriter.append(String.valueOf(run));
+            perAgentDataCSVWriter.append(",");
+    
+            perAgentDataCSVWriter.append(String.valueOf(day));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getAgentType()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getRejectedReceivedExchanges()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getRejectedRequestedExchanges()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getAcceptedRequestedExchanges()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getSocialCapitalExchanges()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getNoSocialCapitalExchanges()));
+            perAgentDataCSVWriter.append(",");
+
+            perAgentDataCSVWriter.append(String.valueOf(a.getUnspentSocialCapital()));
+            perAgentDataCSVWriter.append("\n");
+        }
 
         /*
          * To facilitate social learning, for the number of the agents who are able to consider changing their strategy,

@@ -13,7 +13,4 @@ public abstract class FixedParameters {
 
     // Constant parameters for all simulations, this version of the system is not designed for these to be modified.
     public static final int UNIQUE_TIME_SLOTS = 24;
-
-    // In this version maximum peak consumption is calculated to be the number of agents * the number of slots requested per agent.
-    // public static final int MAXIMUM_PEAK_CONSUMPTION = 16;
 }

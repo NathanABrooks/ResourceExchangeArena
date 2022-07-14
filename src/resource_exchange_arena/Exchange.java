@@ -1,33 +1,35 @@
 package resource_exchange_arena;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.stream.IntStream;
 
 class Exchange {
     /**
      * With each exchange all agents form pairwise exchanges and are able to consider a trade with their partner for
      * one time slot.
      *
-     * @param daysOfInterest Integer array containing the days be shown in graphs produced after the simulation.
+     * @param run Integer value identifying the current simulation run.
      * @param day Integer value representing the current day being simulated.
      * @param exchange Integer value representing the current exchange being simulated.
-     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
-     *                         begins.
+     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
+     *                         simulation begins.
      * @param agents Array List of all the agents that exist in the current simulation.
-     * @param endOfRoundAverageSatisfactions Stores the average satisfaction for each agent type at the end of each
-     *                                       round.
+     * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
      * @exception IOException On input error.
      * @see IOException
      */
+
+    Boolean noExchanges = false;
+    
     Exchange(
-            int[] daysOfInterest,
+        int run,
             int day,
             int exchange,
             ArrayList<Integer> uniqueAgentTypes,
             ArrayList<Agent> agents,
-            ArrayList<ArrayList<Double>> endOfRoundAverageSatisfactions
+            FileWriter eachRoundDataCSVWriter
     ) throws IOException {
 
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
@@ -96,6 +98,9 @@ class Exchange {
             }
         }
 
+
+        int successfullExchanges = 0;
+
         // Agents confirm and complete approved requests if they are able to do so, and update their relations with
         // other Agents accordingly.
         Collections.shuffle(agents, ResourceExchangeArena.random);
@@ -114,6 +119,7 @@ class Exchange {
                                 if (scloss) {
                                     b.lostSocialCapital();
                                 }
+                                successfullExchanges++;
                             }
                             break;
                         }
@@ -127,21 +133,30 @@ class Exchange {
             }
         }
 
-        // The average end of round satisfaction is stored for each Agent type if the current day exists in the
-        // daysOfInterest array. This data can later be averaged over simulation runs and added to the individual
-        // data file.
-        if (IntStream.of(daysOfInterest).anyMatch(val -> val == day)) {
-            for (int uniqueAgentType : uniqueAgentTypes) {
-                double averageSatisfactionForType =
-                        CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
-                ArrayList<Double> endOfRoundAverageSatisfaction = new ArrayList<>();
-                endOfRoundAverageSatisfaction.add((double) day);
-                endOfRoundAverageSatisfaction.add((double) exchange);
-                endOfRoundAverageSatisfaction.add((double) uniqueAgentType);
-                endOfRoundAverageSatisfaction.add(averageSatisfactionForType);
-
-                endOfRoundAverageSatisfactions.add(endOfRoundAverageSatisfaction);
-            }
+        if (successfullExchanges == 0) {
+            noExchanges = true;
         }
+
+        // The average end of round satisfaction is stored for each Agent type.
+        // This data can later be averaged over simulation runs and added to the individual data file.
+        for (int uniqueAgentType : uniqueAgentTypes) {
+            double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
+
+            eachRoundDataCSVWriter.append(String.valueOf(run));
+            eachRoundDataCSVWriter.append(",");
+            
+            eachRoundDataCSVWriter.append(String.valueOf(day));
+            eachRoundDataCSVWriter.append(",");
+            
+            eachRoundDataCSVWriter.append(String.valueOf(exchange));
+            eachRoundDataCSVWriter.append(",");
+            
+            eachRoundDataCSVWriter.append(String.valueOf(uniqueAgentType));
+            eachRoundDataCSVWriter.append(",");
+
+            eachRoundDataCSVWriter.append(String.valueOf(averageSatisfactionForType));
+            eachRoundDataCSVWriter.append("\n");
+        }
+
     }
 }

@@ -29,18 +29,13 @@ public abstract class UserParameters extends FixedParameters {
     // Alter the number of timeslots that each agent requests each day.
     public static final int SLOTS_PER_AGENT = 4;
 
-    // Alter the length of time to be simulated.
-    public static final int DAYS = 500;
+    // Alter the length of time to be simulated once the simulation has reached a steady population state.
+    public static final int DAYS = 100;
     // Example: "500"
 
     // Increase the number of simulation runs for more consistent results.
-    public static final int SIMULATION_RUNS = 500;
+    public static final int SIMULATION_RUNS = 100;
     // Example: "50"
-
-    // Days that will have the Agents average satisfaction over the course of the day, and satisfaction distribution at
-    // the end of the day visualised.
-    public static final int[] DAYS_OF_INTEREST = {1, 100, 200, 300, 400, 500};
-    // Example: "{1, 100, 200, 300, 400, 500}"
 
     // Specify whether only a single agent type should exist in the simulation, used for establishing baseline results.
     public static boolean SINGLE_AGENT_TYPE = false;
@@ -59,15 +54,7 @@ public abstract class UserParameters extends FixedParameters {
     // The arrays should have 1 value for each 30 minute segment of the day.
     public static final int[] AVAILABILITY_CURVE = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
-    // In order to schedule multiple parameter combinations when performing a parameter sweep, add more items to
-    // the following arrays. All possible combinations will be simulated.
-    // ################################################################################################################
-    // Number of exchange rounds per day.
-    public static final int[] EXCHANGES_ARRAY = {1,10,20,30,40,50,100,150,200};
-    // Example: "{1,50,100,150,200};"
-
     // Percentage of agents that will evolve their strategy per day.
-    // CURRENTLY MUST HAVE MORE THAN 1 VALUE
     public static final int[] PERCENTAGE_OF_AGENTS_TO_EVOLVE_ARRAY = {0,100};
     // Example: "{0,50,100}" {0, 10, 25, 50,100}
 
