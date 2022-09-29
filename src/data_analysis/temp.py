@@ -680,3 +680,4 @@ with open(dataFile) as rawData:
     
         fullPath: str = os.path.join(baseOutputDirectory, convertedBaseFileName2)
         py.io.write_image(selFig, fullPath, format="png")
+        

@@ -54,7 +54,7 @@ class SocialLearning {
             if (Math.round(learningAgentSatisfaction * slotsPerAgent) < Math.round(observedAgentSatisfaction * slotsPerAgent)) {
                 double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                 if (difference >= 0) {
-                    double beta = 1.0;
+                    double beta = 1;
                     double learningChance = 1 / (1 + (Math.exp(-beta * difference)));
                     double normalisedLearningChance = (learningChance * 2) - 1;
 
