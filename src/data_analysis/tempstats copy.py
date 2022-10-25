@@ -27,7 +27,8 @@ typicalSelfish : str
 dataFile: str = "/home/brooks/code/ResourceExchangeArena/results/RWD_small/useSC_true_AType_mixed/AE_100_SR_Selfish_Social/data/agentData.csv"
 dataFile2: str = "/home/brooks/code/ResourceExchangeArena/results/RWD_large/useSC_true_AType_mixed/AE_100_SR_Selfish_Social/data/agentData.csv"
 
-# Store the scope of the data.
+d1Size = 24
+d2Size = 192
 
 def Average(lst):
     return sum(lst) / len(lst)
@@ -43,15 +44,14 @@ with open(dataFile) as rawData:
     next(reader)
 
     day = 0
-    tempSocCap = [0] * 24
+    tempSocCap = [0] * d1Size
     i = 0
 
     for row in reader:
         newDay = int(row[1])
-        tempSocCap[i] = int(row[10])
         i = i+1
 
-        if i > 23:
+        if i == d1Size:
             i = 0
 
         if (newDay < day):
@@ -59,7 +59,10 @@ with open(dataFile) as rawData:
             socCap.extend(tempSocCap)
         else:
             day = newDay
-
+        
+        tempSocCap[i] = int(row[10])
+    socCap.extend(tempSocCap)
+    
     print(Average(socCap))
 
 with open(dataFile2) as rawData:
@@ -70,15 +73,14 @@ with open(dataFile2) as rawData:
     next(reader)
 
     day = 0
-    tempSocCap = [0] * 24
+    tempSocCap = [0] * d2Size
     i = 0
 
     for row in reader:
         newDay = int(row[1])
-        tempSocCap[i] = int(row[10])
         i = i+1
 
-        if i > 23:
+        if i == d2Size:
             i = 0
 
         if (newDay < day):
@@ -86,5 +88,8 @@ with open(dataFile2) as rawData:
             socCap.extend(tempSocCap)
         else:
             day = newDay
-
+        
+        tempSocCap[i] = int(row[10])
+    socCap.extend(tempSocCap)
+    
     print(Average(socCap))
