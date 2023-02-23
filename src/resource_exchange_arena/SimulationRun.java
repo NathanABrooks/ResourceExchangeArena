@@ -104,7 +104,7 @@ class SimulationRun {
 
         boolean complete = false;
         boolean takeover = false;
-        int extention = 1;
+        int extention = 0;
         int day = 1;
         while (!complete) {
             /*
@@ -181,9 +181,6 @@ class SimulationRun {
                 takeoverData.add(0.0);
                 keyDaysData.add(takeoverData);
             }
-            if (takeover) {
-                extention++;
-            }
 
             if (extention == days) {
                 complete = true;
@@ -213,7 +210,11 @@ class SimulationRun {
                 finalData.add(1.0);
                 keyDaysData.add(finalData);
             }
-            day++;   
+            day++;
+            
+            if (takeover) {
+                extention++;
+            }
         }
     }
 }
