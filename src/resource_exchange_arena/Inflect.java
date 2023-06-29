@@ -1,7 +1,7 @@
 package resource_exchange_arena;
 
 class Inflect {
-    
+
   /**
    * Takes an agentType and converts it from its {@link Integer} format to a descriptive {@link String} name to organise the data output by the simulation.
    *

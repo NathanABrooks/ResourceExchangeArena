@@ -18,7 +18,7 @@ public class ResourceExchangeArena extends UserParameters {
     static Random random = new Random();
 
     /**
-     * This is the main method which runs the entire ResourceExchangeArena simulation.
+     * This is the main method which runs the entire {@link ResourceExchangeArena} simulation.
      *
      * @param args Unused.
      * @exception IOException On input error.
@@ -26,65 +26,60 @@ public class ResourceExchangeArena extends UserParameters {
      */
     public static void main(String[] args) throws IOException {
         switch (COMPARISON_LEVEL) {
-            case 1:
+            case 1 -> {
                 // Test user parameters with and without social capital for comparison.
                 USE_SOCIAL_CAPITAL = false;
                 runSimulationSet();
                 System.out.println("********** 1 / 2 ENVIRONMENT VERSIONS COMPLETE **********");
-
                 USE_SOCIAL_CAPITAL = true;
                 runSimulationSet();
                 System.out.println("********** 2 / 2 ENVIRONMENT VERSIONS COMPLETE **********");
-                break;
-            case 2:
+            }
+            case 2 -> {
                 // As above but also test single agent type populations for reference.
                 USE_SOCIAL_CAPITAL = false;
                 SINGLE_AGENT_TYPE = true;
                 SELECTED_SINGLE_AGENT_TYPE = SELFISH;
                 runSimulationSet();
                 System.out.println("********** 1 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
-
                 USE_SOCIAL_CAPITAL = false;
                 SINGLE_AGENT_TYPE = true;
                 SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
                 runSimulationSet();
                 System.out.println("********** 2 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
-
                 USE_SOCIAL_CAPITAL = true;
                 SINGLE_AGENT_TYPE = true;
                 SELECTED_SINGLE_AGENT_TYPE = SOCIAL;
                 runSimulationSet();
                 System.out.println("********** 3 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
-
                 USE_SOCIAL_CAPITAL = false;
                 SINGLE_AGENT_TYPE = false;
                 runSimulationSet();
                 System.out.println("********** 4 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
-
                 USE_SOCIAL_CAPITAL = true;
                 SINGLE_AGENT_TYPE = false;
                 runSimulationSet();
                 System.out.println("********** 5 / 5 ENVIRONMENT VERSIONS COMPLETE **********");
-                break;
-            default:
+            }
+            default ->
                 // Run only the set of parameters defined by the user.
-                runSimulationSet();
+                    runSimulationSet();
         }
 
         // String version of starting ratios for file names.
-        ArrayList<String> startingRatiosArray = new ArrayList<String>();
+        ArrayList<String> startingRatiosArray = new ArrayList<>();
 
         for (int[] AGENT_TYPES : AGENT_TYPES_ARRAY) {
-            String ratio = "";
+            StringBuilder ratio = new StringBuilder();
             int typesListed = 0;
             for (int type : AGENT_TYPES) {
                 if (typesListed != 0) {
-                    ratio += "_";
+                    ratio.append("_");
                 }
                 typesListed++;
-                ratio += Inflect.getHumanReadableAgentType(type);
+                ratio.append(Inflect.getHumanReadableAgentType(type));
             }
-            startingRatiosArray.add(ratio);          
+            startingRatiosArray.add(ratio.toString());
         }
     }
     
@@ -186,16 +181,16 @@ public class ResourceExchangeArena extends UserParameters {
                  * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used
                  *                     the agents are split equally between the curves.
                  * @param availabilityCurve Integer array of energy availability used by the simulation.
-                 * @param socialCapital Boolean value that determines whether or not social agents will utilise
+                 * @param socialCapital Boolean value that determines whether social agents will utilise
                  *                      social capital.
-                 * @param simulationRuns Integer value representing the number of simulations to be ran and
+                 * @param simulationRuns Integer value representing the number of simulations to be run and
                  *                       averaged.
                  * @param days Integer value representing the number of days to be simulated.
                  * @param populationSize Integer value representing the size of the initial agent population.
                  * @param uniqueTimeSlots Integer value representing the number of unique time slots available in
                  *                        the simulation.
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-                 * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy
+                 * @param numberOfAgentsToEvolve Integer value representing the number of Agents whose strategy
                  *                               will change at the end of each day.
                  * @param agentTypes Integer array containing the agent types that the simulation will begin with.
                  *                   The same type can exist multiple times in the array where more agents of one
