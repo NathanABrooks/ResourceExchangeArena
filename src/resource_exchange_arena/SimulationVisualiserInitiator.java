@@ -1,18 +1,21 @@
 package resource_exchange_arena;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 class SimulationVisualiserInitiator {
+
     /**
      * Begins python code that visualises the gathered data from the current environment being simulated.
      *
-     * @param pythonExe String representing the system path to python environment executable.
-     * @param pythonPath String representing the system path to the python data visualiser.
-     * @param folderName String representing the output destination folder, used to organise output data.
-     * @param environmentTag String detailing specifics about the simulation environment.
+     * @param pythonExe {@link String} representing the system path to python environment executable.
+     * @param pythonPath {@link String} representing the system path to the python data visualiser.
+     * @param folderName {@link String} representing the output destination folder, used to organise output data.
+     * @param environmentTag {@link String} detailing specifics about the simulation environment.
      * @param dataFile Stores all the data that can be analysed for each day.
      * @param typicalSocial The most average performing social run.
      * @param typicalSelfish The most average performing selfish run.
@@ -24,7 +27,7 @@ class SimulationVisualiserInitiator {
             String pythonPath,
             String folderName,
             String environmentTag,
-            File dataFile,
+            @NotNull File dataFile,
             double typicalSocial,
             double typicalSelfish
     ) throws IOException {
