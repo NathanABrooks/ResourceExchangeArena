@@ -24,28 +24,28 @@ public class Day {
     double optimumAllocations;
 
     /**
-     * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
-     * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
+     * Each Simulation run consists of a number of {@link Day}s, each {@link Day} consists of requesting and being allocated time slots,
+     * exchanging those slots with other {@link Agent}s, and {@link Agent}s using social learning to learn from their experiences.
      *
-     * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
+     * @param demandCurves {@link Double} arrays of demand used by the {@link Agent}s, when multiple curves are used the {@link Agent}s
      *                    are split equally between the curves.
-     * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
-     * @param totalAvailability Integer value representing the total energy available throughout the day.
-     * @param day Integer value representing the current day being simulated.
+     * @param totalDemandValues {@link Double} values representing the sum of all values in their associated demand curves.
+     * @param availabilityCurve {@link Integer} array representing the amount of energy available at each timeslot.
+     * @param totalAvailability {@link Integer} value representing the total energy available throughout the {@link Day}.
+     * @param day {@link Integer} value representing the current {@link Day} being simulated.
      * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
-     * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
-     *                               end of each day.
-     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
+     * @param populationSize {@link Integer} value representing the size of the initial {@link Agent} population.
+     * @param uniqueTimeSlots {@link Integer} value representing the number of unique time slots available in the simulation.
+     * @param slotsPerAgent {@link Integer} value representing the number of time slots each {@link Agent} requires.
+     * @param numberOfAgentsToEvolve {@link Integer} value representing the number of {@link Agent}s whose strategy will change at the
+     *                               end of each {@link Day}.
+     * @param uniqueAgentTypes {@link Integer} {@link ArrayList} containing each unique {@link Agent} type that exists when the simulation
      *                         begins.
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
-     * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
-     * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
-     * @param run Integer value identifying the current simulation run.
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param allDailyDataCSVWriter Used to store data regarding the state of the system at the end of each {@link Day}.
+     * @param perAgentDataCSVWriter Used to store data regarding the state of the {@link Agent} at the end of each {@link Day}.
+     * @param eachRoundDataCSVWriter Used to store data regarding the state of the system at the end of each round.
+     * @param run {@link Integer} value identifying the current simulation run.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -134,8 +134,8 @@ public class Day {
              * @param exchange Integer value representing the current exchange being simulated.
              * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
              *                         simulation begins.
-             * @param agents Array List of all the agents that exist in the current simulation.
-             * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
+             * @param agents {@link ArrayList} of all the agents that exist in the current simulation.
+             * @param eachRoundDataCSVWriter Used to store data regarding the state of the system at the end of each round.
              * @exception IOException On input error.
              * @see IOException
              */ 
@@ -287,20 +287,20 @@ public class Day {
          * strategy used by the observed agent in the previous day, with the likelihood of copying their strategy
          * proportional to the difference between their individual satisfactions.
          *
-         * @param agents Array List of all the agents that exist in the current simulation.
+         * @param agents {@link ArrayList} of all the agents that exist in the current simulation.
          * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-         * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at
+         * @param numberOfAgentsToEvolve Integer value representing the number of Agents whose strategy may change at
          *                               the end of each day.
          */
         new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve);
     }
 
     /**
-     * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and the
+     * Gives a random initial time slot allocation to an {@link Agent} based on the number of time slots it requests and the
      * time slots that are currently available.
      *
-     * @param requestedTimeSlots The time slots that the Agent has requested.
-     * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
+     * @param requestedTimeSlots The time slots that the {@link Agent} has requested.
+     * @return A list of time slots to allocated to the {@link Agent}.
      */
     private ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {
         ArrayList<Integer> timeSlots = new ArrayList<>();
