@@ -1,5 +1,8 @@
 package resource_exchange_arena;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,13 +11,13 @@ import static java.lang.Math.sqrt;
 
 class CalculateSatisfaction {
     /**
-     * Takes all Agents individual satisfactions and calculates the average satisfaction of all Agents in the
+     * Takes all {@link Agent}s individual satisfactions and calculates the average satisfaction of all {@link Agent}s in the
      * simulation.
      *
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @return Double Returns the average satisfaction between 0 and 1 of all agents in the simulation.
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @return The average satisfaction between 0 and 1 of all {@link Agent}s in the simulation.
      */
-    static double averageAgentSatisfaction(ArrayList<Agent> agents) {
+    static double averageAgentSatisfaction(@NotNull ArrayList<Agent> agents) {
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
         for (Agent a : agents) {
             agentSatisfactions.add(a.calculateSatisfaction(null));
@@ -23,14 +26,14 @@ class CalculateSatisfaction {
     }
 
     /**
-     * Takes all Agents of a given types individual satisfactions and calculates the average satisfaction of the Agents
+     * Takes all {@link Agent}s of a given types individual satisfactions and calculates the average satisfaction of the {@link Agent}s
      * of that type.
      *
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @param agentType The type for which to calculate the average satisfaction of all Agents of that type.
-     * @return Double Returns the average satisfaction between 0 and 1 of all agents of the given type.
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param agentType The type for which to calculate the average satisfaction of all {@link Agent}s of that type.
+     * @return The average satisfaction between 0 and 1 of all {@link Agent}s of the given type.
      */
-    static double averageAgentSatisfaction(ArrayList<Agent> agents, int agentType) {
+    static double averageAgentSatisfaction(@NotNull ArrayList<Agent> agents, int agentType) {
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
         for (Agent a : agents) {
             if (a.getAgentType() == agentType) {
@@ -41,13 +44,13 @@ class CalculateSatisfaction {
     }
 
     /**
-     * Takes all Agents of a given types individual satisfactions and calculates the variance between the average
-     * satisfaction of the Agents of that type.
+     * Takes all {@link Agent}s of a given types individual satisfactions and calculates the variance between the average
+     * satisfaction of the {@link Agent}s of that type.
      *
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @param agentType The type for which to calculate the variance between the average satisfactions of all Agents of
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param agentType The type for which to calculate the variance between the average satisfactions of all {@link Agent}s of
      *                  that type.
-     * @return Double Returns the variance between the average satisfactions of all agents of the given type.
+     * @return The variance between the average satisfactions of all {@link Agent}s of the given type.
      */
     static double averageSatisfactionStandardDeviation(ArrayList<Agent> agents, int agentType) {
         double sumDiffsSquared = 0.0;
@@ -70,15 +73,15 @@ class CalculateSatisfaction {
     }
 
     /**
-     * Takes all Agents of a given types individual satisfactions and calculates the quartile ranges, min, max, median
+     * Takes all {@link Agent}s of a given types individual satisfactions and calculates the quartile ranges, min, max, median
      * and 95th percentile satisfaction values for that type.
      *
-     * @param agents Array List of all the agents that exist in the current simulation.
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
      * @param agentType The agent type for which to calculate the various values.
-     * @return Double[] Returns the quartile ranges, min, max, median and 95th percentile satisfaction values for 
-     *         agents of the given type.
+     * @return The quartile ranges, min, max, median and 95th percentile satisfaction values for
+     *         {@link Agent}s of the given type.
      */
-    static double[] statisticalValues(ArrayList<Agent> agents, int agentType) {
+    static double @NotNull [] statisticalValues(@NotNull ArrayList<Agent> agents, int agentType) {
         ArrayList<Double> agentSatisfactions = new ArrayList<>();
         for (Agent a : agents) {
             if (a.getAgentType() == agentType) {
@@ -148,9 +151,10 @@ class CalculateSatisfaction {
      *
      * @param xs Array of values from which the percentile is calculated.
      * @param p The percentile to calculate.
-     * @return Double value of the percentile requested.
+     * @return The percentile requested.
      */
-    static double percentile(double[] xs, int p) {
+    @Contract (pure = true)
+    static double percentile(double @NotNull [] xs, int p) {
         // The sorted elements in X are taken as the 100(0.5/n)th, 100(1.5/n)th, ..., 100([n – 0.5]/n)th percentiles.
         int i = (int) (p * xs.length / 100.0 - 0.5);
 
@@ -161,16 +165,16 @@ class CalculateSatisfaction {
     }
 
     /**
-     * Returns the optimum average satisfaction possible for all agents given the current requests and allocations in
+     * Returns the optimum average satisfaction possible for all {@link Agent}s given the current requests and allocations in
      * the simulation.
      *
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @return Double Returns the highest possible average satisfaction between 0 and 1 of all agents in the simulation.
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @return The highest possible average satisfaction between 0 and 1 of all {@link Agent}s in the simulation.
      */
-    static double optimumAgentSatisfaction(ArrayList<Agent> agents) {
+    static double optimumAgentSatisfaction(@NotNull ArrayList<Agent> agents) {
         ArrayList<Integer> allRequestedSlots = new ArrayList<>();
         ArrayList<Integer> allAllocatedSlots = new ArrayList<>();
-
+C
         for (Agent a : agents) {
             allRequestedSlots.addAll(a.publishRequestedTimeSlots());
             allAllocatedSlots.addAll(a.publishAllocatedTimeSlots());
@@ -179,7 +183,7 @@ class CalculateSatisfaction {
         // Stores the number of slots that could potentially be fulfilled with perfect trading.
         double satisfiedSlots = 0;
 
-        // Stores the total number of slots requested by all Agents.
+        // Stores the total number of slots requested by all {@link Agent}s.
         double totalSlots = allRequestedSlots.size();
 
         for (Integer slot : allRequestedSlots) {
