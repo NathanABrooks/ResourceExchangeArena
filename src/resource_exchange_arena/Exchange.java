@@ -1,34 +1,35 @@
 package resource_exchange_arena;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 class Exchange {
+
+    boolean noExchanges = false;
+
     /**
-     * With each exchange all agents form pairwise exchanges and are able to consider a trade with their partner for
+     * With each exchange all {@link Agent}s form pairwise exchanges and are able to consider a trade with their partner for
      * one time slot.
      *
-     * @param run Integer value identifying the current simulation run.
-     * @param day Integer value representing the current day being simulated.
-     * @param exchange Integer value representing the current exchange being simulated.
-     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
-     *                         simulation begins.
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
+     * @param run {@link Integer} value identifying the current simulation run.
+     * @param day {@link Integer} value representing the current {@link Day} being simulated.
+     * @param exchange {@link Integer} value representing the current exchange being simulated.
+     * @param uniqueAgentTypes {@link Integer} ArrayList containing each unique {@link Agent} type that exists when the simulation begins.
+     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param eachRoundDataCSVWriter Used to store data regarding the state of the system at the end of each round.
      * @exception IOException On input error.
      * @see IOException
      */
-
-    Boolean noExchanges = false;
-    
     Exchange(
-        int run,
+            int run,
             int day,
             int exchange,
             ArrayList<Integer> uniqueAgentTypes,
-            ArrayList<Agent> agents,
+            @NotNull ArrayList<Agent> agents,
             FileWriter eachRoundDataCSVWriter
     ) throws IOException {
 
@@ -71,7 +72,7 @@ class Exchange {
                     // The agent who offered the requested time slot receives the exchange request.
                     for (Agent b : agents) {
                         if (b.agentID == chosenAdvert.get(0)) {
-                            if (b.madeInteraction() == false) {
+                            if (!b.madeInteraction()) {
                                 b.receiveExchangeRequest(request, a.getAgentType());
                                 b.setMadeInteraction(true);
                                 break;
@@ -99,7 +100,7 @@ class Exchange {
         }
 
 
-        int successfullExchanges = 0;
+        int successfulExchanges = 0;
 
         // Agents confirm and complete approved requests if they are able to do so, and update their relations with
         // other Agents accordingly.
@@ -119,7 +120,7 @@ class Exchange {
                                 if (scloss) {
                                     b.lostSocialCapital();
                                 }
-                                successfullExchanges++;
+                                successfulExchanges++;
                             }
                             break;
                         }
@@ -133,7 +134,7 @@ class Exchange {
             }
         }
 
-        if (successfullExchanges == 0) {
+        if (successfulExchanges == 0) {
             noExchanges = true;
         }
 
