@@ -24,11 +24,8 @@ public class Day {
     double optimumAllocations;
 
     /**
-     * Each Simulation run consists of a number of {@link Day}s, each {@link Day} consists of requesting and being allocated time slots,
-     * exchanging those slots with other {@link Agent}s, and {@link Agent}s using social learning to learn from their experiences.
      *
-     * @param demandCurves {@link Double} arrays of demand used by the {@link Agent}s, when multiple curves are used the {@link Agent}s
-     *                    are split equally between the curves.
+     * @param demandCurves {@link Double} arrays of demand used by the {@link Agent}s, when multiple curves are used the {@link Agent}s are split equally between the curves.
      * @param totalDemandValues {@link Double} values representing the sum of all values in their associated demand curves.
      * @param availabilityCurve {@link Integer} array representing the amount of energy available at each timeslot.
      * @param totalAvailability {@link Integer} value representing the total energy available throughout the {@link Day}.
@@ -37,17 +34,14 @@ public class Day {
      * @param populationSize {@link Integer} value representing the size of the initial {@link Agent} population.
      * @param uniqueTimeSlots {@link Integer} value representing the number of unique time slots available in the simulation.
      * @param slotsPerAgent {@link Integer} value representing the number of time slots each {@link Agent} requires.
-     * @param numberOfAgentsToEvolve {@link Integer} value representing the number of {@link Agent}s whose strategy will change at the
-     *                               end of each {@link Day}.
-     * @param uniqueAgentTypes {@link Integer} {@link ArrayList} containing each unique {@link Agent} type that exists when the simulation
-     *                         begins.
+     * @param numberOfAgentsToEvolve {@link Integer} value representing the number of {@link Agent}s whose strategy will change at the end of each {@link Day}.
+     * @param uniqueAgentTypes {@link Integer} {@link ArrayList} containing each unique {@link Agent} type that exists when the simulation begins.
      * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
-     * @param allDailyDataCSVWriter Used to store data regarding the state of the system at the end of each {@link Day}.
+     * @param dailyDataWriter Used to store data regarding the state of the system at the end of each {@link Day}.
      * @param perAgentDataCSVWriter Used to store data regarding the state of the {@link Agent} at the end of each {@link Day}.
      * @param eachRoundDataCSVWriter Used to store data regarding the state of the system at the end of each round.
      * @param run {@link Integer} value identifying the current simulation run.
-     * @exception IOException On input error.
-     * @see IOException
+     * @throws IOException On input error
      */
     Day(
         double[][] demandCurves,
@@ -148,11 +142,8 @@ public class Day {
                     eachRoundDataCSVWriter
             );
 
-            if (current.noExchanges == true) {
-                timeout++;
-            } else {
-                timeout = 0;
-            }
+            if (current.noExchanges) timeout++;
+            else timeout = 0;
 
             currentExchanges++;
         }
