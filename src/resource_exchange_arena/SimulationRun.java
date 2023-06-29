@@ -6,37 +6,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class SimulationRun {
+
     /**
-     * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in a single
-     * location.
-     *
-     * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
-     *                    are split equally between the curves.
-     * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
-     * @param totalAvailability Integer value representing the total energy available throughout the day.
-     * @param days Integer value representing the number of days to be simulated.
+     * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in a single location.
+     * @param demandCurves {@link Double} arrays of demand used by the {@link Agent}s, when multiple curves are used the {@link Agent}s are split equally between the curves.
+     * @param totalDemandValues {@link Double} values representing the sum of all values in their associated demand curves.
+     * @param availabilityCurve {@link Integer} array representing the amount of energy available at each timeslot.
+     * @param totalAvailability {@link Integer} value representing the total energy available throughout the {@link Day}.
+     * @param days {@link Integer} value representing the number of days to be simulated.
      * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
-     * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
-     *                               end of each day.
-     * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
-     *                   can exist multiple times in the array where more agents of one type are required.
-     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
-     *                         begins.
-     * @param singleAgentType Boolean value specifying whether only a single agent type should exist, used for
-     *                        establishing baseline results.
-     * @param selectedSingleAgentType Integer value representing the single agent type to be modelled when
-     *                                singleAgentType is true.
-     * @param socialCapital Boolean value that determines whether or not social agents will utilise social capital.
+     * @param populationSize {@link Integer} value representing the size of the initial {@link Agent} population.
+     * @param uniqueTimeSlots {@link Integer} value representing the number of unique time slots available in the simulation.
+     * @param slotsPerAgent {@link Integer} value representing the number of time slots each {@link Agent} requires.
+     * @param numberOfAgentsToEvolve {@link Integer} value representing the number of {@link Agent}s whose strategy will change at the end of each {@link Day}.
+     * @param agentTypes {@link Integer} array containing the {@link Agent} types that the simulation will begin with. The same type can exist multiple times in the array where more {@link Agent}s of one type are required.
+     * @param uniqueAgentTypes {@link Integer} {@link ArrayList} containing each unique {@link Agent} type that exists when the simulation begins.
+     * @param singleAgentType Boolean value specifying whether only a single {@link Agent} type should exist, used for establishing baseline results.
+     * @param selectedSingleAgentType {@link Integer} value representing the single {@link Agent} type to be modelled when singleAgentType is true.
+     * @param socialCapital Boolean value that determines whether social {@link Agent}s will utilise social capital.
      * @param keyDaysData Stores the state of the simulation when a population takes over and when the simulation ends.
-     * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
-     * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
-     * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
-     * @exception IOException On input error.
-     * @see IOException
+     * @param dailyDataWriter Used to store data regarding the state of the system at the end of each {@link Day}.
+     * @param perAgentDataCSVWriter Used to store data regarding the state of the {@link Agent} at the end of each {@link Day}.
+     * @param eachRoundDataCSVWriter Used to store data regarding the state of the system at the end of each round.
+     * @param run {@link Integer} value identifying the current simulation run.
+     * @throws IOException
      */
     SimulationRun(
             double[][] demandCurves,
@@ -73,7 +66,7 @@ class SimulationRun {
                  *                it to others in the ExchangeArena.
                  * @param agentType Integer value denoting the agent type, and thus how it will behave.
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-                 * @param agents Array List of all the agents that exist in the current simulation.
+                 * @param agents {@link ArrayList} of all the agents that exist in the current simulation.
                  * @param socialCapital determines whether the agent uses socialCapital.
                  */
                 new Agent(
@@ -107,33 +100,7 @@ class SimulationRun {
         int extention = 1;
         int day = 1;
         while (!complete) {
-            /*
-            * Each Simulation run with the same parameters runs as an isolated instance although data is recorded in a
-            * single location.
-            *
-            * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
-            *                    are split equally between the curves.
-            * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-            * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
-            * @param totalAvailability Integer value representing the total energy available throughout the day.
-            * @param day Integer value representing the current day being simulated.
-            * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
-            * @param populationSize Integer value representing the size of the initial agent population.
-            * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
-            *                        simulation.
-            * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-            * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change
-            *                               at the end of each day.
-            * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
-            *                         simulation begins.
-            * @param agents Array List of all the agents that exist in the current simulation.
-            * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
-            * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
-            * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
-            * @param run Integer value identifying the current simulation run.
-            * @exception IOException On input error.
-            * @see IOException
-            */
+
             Day current = new Day(
                 demandCurves,
                 totalDemandValues,
