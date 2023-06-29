@@ -174,7 +174,7 @@ class CalculateSatisfaction {
     static double optimumAgentSatisfaction(@NotNull ArrayList<Agent> agents) {
         ArrayList<Integer> allRequestedSlots = new ArrayList<>();
         ArrayList<Integer> allAllocatedSlots = new ArrayList<>();
-C
+        
         for (Agent a : agents) {
             allRequestedSlots.addAll(a.publishRequestedTimeSlots());
             allAllocatedSlots.addAll(a.publishAllocatedTimeSlots());
