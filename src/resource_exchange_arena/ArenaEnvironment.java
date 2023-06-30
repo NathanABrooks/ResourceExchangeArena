@@ -77,7 +77,7 @@ public class ArenaEnvironment {
 
         FileWriter allDailyDataCSVWriter = new FileWriter(allDailyData);
 
-        for (String s : Arrays.asList("Simulation Run",
+        Utilities.write(allDailyDataCSVWriter, "Simulation Run",
                 ",", "Day",
                 ",", "Social Pop",
                 ",", "Selfish Pop",
@@ -98,16 +98,14 @@ public class ArenaEnvironment {
                 ",", "Social Median",
                 ",", "Selfish Median",
                 ",", "Random Allocation Sat",
-                ",", "Optimum Allocation Sat", "\n")) {
-            allDailyDataCSVWriter.append(s);
-        }
+                ",", "Optimum Allocation Sat", "\n");
 
         // Stores the amount of unspent social capital each agent has accumulated.
         File perAgentData = new File(dataOutputFolder, "agentData.csv");
 
         FileWriter perAgentDataCSVWriter = new FileWriter(perAgentData);
 
-        for (String s1 : Arrays.asList("Simulation Run",
+        Utilities.write(perAgentDataCSVWriter, "Simulation Run",
                 ",", "Day",
                 ",", "Agent Type",
                 ",", "Satisfaction",
@@ -117,28 +115,25 @@ public class ArenaEnvironment {
                 ",", "Accepted Requested Exchanges",
                 ",", "Social Capital Exchanges",
                 ",", "No Social Capital Exchanges",
-                ",", "Unspent Social Capital", "\n")) {
-            perAgentDataCSVWriter.append(s1);
-        }
+                ",", "Unspent Social Capital", "\n");
 
         // Stores the satisfaction of each individual Agent at the end of every round throughout the simulation.
         File exchangeData = new File(dataOutputFolder, "exchangeData.csv");
 
         FileWriter eachRoundDataCSVWriter = new FileWriter(exchangeData);
 
-        for (String s1 : Arrays.asList("Simulation Run",
+        Utilities.write(eachRoundDataCSVWriter, "Simulation Run",
                 ",", "Day",
                 ",", "Round",
                 ",", "Agent Type",
-                ",", "Satisfaction", "\n"))
-            eachRoundDataCSVWriter.append(s1);
+                ",", "Satisfaction", "\n");
 
         // Stores the key data about the simulation about to begin in the data output location.
         File simulationData = new File(folderName + "/" + environmentTag, "simulationData.txt");
 
         FileWriter simulationDataWriter = new FileWriter(simulationData);
 
-        for (String s : Arrays.asList("Simulation Information: \n\n",
+        Utilities.write(simulationDataWriter, "Simulation Information: \n\n",
                 "Seed: ",
                 String.valueOf(ResourceExchangeArena.seed),
                 "\n", "Single agent type: ",
@@ -157,9 +152,7 @@ public class ArenaEnvironment {
                 String.valueOf(slotsPerAgent),
                 "\n", "Number of agents to evolve: ",
                 String.valueOf(numberOfAgentsToEvolve),
-                "\n", "Starting ratio of agent types: "
-        ))
-            simulationDataWriter.append(s);
+                "\n", "Starting ratio of agent types: ");
 
         int typesListed = 0;
         for (int type : agentTypes) {
@@ -362,16 +355,14 @@ public class ArenaEnvironment {
             int slowSelfish = (int) Math.floor(slowestSelfishTakeover.get(0));
             int fastSelfish = (int) Math.floor(fastestSelfishTakeover.get(0));
 
-            for (String s : Arrays.asList("Selfish Takeovers: ",
-                    String.valueOf(selfishRunsTotal),
-                    "Fastest selfish: Run ",
-                    String.valueOf(fastSelfish),
-                    "Slowest selfish: Run ",
-                    String.valueOf(slowSelfish),
-                    "Typical selfish: Run ",
-                    String.valueOf(middleSelfish))) {
-                simulationDataWriter.append(s).append("\n");
-            }
+            Utilities.write(simulationDataWriter, "Selfish Takeovers: ", "\n",
+                    String.valueOf(selfishRunsTotal), "\n",
+                    "Fastest selfish: Run ", "\n",
+                    String.valueOf(fastSelfish), "\n",
+                    "Slowest selfish: Run ", "\n",
+                    String.valueOf(slowSelfish), "\n",
+                    "Typical selfish: Run ", "\n",
+                    String.valueOf(middleSelfish));
 
             double avgDaysSelfish = 0;
             double avgSatSelfish = 0;
@@ -383,14 +374,13 @@ public class ArenaEnvironment {
                 avgSDSelfish += run.get(3);
             }
 
-            for (String s : Arrays.asList("Average Takeover Days (selfish): ",
+            Utilities.write(simulationDataWriter, "Average Takeover Days (selfish): ",
                     String.valueOf(avgDaysSelfish / selfishTakeoverDays.size()),
                     "\n", "Average Takeover Satisfaction (selfish): ",
                     String.valueOf(avgSatSelfish / selfishTakeoverDays.size()),
                     "\n", "Average Takeover SD (selfish): ",
                     String.valueOf(avgSDSelfish / socialTakeoverDays.size()),
-                    "\n"))
-                simulationDataWriter.append(s);
+                    "\n");
 
             avgDaysSelfish = 0;
             avgSatSelfish = 0;

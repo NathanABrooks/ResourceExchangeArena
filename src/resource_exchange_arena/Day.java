@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class Day {
     // List of all the possible allocations that exist in the current simulation.
@@ -155,106 +156,42 @@ public class Day {
         socialStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SOCIAL);
         selfishStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SELFISH);
 
-        dailyDataWriter.append(String.valueOf(run));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(day));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socPop));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selPop));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socSat));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selSat));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socSD));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selSD));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[0]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selfishStatValues[0]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[1]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selfishStatValues[1]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[2]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selfishStatValues[2]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[3]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selfishStatValues[3]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[4]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selfishStatValues[4]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[5]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(selfishStatValues[5]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(randomAllocations));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(optimumAllocations));
-        dailyDataWriter.append("\n");
+        Utilities.write(dailyDataWriter, String.valueOf(run), ",",
+                String.valueOf(day), ",",
+                String.valueOf(socPop), ",",
+                String.valueOf(selPop), ",",
+                String.valueOf(socSat), ",",
+                String.valueOf(selSat), ",",
+                String.valueOf(socSD), ",",
+                String.valueOf(selSD), ",",
+                String.valueOf(socialStatValues[0]), ",",
+                String.valueOf(selfishStatValues[0]), ",",
+                String.valueOf(socialStatValues[1]), ",",
+                String.valueOf(selfishStatValues[1]), ",",
+                String.valueOf(socialStatValues[2]), ",",
+                String.valueOf(selfishStatValues[2]), ",",
+                String.valueOf(socialStatValues[3]), ",",
+                String.valueOf(selfishStatValues[3]), ",",
+                String.valueOf(socialStatValues[4]), ",",
+                String.valueOf(selfishStatValues[4]), ",",
+                String.valueOf(socialStatValues[5]), ",",
+                String.valueOf(selfishStatValues[5]), ",",
+                String.valueOf(randomAllocations), ",",
+                String.valueOf(optimumAllocations), "\n");
 
 
         for (Agent a : agents) {
-            perAgentDataCSVWriter.append(String.valueOf(run));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(day));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getAgentType()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getRejectedReceivedExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getRejectedRequestedExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getAcceptedRequestedExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getSocialCapitalExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getNoSocialCapitalExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getUnspentSocialCapital()));
-            perAgentDataCSVWriter.append("\n");
+            Utilities.write(perAgentDataCSVWriter, String.valueOf(run), ",",
+                    String.valueOf(day), ",",
+                    String.valueOf(a.getAgentType()), ",",
+                    String.valueOf(a.calculateSatisfaction(null)), ",",
+                    String.valueOf(a.getRejectedReceivedExchanges()), ",",
+                    String.valueOf(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges()), ",",
+                    String.valueOf(a.getRejectedRequestedExchanges()), ",",
+                    String.valueOf(a.getAcceptedRequestedExchanges()), ",",
+                    String.valueOf(a.getSocialCapitalExchanges()), ",",
+                    String.valueOf(a.getNoSocialCapitalExchanges()), ",",
+                    String.valueOf(a.getUnspentSocialCapital()), "\n");
         }
 
         /*
@@ -263,11 +200,6 @@ public class Day {
          * checks whether their performance was weaker than the agent observed, if so they have a chance to copy the
          * strategy used by the observed agent in the previous day, with the likelihood of copying their strategy
          * proportional to the difference between their individual satisfactions.
-         *
-         * @param agents {@link ArrayList} of all the agents that exist in the current simulation.
-         * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-         * @param numberOfAgentsToEvolve Integer value representing the number of Agents whose strategy may change at
-         *                               the end of each day.
          */
         new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve);
     }
@@ -282,8 +214,8 @@ public class Day {
     private @NotNull ArrayList<Integer> getRandomInitialAllocation(@NotNull ArrayList<Integer> requestedTimeSlots) {
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
-        for (int requestedTimeSlot = 1; requestedTimeSlot <= requestedTimeSlots.size(); requestedTimeSlot++) {
-            // Only allocate time slots if there are slots available to allocate.
+        // Only allocate time slots if there are slots available to allocate.
+        IntStream.rangeClosed(1, requestedTimeSlots.size()).forEach(requestedTimeSlot -> {
             if (!availableTimeSlots.isEmpty()) {
                 int selector = ResourceExchangeArena.random.nextInt(availableTimeSlots.size());
                 int timeSlot = availableTimeSlots.get(selector);
@@ -293,7 +225,7 @@ public class Day {
             } else {
                 System.out.println("Error: No Timeslots Available");
             }
-        }
+        });
         return timeSlots;
     }
 }
