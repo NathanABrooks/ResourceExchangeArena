@@ -35,18 +35,16 @@ class SimulationVisualiserInitiator {
         System.out.println("Starting typical run visualisation...");
 
         // Pass average satisfaction levels data to python to be visualised.
-        List<String> satisfactionPythonArgs = new ArrayList<>();
 
         String satisfactionPythonPath = pythonPath + "TypicalRun.py";
 
-        for (String s : Arrays.asList(pythonExe,
+        List<String> satisfactionPythonArgs = new ArrayList<>(Arrays.asList(pythonExe,
                 satisfactionPythonPath,
                 folderName,
                 environmentTag,
                 dataFile.getAbsolutePath(),
                 Double.toString(typicalSocial),
-                Double.toString(typicalSelfish)))
-            satisfactionPythonArgs.add(s);
+                Double.toString(typicalSelfish)));
 
         ProcessBuilder satisfactionBuilder = new ProcessBuilder(satisfactionPythonArgs);
 
