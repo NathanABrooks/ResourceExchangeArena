@@ -107,7 +107,7 @@ public class ResourceExchangeArena extends UserParameters {
                 "\n", "Population size: ", String.valueOf(POPULATION_SIZE),
                 "\n", "Unique time slots: ", String.valueOf(UNIQUE_TIME_SLOTS),
                 "\n", "Slots per agent: ", String.valueOf(SLOTS_PER_AGENT), "\n"
-                );
+        );
 
         if (SINGLE_AGENT_TYPE) {
             allSimulationsDataWriter.append("Agent type: ")
