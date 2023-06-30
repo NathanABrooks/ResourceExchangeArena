@@ -58,14 +58,14 @@ class Agent {
     /**
      * Getter for whether the {@link Agent} uses social capital.
      *
-     * @return boolean Returns whether the {@link Agent} uses social capital.
+     * @return Whether the {@link Agent} uses social capital.
      */
     boolean usesSocialCapital() {
         return usesSocialCapital;
     }
 
     /**
-     * Used to change an {@link Agent}s type during a simulation.
+     * Used to change an {@link Agent}'s type during a simulation.
      *
      * @param type {@link Integer} value representing the type the {@link Agent} should become, types are listed in the {@link ResourceExchangeArena}.
      */
@@ -76,7 +76,7 @@ class Agent {
     /**
      * Getter for whether the {@link Agent} has been involved in an interaction.
      *
-     * @return boolean Returns whether the {@link Agent} has been involved in an interaction.
+     * @return Whether the {@link Agent} has been involved in an interaction.
      */
     boolean madeInteraction() {
         return madeInteraction;
@@ -85,7 +85,7 @@ class Agent {
     /**
      * Setter for whether the {@link Agent} has been involved in an interaction.
      *
-     * @param state Boolean value representing whether the {@link Agent} has made an interaction during this exchange round.
+     * @param state {@link Boolean} value representing whether the {@link Agent} has made an interaction during this exchange round.
      */
     void setMadeInteraction(boolean state) {
         madeInteraction = state;
@@ -94,7 +94,7 @@ class Agent {
     /**
      * Getter for the number of timeslots requested.
      *
-     * @return boolean Returns the number of timeslots the {@link Agent} wants.
+     * @return The number of timeslots the {@link Agent} wants.
      */
     int numberOfTimeSlotsWanted() {
         return numberOfTimeSlotsWanted;
@@ -103,7 +103,7 @@ class Agent {
     /**
      * Getter for whether the {@link Agent} approved the current received exchange request.
      *
-     * @return boolean Returns whether the {@link Agent} approved the current received exchange request.
+     * @return Whether the {@link Agent} approved the current received exchange request.
      */
     boolean getExchangeRequestApproved() {
         return exchangeRequestApproved;
@@ -111,6 +111,8 @@ class Agent {
 
     /**
      * Setter for whether the {@link Agent} approved the current received exchange request.
+     *
+     * @param approved Whether the {@link Agent} has approved the current received exchange request.
      */
     void setExchangeRequestApproved(boolean approved) {
         exchangeRequestApproved = approved;
@@ -119,14 +121,14 @@ class Agent {
     /**
      * Getter for the currently received exchange request.
      *
-     * @return boolean Returns the currently received exchange request.
+     * @return The currently received exchange request.
      */
     ArrayList<Integer> getExchangeRequestReceived() {
         return exchangeRequestReceived;
     }
 
     /**
-     * Setter for the currently received exchange request.
+     * Clears the exchange request list.
      */
     void setExchangeRequestReceived() {
         exchangeRequestReceived.clear();
@@ -135,7 +137,7 @@ class Agent {
     /**
      * Getter for the favours the {@link Agent} owes.
      *
-     * @return ArrayList<ArrayList<Integer>> Returns all the favours the {@link Agent} owes.
+     * @return All the favours the {@link Agent} owes.
      */
     ArrayList<ArrayList<Integer>> getFavoursOwed() {
         return favoursOwed;
@@ -144,7 +146,7 @@ class Agent {
     /**
      * Getter for the favours given by the {@link Agent}.
      *
-     * @return ArrayList<ArrayList<Integer>> Returns all the favours given by the {@link Agent}, i.e. the other {@link Agent}s who owe this {@link Agent} a favour.
+     * @return All the favours given by the {@link Agent}, i.e. the other {@link Agent}s who owe this {@link Agent} a favour.
      */
     ArrayList<ArrayList<Integer>> getFavoursGiven() {
         return favoursGiven;
@@ -154,7 +156,7 @@ class Agent {
      * Identifies all other {@link Agent}s in the {@link ResourceExchangeArena} and initialises counts of favours given to and received from
      * each other {@link Agent}.
      *
-     * @param agents {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param agents An {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
      */
     void initializeFavoursStore(ArrayList<Agent> agents) {
         if (usesSocialCapital) {
@@ -189,7 +191,7 @@ class Agent {
     /**
      * Getter for the current amount of unspent social capital the {@link Agent} has.
      *
-     * @return boolean Returns the current amount of unspent social capital the {@link Agent} has.
+     * @return The current amount of unspent social capital the {@link Agent} has.
      */
     int getUnspentSocialCapital() {
         return totalSocialCapital;
@@ -217,9 +219,9 @@ class Agent {
     }
 
     /**
-     * Getter method for retrieving the {@link Agent}s type.
+     * Getter method for retrieving the {@link Agent}'s type.
      *
-     * @return int Return the {@link Agent}s type.
+     * @return The {@link Agent}'s type.
      */
     int getAgentType() {
         return agentType;
@@ -239,7 +241,7 @@ class Agent {
     /**
      * Getter method for retrieving the number of exchanges approved due to social capital.
      *
-     * @return int Return the number of exchanges approved due to social capital.
+     * @return The number of exchanges approved due to social capital.
      */
     int getSocialCapitalExchanges() {
         return dailySocialCapitalExchanges;
@@ -248,7 +250,7 @@ class Agent {
     /**
      * Getter method for retrieving the number of exchanges approved without social capital.
      *
-     * @return int Return the number of exchanges approved without social capital.
+     * @return The number of exchanges approved without social capital.
      */
     int getNoSocialCapitalExchanges() {
         return dailyNoSocialCapitalExchanges;
@@ -257,16 +259,16 @@ class Agent {
     /**
      * Getter method for retrieving the number of exchanges rejected by this {@link Agent}.
      *
-     * @return int Return the number of exchanges rejected by this {@link Agent}.
+     * @return The number of exchanges rejected by this {@link Agent}.
      */
     int getRejectedReceivedExchanges() {
         return dailyRejectedReceivedExchanges;
     }
 
     /**
-     * Getter method for retrieving the number of exchanges requested by this {@link Agent} that were rejected.
+     * Getter method for retrieving the number of exchanges requested by this {@link Agent} which were rejected.
      *
-     * @return int Return the number of exchanges requested by this {@link Agent} that were rejected.
+     * @return The number of exchanges requested by this {@link Agent} that were rejected.
      */
     int getRejectedRequestedExchanges() {
         return dailyRejectedRequestedExchanges;
@@ -275,18 +277,18 @@ class Agent {
     /**
      * Getter method for retrieving the number of exchanges requested by this {@link Agent} that were accepted.
      *
-     * @return int Return the number of exchanges requested by this {@link Agent} that were accepted.
+     * @return The number of exchanges requested by this {@link Agent} that were accepted.
      */
     int getAcceptedRequestedExchanges() {
         return dailyAcceptedRequestedExchanges;
     }
 
     /**
-     * Checks the time slots that exist in the simulation and makes a new request for a number of unique time slots
+     * Checks the time slots that exist in the simulation and makes a new request for a number of unique time slots,
      * according to how many slots the {@link Agent} wants and the given demand curve.
      *
-     * @param demandCurve Double array representing the demand curve that the {@link Agent} should base its requests around.
-     * @return ArrayList<Integer> Returns the time slots that the {@link Agent} has requested.
+     * @param demandCurve An array of {@link Double}s representing the demand curve that the {@link Agent} should base its requests around.
+     * @return The time slots that the {@link Agent} has requested.
      */
     ArrayList<Integer> requestTimeSlots(double[] demandCurve, double totalDemand) {
 
@@ -320,7 +322,7 @@ class Agent {
     /**
      * Getter method for retrieving the time slots that the {@link Agent} has currently requested.
      *
-     * @return ArrayList<Integer> Returns the time slots that the {@link Agent} has requested.
+     * @return The time slots that the {@link Agent} has requested.
      */
     ArrayList<Integer> publishRequestedTimeSlots() {
         return requestedTimeSlots;
@@ -338,7 +340,7 @@ class Agent {
     /**
      * Getter method for retrieving the time slots that the {@link Agent} is currently allocated.
      *
-     * @return ArrayList<Integer> Returns the time slots that the {@link Agent} is allocated.
+     * @return The time slots that the {@link Agent} is allocated.
      */
     ArrayList<Integer> publishAllocatedTimeSlots() {
         return allocatedTimeSlots;
@@ -348,7 +350,7 @@ class Agent {
      * Shares the time slots that are currently allocated to the {@link Agent} that it may potentially be willing to
      * exchange under certain circumstances.
      *
-     * @return ArrayList<Integer> Returns the time slots that the {@link Agent} is allocated but may potentially exchange.
+     * @return The time slots that the {@link Agent} is allocated but may potentially exchange.
      */
     ArrayList<Integer> publishUnlockedTimeSlots() {
         ArrayList<Integer> unlockedTimeSlots;
@@ -361,9 +363,9 @@ class Agent {
      * Takes two arrays of time slots, and returns the time slots from the first array that are not present in the
      * second array.
      *
-     * @param potentialTimeSlots the time slots that may be returned if not present in the second array.
-     * @param timeSlotsToAvoid the time slots that shouldn't be returned.
-     * @return ArrayList<Integer> Returns the time slots from the potentialTimeSlots array that are not present in the timeSlotsToAvoid array.
+     * @param potentialTimeSlots The time slots that may be returned if not present in the second array.
+     * @param timeSlotsToAvoid The time slots that shouldn't be returned.
+     * @return The time slots from the {@@code potentialTimeSlots} array that are not present in the {@code timeSlotsToAvoid} array.
      */
     private @NotNull ArrayList<Integer> nonExistingTimeSlots(
             @NotNull ArrayList<Integer> potentialTimeSlots,
@@ -388,8 +390,8 @@ class Agent {
      * Make an exchange request for a time slot that another {@link Agent} has published as a possible exchange, and that this
      * {@link Agent} wants but has not currently been allocated.
      *
-     * @param advertisingBoard All the time slots that {@link Agent}s have said they may exchange.
-     * @return ArrayList<Integer>|null A time slot owned by another {@link Agent} that this {@link Agent} is requesting an exchange for.
+     * @param advertisingBoard The time slots that {@link Agent}s have said they may exchange.
+     * @return A time slot owned by another {@link Agent} that this {@link Agent} is requesting an exchange for, {@code null} otherise.
      */
     ArrayList<Integer> requestExchange(ArrayList<ArrayList<Integer>> advertisingBoard) {
         ArrayList<Integer> targetTimeSlots = nonExistingTimeSlots(requestedTimeSlots, allocatedTimeSlots);
@@ -419,7 +421,8 @@ class Agent {
     /**
      * Stores a request for an exchange received from another {@link Agent}.
      *
-     * @param request An {@link Agent}'s agentID, the time slot that it wants and the time slot that it is willing to exchange.
+     * @param request An {@link Agent}'s ID, the time slot that it wants and the time slot that it is willing to exchange.
+     * @param partnersAgentType The strategy being used by the {@link Agent} that has fulfilled the exchange request.
      */
     void receiveExchangeRequest(ArrayList<Integer> request, int partnersAgentType) {
         exchangeRequestReceived = request;
@@ -430,7 +433,7 @@ class Agent {
     /**
      * Returns the most recent received from another {@link Agent}.
      *
-     * @return ArrayList<Integer> request The most recent received from another {@link Agent}.
+     * @return The most recent received from another {@link Agent}.
      */
     ArrayList<Integer> getExchangeRequest() {
         return exchangeRequestReceived;
@@ -508,7 +511,7 @@ class Agent {
     /**
      * Checks whether the {@link Agent} still has a requested time slot before exchanging it.
      *
-     * @param timeSlot The time slot to check the {@link Agent}s allocated time slots for.
+     * @param timeSlot The time slot to check the {@link Agent}'s allocated time slots for.
      * @return Whether the time slot belongs to the {@link Agent} and so can be exchanged.
      */
     boolean finalCheck(int timeSlot) {
@@ -516,11 +519,11 @@ class Agent {
     }
 
     /**
-     * Completes an exchange that was originally requested by this {@link Agent}, making the exchange and updating this {@link Agent}s
+     * Completes an exchange that was originally requested by this {@link Agent}, making the exchange and updating this {@link Agent}'s
      * relationship with the other {@link Agent} involved.
      *
      * @param offer The exchange that is to be completed.
-     * @param agentID The agentID of the {@link Agent} that has fulfilled the exchange request.
+     * @param agentID The ID of the {@link Agent} that has fulfilled the exchange request.
      * @param partnersAgentType The strategy being used by the {@link Agent} that has fulfilled the exchange request.
      * @return Whether the other {@link Agent} gained social capital.
      */
@@ -557,13 +560,13 @@ class Agent {
 
     /**
      * Completes an exchange that was originally requested by another {@link Agent}, making the exchange and updating
-     * this {@link Agent}s relationship with the other {@link Agent} involved.
+     * this {@link Agent}'s relationship with the other {@link Agent} involved.
      *
      * @param offer The exchange that is to be completed.
      * @param partnersAgentType The strategy being used by the {@link Agent} that requested the exchange request.
      * @return Whether the other {@link Agent} gained social capital.
      */
-    boolean completeReceivedExchange(ArrayList<Integer> offer, int partnersAgentType) {
+    boolean completeReceivedExchange(@NotNull ArrayList<Integer> offer, int partnersAgentType) {
         boolean SCLoss = false;
 
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
@@ -594,11 +597,11 @@ class Agent {
     }
 
     /**
-     * Calculates the {@link Agent}s satisfaction with a given list of time slots by comparing the list with the time slots
+     * Calculates the {@link Agent}'s satisfaction with a given list of time slots by comparing the list with the time slots
      * requested by this {@link Agent}.
      *
      * @param timeSlots The set of time slots to consider.
-     * @return Double The {@link Agent}s satisfaction with the time slots given.
+     * @return The {@link Agent}'s satisfaction with the time slots given.
      */
     double calculateSatisfaction(ArrayList<Integer> timeSlots) {
         if (timeSlots == null) {
