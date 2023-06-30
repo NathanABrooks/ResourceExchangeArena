@@ -14,6 +14,12 @@ import java.io.Writer;
  */
 public final class Utilities {
 
+    /**
+     * Append data to some sort of {@link Writer}.
+     * @param writer A generic implementation of a {@link Writer}
+     * @param data The data to be appended to the {@link Writer} (in the form of a {@link String}).
+     * @throws IOException If there is some kind of issue with the {@link Writer}.
+     */
     public static void write(@NotNull Writer writer, String @NotNull ... data) throws IOException {
         for (String s : data)
             writer.append(s);
