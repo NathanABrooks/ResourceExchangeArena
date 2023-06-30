@@ -166,23 +166,18 @@ class Agent {
             if (!favoursOwed.isEmpty()) {
                 favoursOwed.clear();
             }
-            for (Agent a : agents) {
-                if (a.agentID != agentID) {
-                    ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
-                    ArrayList<Integer> favoursGivenRelation = new ArrayList<>();
-
-                    // Initially, no favours are owed or have been given to any other Agent.
-                    favoursOwedRelation.add(a.agentID);
-                    favoursOwedRelation.add(0);
-
-                    favoursGivenRelation.add(a.agentID);
-                    favoursGivenRelation.add(0);
-
-                    // Store a reference to the new relations in the Agents corresponding lists of relations.
-                    favoursOwed.add(favoursOwedRelation);
-                    favoursGiven.add(favoursGivenRelation);
-                }
-            }
+            // Initially, no favours are owed or have been given to any other Agent.
+            // Store a reference to the new relations in the Agents corresponding lists of relations.
+            agents.stream().filter(a -> a.agentID != agentID).forEach(a -> {
+                ArrayList<Integer> favoursOwedRelation = new ArrayList<>();
+                ArrayList<Integer> favoursGivenRelation = new ArrayList<>();
+                favoursOwedRelation.add(a.agentID);
+                favoursOwedRelation.add(0);
+                favoursGivenRelation.add(a.agentID);
+                favoursGivenRelation.add(0);
+                favoursOwed.add(favoursOwedRelation);
+                favoursGiven.add(favoursGivenRelation);
+            });
 
             totalSocialCapital = 0;
         }
@@ -310,11 +305,8 @@ class Agent {
             }
 
             // Ensures all requested time slots are unique.
-            if (requestedTimeSlots.contains(timeSlot)) {
-                i--;
-            } else {
-                requestedTimeSlots.add(timeSlot);
-            }
+            if (requestedTimeSlots.contains(timeSlot)) i--;
+            else requestedTimeSlots.add(timeSlot);
         }
         return requestedTimeSlots;
     }
@@ -353,10 +345,7 @@ class Agent {
      * @return The time slots that the {@link Agent} is allocated but may potentially exchange.
      */
     ArrayList<Integer> publishUnlockedTimeSlots() {
-        ArrayList<Integer> unlockedTimeSlots;
-        unlockedTimeSlots = new ArrayList<>(nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots));
-
-        return unlockedTimeSlots;
+        return new ArrayList<>(nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots));
     }
 
     /**
@@ -365,7 +354,7 @@ class Agent {
      *
      * @param potentialTimeSlots The time slots that may be returned if not present in the second array.
      * @param timeSlotsToAvoid The time slots that shouldn't be returned.
-     * @return The time slots from the {@@code potentialTimeSlots} array that are not present in the {@code timeSlotsToAvoid} array.
+     * @return The time slots from the {@code potentialTimeSlots} array that are not present in the {@code timeSlotsToAvoid} array.
      */
     private @NotNull ArrayList<Integer> nonExistingTimeSlots(
             @NotNull ArrayList<Integer> potentialTimeSlots,
@@ -374,7 +363,7 @@ class Agent {
         // referenced list.
         ArrayList<Integer> localTimeSlotsToAvoid = new ArrayList<>(timeSlotsToAvoid);
         ArrayList<Integer> timeSlots = new ArrayList<>();
-        for (int timeSlot : potentialTimeSlots) {
+        potentialTimeSlots.forEach(timeSlot -> {
             if (!localTimeSlotsToAvoid.contains(timeSlot)) {
                 timeSlots.add(timeSlot);
             } else {
@@ -382,7 +371,7 @@ class Agent {
                 // of duplicates.
                 localTimeSlotsToAvoid.remove(Integer.valueOf(timeSlot));
             }
-        }
+        });
         return timeSlots;
     }
 
@@ -391,7 +380,7 @@ class Agent {
      * {@link Agent} wants but has not currently been allocated.
      *
      * @param advertisingBoard The time slots that {@link Agent}s have said they may exchange.
-     * @return A time slot owned by another {@link Agent} that this {@link Agent} is requesting an exchange for, {@code null} otherise.
+     * @return A time slot owned by another {@link Agent} that this {@link Agent} is requesting an exchange for, {@code null} otherwise.
      */
     ArrayList<Integer> requestExchange(ArrayList<ArrayList<Integer>> advertisingBoard) {
         ArrayList<Integer> targetTimeSlots = nonExistingTimeSlots(requestedTimeSlots, allocatedTimeSlots);
@@ -468,20 +457,19 @@ class Agent {
                     dailyNoSocialCapitalExchanges++;
                 } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
                     if (usesSocialCapital) {
-                        int favoursOwedToRequester = 0;
-                        int favoursGivenToRequester = 0;
-                        for (ArrayList<Integer> favours : favoursOwed) {
-                            if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
-                                favoursOwedToRequester = favours.get(1);
-                                break;
-                            }
-                        }
-                        for (ArrayList<Integer> favours : favoursGiven) {
-                            if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
-                                favoursGivenToRequester = favours.get(1);
-                                break;
-                            }
-                        }
+                        int favoursOwedToRequester;
+                        int favoursGivenToRequester;
+                        favoursOwedToRequester = favoursOwed.stream()
+                                .filter(favours -> favours.get(0).equals(exchangeRequestReceived.get(0)))
+                                .findFirst()
+                                .map(favours -> favours.get(1))
+                                .orElse(0);
+                        favoursGivenToRequester = favoursGiven.stream()
+                                .filter(favours -> favours.get(0).equals(exchangeRequestReceived.get(0)))
+                                .findFirst()
+                                .map(favours -> favours.get(1))
+                                .orElse(0);
+
                         if (favoursOwedToRequester > favoursGivenToRequester) {
                             exchangeRequestApproved = true;
                             dailySocialCapitalExchanges++;
@@ -567,7 +555,7 @@ class Agent {
      * @return Whether the other {@link Agent} gained social capital.
      */
     boolean completeReceivedExchange(@NotNull ArrayList<Integer> offer, int partnersAgentType) {
-        boolean SCLoss = false;
+        boolean scLoss = false;
 
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time slots.
@@ -589,11 +577,11 @@ class Agent {
                         favours.set(1, currentFavour + 1);
                         break;
                     }
-                }     
-                SCLoss = true;
+                }
+                scLoss = true;
             }
         }
-        return SCLoss;
+        return scLoss;
     }
 
     /**
