@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.IntStream;
 
 class SimulationRun {
 
@@ -30,7 +31,7 @@ class SimulationRun {
      * @param perAgentDataCSVWriter   Used to store data regarding the state of the {@link Agent} at the end of each {@link Day}.
      * @param eachRoundDataCSVWriter  Used to store data regarding the state of the system at the end of each round.
      * @param run                     {@link Integer} value identifying the current simulation run.
-     * @throws IOException
+     * @throws IOException If there is an issue with the simulation.
      */
     SimulationRun(
             double[][] demandCurves,
@@ -59,46 +60,29 @@ class SimulationRun {
         ArrayList<Agent> agents = new ArrayList<>();
 
         // Create the Agents for the simulation.
-        for (int agentNumber = 1; agentNumber <= populationSize; agentNumber++) {
-            /*
-             * This is the constructor for Agent objects.
-             *
-             * @param agentID This is an integer value that is unique to the individual agent and used to identify
-             *                it to others in the ExchangeArena.
-             * @param agentType Integer value denoting the agent type, and thus how it will behave.
-             * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-             * @param agents {@link ArrayList} of all the agents that exist in the current simulation.
-             * @param socialCapital determines whether the agent uses socialCapital.
-             */
-            new Agent(
-                    agentNumber,
-                    agentTypes[agentNumber % agentTypes.length],
-                    slotsPerAgent,
-                    agents,
-                    socialCapital
-            );
-        }
+        IntStream.rangeClosed(1, populationSize).forEach(agentNumber -> new Agent(
+                agentNumber,
+                agentTypes[agentNumber % agentTypes.length],
+                slotsPerAgent,
+                agents,
+                socialCapital
+        ));
+
         Collections.shuffle(agents, ResourceExchangeArena.random);
 
         // Set all agents to a single type, used for establishing baseline performance.
-        if (singleAgentType && selectedSingleAgentType != 0) {
-            for (Agent a : agents) {
-                a.setType(selectedSingleAgentType);
-            }
-        }
+        if (singleAgentType && selectedSingleAgentType != 0) agents.forEach(a -> a.setType(selectedSingleAgentType));
 
         // Increment the simulations seed each run.
         ResourceExchangeArena.seed++;
         ResourceExchangeArena.random.setSeed(ResourceExchangeArena.seed);
 
         // Initialise each Agents relations with each other Agent.
-        for (Agent a : agents) {
-            a.initializeFavoursStore(agents);
-        }
+        agents.forEach(a -> a.initializeFavoursStore(agents));
 
         boolean complete = false;
         boolean takeover = false;
-        int extention = 1;
+        int extension = 1;
         int day = 1;
         while (!complete) {
 
@@ -150,10 +134,10 @@ class SimulationRun {
                 keyDaysData.add(takeoverData);
             }
             if (takeover) {
-                extention++;
+                extension++;
             }
 
-            if (extention == days) {
+            if (extension == days) {
                 complete = true;
                 ArrayList<Double> finalData = new ArrayList<>();
                 finalData.add((double) run);

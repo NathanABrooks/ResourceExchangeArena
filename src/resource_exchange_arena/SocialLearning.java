@@ -45,9 +45,8 @@ class SocialLearning {
             Agent learningAgent = unselectedAgents.get(ResourceExchangeArena.random.nextInt(unselectedAgents.size()));
 
             // Ensure the agent altering its strategy doesn't copy itself.
-            while (learningAgent.agentID == observedPerformance) {
+            while (learningAgent.agentID == observedPerformance)
                 observedPerformance = ResourceExchangeArena.random.nextInt(totalAgents);
-            }
 
             // Copy the observed agents strategy if it is better than its own, with likelihood dependent on the
             // difference between the agents satisfaction and the observed satisfaction.
