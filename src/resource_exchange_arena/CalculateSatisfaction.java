@@ -6,10 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.sqrt;
 
 class CalculateSatisfaction {
+
     /**
      * Takes all {@link Agent}s individual satisfactions and calculates the average satisfaction of all {@link Agent}s in the
      * simulation.
@@ -18,10 +20,10 @@ class CalculateSatisfaction {
      * @return The average satisfaction between 0 and 1 of all {@link Agent}s in the simulation.
      */
     static double averageAgentSatisfaction(@NotNull ArrayList<Agent> agents) {
-        ArrayList<Double> agentSatisfactions = new ArrayList<>();
-        for (Agent a : agents) {
-            agentSatisfactions.add(a.calculateSatisfaction(null));
-        }
+        ArrayList<Double> agentSatisfactions =
+                agents.stream()
+                        .map(a -> a.calculateSatisfaction(null))
+                        .collect(Collectors.toCollection(ArrayList::new));
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
     }
 
@@ -34,12 +36,11 @@ class CalculateSatisfaction {
      * @return The average satisfaction between 0 and 1 of all {@link Agent}s of the given type.
      */
     static double averageAgentSatisfaction(@NotNull ArrayList<Agent> agents, int agentType) {
-        ArrayList<Double> agentSatisfactions = new ArrayList<>();
-        for (Agent a : agents) {
-            if (a.getAgentType() == agentType) {
-                agentSatisfactions.add(a.calculateSatisfaction(null));
-            }
-        }
+        ArrayList<Double> agentSatisfactions =
+                agents.stream()
+                        .filter(a -> a.getAgentType() == agentType)
+                        .map(a -> a.calculateSatisfaction(null))
+                        .collect(Collectors.toCollection(ArrayList::new));
         return agentSatisfactions.stream().mapToDouble(val -> val).average().orElse(0.0);
     }
 
@@ -64,9 +65,7 @@ class CalculateSatisfaction {
                 groupSize++;
             }
         }
-        if (groupSize == 0) {
-            return 0.0;
-        }
+        if (groupSize == 0) return 0.0;
 
         double populationVariance = sumDiffsSquared / (double) (groupSize);
         return sqrt(populationVariance);
@@ -82,13 +81,13 @@ class CalculateSatisfaction {
      * {@link Agent}s of the given type.
      */
     static double @NotNull [] statisticalValues(@NotNull ArrayList<Agent> agents, int agentType) {
-        ArrayList<Double> agentSatisfactions = new ArrayList<>();
-        for (Agent a : agents) {
-            if (a.getAgentType() == agentType) {
-                agentSatisfactions.add(a.calculateSatisfaction(null));
-            }
-        }
-        Collections.sort(agentSatisfactions);
+        ArrayList<Double> agentSatisfactions =
+                agents.stream()
+                        .filter(a -> a.getAgentType() == agentType)
+                        .map(a -> a.calculateSatisfaction(null))
+                        .sorted()
+                        .collect(Collectors.toCollection(ArrayList::new));
+
         double[] statValues = new double[6];
 
         int size = agentSatisfactions.size();
@@ -175,10 +174,10 @@ class CalculateSatisfaction {
         ArrayList<Integer> allRequestedSlots = new ArrayList<>();
         ArrayList<Integer> allAllocatedSlots = new ArrayList<>();
 
-        for (Agent a : agents) {
+        agents.forEach(a -> {
             allRequestedSlots.addAll(a.publishRequestedTimeSlots());
             allAllocatedSlots.addAll(a.publishAllocatedTimeSlots());
-        }
+        });
 
         // Stores the number of slots that could potentially be fulfilled with perfect trading.
         double satisfiedSlots = 0;

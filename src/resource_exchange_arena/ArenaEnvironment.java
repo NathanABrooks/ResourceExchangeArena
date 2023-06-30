@@ -156,16 +156,11 @@ public class ArenaEnvironment {
 
         int typesListed = 0;
         for (int type : agentTypes) {
-            if (typesListed != 0) {
-                simulationDataWriter.append(" : ");
-            }
+            if (typesListed != 0) simulationDataWriter.append(" : ");
             typesListed++;
             simulationDataWriter.append(Inflect.getHumanReadableAgentType(type));
         }
-        if (singleAgentType) {
-            simulationDataWriter.append("Agent type: ")
-                    .append(String.valueOf(selectedSingleAgentType)).append("\n");
-        }
+        if (singleAgentType) simulationDataWriter.append("Agent type: ").append(String.valueOf(selectedSingleAgentType)).append("\n");
         simulationDataWriter.append("\n\n");
 
         // The demand curves are bucketed before the simulations for efficiency, as they will all use the same bucketed values.
@@ -331,6 +326,13 @@ public class ArenaEnvironment {
                     "Average Takeover SD (social): ",
                     String.valueOf(avgSDSocial / socialTakeoverDays.size())))
                 simulationDataWriter.append(s).append("\n");
+
+            Utilities.write(simulationDataWriter, "Average Takeover Days (social): ",
+                    "\n", String.valueOf(avgDaysSocial / socialTakeoverDays.size()),
+                    "\n", "Average Takeover Satisfaction (social): ",
+                    "\n", String.valueOf(avgSatSocial / socialTakeoverDays.size()),
+                    "\n", "Average Takeover SD (social): ",
+                    "\n",  String.valueOf(avgSDSocial / socialTakeoverDays.size()), "\n");
 
             avgDaysSocial = 0;
             avgSatSocial = 0;
