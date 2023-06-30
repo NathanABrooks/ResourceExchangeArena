@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class ArenaEnvironment {
     // Data that is collected over simulation runs is held within the arenaEnvironment.
@@ -62,15 +63,10 @@ public class ArenaEnvironment {
         System.out.println("Starting simulation...");
 
         // Array of the unique agent types used in the simulation.
-        ArrayList<Integer> uniqueAgentTypes = new ArrayList<>();
-        for (int type : agentTypes) {
-            if (!uniqueAgentTypes.contains(type)) {
-                uniqueAgentTypes.add(type);
-            }
-        }
+        ArrayList<Integer> uniqueAgentTypes =
+                Arrays.stream(agentTypes).distinct().boxed().sorted().collect(Collectors.toCollection(ArrayList::new));
 
         // Sort the agent types so that they are ordered correctly in the output csv files.
-        Collections.sort(uniqueAgentTypes);
 
         // Create a directory to store the data output by the simulation.
         String dataOutputFolder = folderName + "/" + environmentTag + "/data";
@@ -135,9 +131,8 @@ public class ArenaEnvironment {
                 ",", "Day",
                 ",", "Round",
                 ",", "Agent Type",
-                ",", "Satisfaction", "\n")) {
+                ",", "Satisfaction", "\n"))
             eachRoundDataCSVWriter.append(s1);
-        }
 
         // Stores the key data about the simulation about to begin in the data output location.
         File simulationData = new File(folderName + "/" + environmentTag, "simulationData.txt");
@@ -389,9 +384,14 @@ public class ArenaEnvironment {
                 avgSDSelfish += run.get(3);
             }
 
-            simulationDataWriter.append("Average Takeover Days (selfish): ").append(String.valueOf(avgDaysSelfish / selfishTakeoverDays.size())).append("\n");
-            simulationDataWriter.append("Average Takeover Satisfaction (selfish): ").append(String.valueOf(avgSatSelfish / selfishTakeoverDays.size())).append("\n");
-            simulationDataWriter.append("Average Takeover SD (selfish): ").append(String.valueOf(avgSDSelfish / socialTakeoverDays.size())).append("\n");
+            for (String s : Arrays.asList("Average Takeover Days (selfish): ",
+                    String.valueOf(avgDaysSelfish / selfishTakeoverDays.size()),
+                    "\n", "Average Takeover Satisfaction (selfish): ",
+                    String.valueOf(avgSatSelfish / selfishTakeoverDays.size()),
+                    "\n", "Average Takeover SD (selfish): ",
+                    String.valueOf(avgSDSelfish / socialTakeoverDays.size()),
+                    "\n"))
+                simulationDataWriter.append(s);
 
             avgDaysSelfish = 0;
             avgSatSelfish = 0;
