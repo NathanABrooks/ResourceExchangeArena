@@ -36,13 +36,11 @@ class Exchange {
         ArrayList<ArrayList<Integer>> advertisingBoard = new ArrayList<>();
 
         // Reset the check for whether each Agent has made an interaction this round.
-        for (Agent a : agents) {
-            a.setMadeInteraction(false);
-        }
+        agents.forEach(a -> a.setMadeInteraction(false));
 
         // Exchanges start by Agents advertising time slots they may be willing to exchange.
         Collections.shuffle(agents, ResourceExchangeArena.random);
-        for (Agent a : agents) {
+        agents.forEach(a -> {
             ArrayList<Integer> unlockedTimeSlots = a.publishUnlockedTimeSlots();
             if (!unlockedTimeSlots.isEmpty()) {
                 ArrayList<Integer> advert = new ArrayList<>();
@@ -50,7 +48,7 @@ class Exchange {
                 advert.addAll(unlockedTimeSlots);
                 advertisingBoard.add(advert);
             }
-        }
+        });
 
         // Each Agent has the opportunity to make exchange requests for advertised time slots.
         Collections.shuffle(agents, ResourceExchangeArena.random);
@@ -71,12 +69,10 @@ class Exchange {
 
                     // The agent who offered the requested time slot receives the exchange request.
                     for (Agent b : agents) {
-                        if (b.agentID == chosenAdvert.get(0)) {
-                            if (!b.madeInteraction()) {
-                                b.receiveExchangeRequest(request, a.getAgentType());
-                                b.setMadeInteraction(true);
-                                break;
-                            }
+                        if (b.agentID == chosenAdvert.get(0) && !b.madeInteraction()) {
+                            b.receiveExchangeRequest(request, a.getAgentType());
+                            b.setMadeInteraction(true);
+                            break;
                         }
                     }
                 }
@@ -85,19 +81,11 @@ class Exchange {
 
         // Agents who have received a request consider it.
         Collections.shuffle(agents, ResourceExchangeArena.random);
-        for (Agent a : agents) {
-            if (!a.getExchangeRequestReceived().isEmpty()) {
-                boolean accepted = a.considerRequest();
-                if (!accepted) {
-                    for (Agent b : agents) {
-                        if (b.agentID == a.getExchangeRequest().get(0)) {
-                            b.requestRejected();
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        agents.stream().filter(a -> !a.getExchangeRequestReceived().isEmpty()).forEach(a -> {
+            boolean accepted = a.considerRequest();
+            if (!accepted)
+                agents.stream().filter(b -> b.agentID == a.getExchangeRequest().get(0)).findFirst().ifPresent(Agent::requestRejected);
+        });
 
 
         int successfulExchanges = 0;
@@ -112,14 +100,10 @@ class Exchange {
                     for (Agent b : agents) {
                         if (b.agentID == offer.get(0)) {
                             if (b.finalCheck(offer.get(2))) {
-                                boolean scgain = b.completeRequestedExchange(offer, a.agentID, a.getAgentType());
-                                boolean scloss = a.completeReceivedExchange(offer, b.getAgentType());
-                                if (scgain) {
-                                    a.gainedSocialCapital();
-                                }
-                                if (scloss) {
-                                    b.lostSocialCapital();
-                                }
+                                boolean scGain = b.completeRequestedExchange(offer, a.agentID, a.getAgentType());
+                                boolean scLoss = a.completeReceivedExchange(offer, b.getAgentType());
+                                if (scGain) a.gainedSocialCapital();
+                                if (scLoss) b.lostSocialCapital();
                                 successfulExchanges++;
                             }
                             break;
@@ -129,35 +113,19 @@ class Exchange {
                 a.setExchangeRequestApproved(false);
             }
             // Clear the agents accepted offers list before the next exchange round.
-            if (!a.getExchangeRequestReceived().isEmpty()) {
-                a.setExchangeRequestReceived();
-            }
+            if (!a.getExchangeRequestReceived().isEmpty()) a.setExchangeRequestReceived();
         }
 
-        if (successfulExchanges == 0) {
-            noExchanges = true;
-        }
+        if (successfulExchanges == 0) noExchanges = true;
 
         // The average end of round satisfaction is stored for each Agent type.
         // This data can later be averaged over simulation runs and added to the individual data file.
-        for (int uniqueAgentType : uniqueAgentTypes) {
-            double averageSatisfactionForType = CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType);
-
-            eachRoundDataCSVWriter.append(String.valueOf(run));
-            eachRoundDataCSVWriter.append(",");
-
-            eachRoundDataCSVWriter.append(String.valueOf(day));
-            eachRoundDataCSVWriter.append(",");
-
-            eachRoundDataCSVWriter.append(String.valueOf(exchange));
-            eachRoundDataCSVWriter.append(",");
-
-            eachRoundDataCSVWriter.append(String.valueOf(uniqueAgentType));
-            eachRoundDataCSVWriter.append(",");
-
-            eachRoundDataCSVWriter.append(String.valueOf(averageSatisfactionForType));
-            eachRoundDataCSVWriter.append("\n");
-        }
+        for (int uniqueAgentType : uniqueAgentTypes)
+            Utilities.write(eachRoundDataCSVWriter, String.valueOf(run), ",",
+                    String.valueOf(day), ",",
+                    String.valueOf(exchange), ",",
+                    String.valueOf(uniqueAgentType), ",",
+                    String.valueOf(CalculateSatisfaction.averageAgentSatisfaction(agents, uniqueAgentType)), "\n");
 
     }
 }
