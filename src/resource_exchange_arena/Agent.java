@@ -7,18 +7,17 @@ import java.util.Collections;
 import java.util.Random;
 
 class Agent {
-    // Unique identifier for the agent.
-    int agentID;
-
-    // Instance variables to store the agents state, relations and ongoing exchanges.
-    private int agentType;
     private final boolean usesSocialCapital;
-    private boolean madeInteraction;
     private final int numberOfTimeSlotsWanted;
     private final ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
-    private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
     private final ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
     private final ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
+    // Unique identifier for the agent.
+    int agentID;
+    // Instance variables to store the agents state, relations and ongoing exchanges.
+    private int agentType;
+    private boolean madeInteraction;
+    private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> exchangeRequestReceived = new ArrayList<>();
     private boolean exchangeRequestApproved;
     private int totalSocialCapital;
@@ -31,13 +30,13 @@ class Agent {
     /**
      * {@link Agent}s represent the individual consumers in the simulation.
      *
-     * @param agentID This is an {@link Integer} value that is unique to the individual {@link Agent} and used to identify it to others in the {@link ResourceExchangeArena}.
-     * @param agentType An {@link Integer} value denoting the {@link Agent} type, and thus how it will behave.
+     * @param agentID       This is an {@link Integer} value that is unique to the individual {@link Agent} and used to identify it to others in the {@link ResourceExchangeArena}.
+     * @param agentType     An {@link Integer} value denoting the {@link Agent} type, and thus how it will behave.
      * @param slotsPerAgent An {@link Integer} value representing the number of time slots each {@link Agent} requires.
-     * @param agents An {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param agents        An {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
      * @param socialCapital Determines whether the {@link Agent} uses {@code socialCapital}.
      */
-    Agent(int agentID, int agentType, int slotsPerAgent, @NotNull ArrayList<Agent> agents, boolean socialCapital){
+    Agent(int agentID, int agentType, int slotsPerAgent, @NotNull ArrayList<Agent> agents, boolean socialCapital) {
         this.agentID = agentID;
         this.agentType = agentType;
         this.usesSocialCapital = socialCapital;
@@ -296,11 +295,11 @@ class Agent {
             Random random = ResourceExchangeArena.random;
 
             // Selects a time slot based on the demand curve.
-            int wheelSelector = random.nextInt((int)(totalDemand * 10));
+            int wheelSelector = random.nextInt((int) (totalDemand * 10));
             int wheelCalculator = 0;
             int timeSlot = 0;
             while (wheelCalculator < wheelSelector) {
-                wheelCalculator = wheelCalculator + ((int)(demandCurve[timeSlot] * 10));
+                wheelCalculator = wheelCalculator + ((int) (demandCurve[timeSlot] * 10));
                 timeSlot++;
             }
 
@@ -353,7 +352,7 @@ class Agent {
      * second array.
      *
      * @param potentialTimeSlots The time slots that may be returned if not present in the second array.
-     * @param timeSlotsToAvoid The time slots that shouldn't be returned.
+     * @param timeSlotsToAvoid   The time slots that shouldn't be returned.
      * @return The time slots from the {@code potentialTimeSlots} array that are not present in the {@code timeSlotsToAvoid} array.
      */
     private @NotNull ArrayList<Integer> nonExistingTimeSlots(
@@ -369,7 +368,7 @@ class Agent {
             } else {
                 // Once a time slot in the list of time slots to avoid has been considered once it is removed encase
                 // of duplicates.
-                localTimeSlotsToAvoid.remove(Integer.valueOf(timeSlot));
+                localTimeSlotsToAvoid.remove(timeSlot);
             }
         });
         return timeSlots;
@@ -410,7 +409,7 @@ class Agent {
     /**
      * Stores a request for an exchange received from another {@link Agent}.
      *
-     * @param request An {@link Agent}'s ID, the time slot that it wants and the time slot that it is willing to exchange.
+     * @param request           An {@link Agent}'s ID, the time slot that it wants and the time slot that it is willing to exchange.
      * @param partnersAgentType The strategy being used by the {@link Agent} that has fulfilled the exchange request.
      */
     void receiveExchangeRequest(ArrayList<Integer> request, int partnersAgentType) {
@@ -418,7 +417,7 @@ class Agent {
         exchangeRequestReceived.add(partnersAgentType);
     }
 
-        
+
     /**
      * Returns the most recent received from another {@link Agent}.
      *
@@ -430,7 +429,7 @@ class Agent {
 
     /**
      * Determine whether the {@link Agent} will be willing to accept a received exchange request.
-     * 
+     *
      * @return Whether the request was accepted.
      */
     boolean considerRequest() {
@@ -446,7 +445,7 @@ class Agent {
             potentialAllocatedTimeSlots.add(exchangeRequestReceived.get(2));
 
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
-            
+
 
             // if (agentType == ResourceExchangeArena.SOCIAL && exchangeRequestReceived.get(3) == ResourceExchangeArena.SOCIAL) {
             if (agentType == ResourceExchangeArena.SOCIAL) {
@@ -510,8 +509,8 @@ class Agent {
      * Completes an exchange that was originally requested by this {@link Agent}, making the exchange and updating this {@link Agent}'s
      * relationship with the other {@link Agent} involved.
      *
-     * @param offer The exchange that is to be completed.
-     * @param agentID The ID of the {@link Agent} that has fulfilled the exchange request.
+     * @param offer             The exchange that is to be completed.
+     * @param agentID           The ID of the {@link Agent} that has fulfilled the exchange request.
      * @param partnersAgentType The strategy being used by the {@link Agent} that has fulfilled the exchange request.
      * @return Whether the other {@link Agent} gained social capital.
      */
@@ -529,7 +528,7 @@ class Agent {
         if (usesSocialCapital) {
             // if (Double.compare(newSatisfaction, previousSatisfaction) > 0
             //         && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
-                if (Double.compare(newSatisfaction, previousSatisfaction) > 0
+            if (Double.compare(newSatisfaction, previousSatisfaction) > 0
                     && agentType == ResourceExchangeArena.SOCIAL) {
 
                 for (ArrayList<Integer> favours : favoursOwed) {
@@ -550,7 +549,7 @@ class Agent {
      * Completes an exchange that was originally requested by another {@link Agent}, making the exchange and updating
      * this {@link Agent}'s relationship with the other {@link Agent} involved.
      *
-     * @param offer The exchange that is to be completed.
+     * @param offer             The exchange that is to be completed.
      * @param partnersAgentType The strategy being used by the {@link Agent} that requested the exchange request.
      * @return Whether the other {@link Agent} gained social capital.
      */
@@ -567,7 +566,7 @@ class Agent {
         if (usesSocialCapital) {
             // if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
             //         && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
-                
+
             if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
                     && agentType == ResourceExchangeArena.SOCIAL) {
 
