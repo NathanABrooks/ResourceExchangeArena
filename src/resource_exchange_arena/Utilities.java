@@ -7,10 +7,10 @@ import java.io.Writer;
 
 /**
  * @author refracc
- * @since 2023-JUNE-30
  * @version 1.0.0
- *
+ * <p>
  * This class holds some general utility methods for general use in the program.
+ * @since 2023-JUNE-30
  */
 public final class Utilities {
 
