@@ -16,7 +16,7 @@ class SimulationVisualiserInitiator {
    * @param pythonPath     {@link String} representing the system path to the python data visualiser.
    * @param folderName     {@link String} representing the output destination folder, used to organise output data.
    * @param environmentTag {@link String} detailing specifics about the simulation environment.
-   * @param dataFile       Stores all the data that can be analysed for each day.
+   * @param dataFile       Stores all the data that can be analysed for each {@link Day}.
    * @param typicalSocial  The most average performing social run.
    * @param typicalSelfish The most average performing selfish run.
    * @throws IOException On input error.
