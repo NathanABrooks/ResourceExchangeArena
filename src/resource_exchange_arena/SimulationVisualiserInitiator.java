@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class SimulationVisualiserInitiator {
@@ -38,13 +39,14 @@ class SimulationVisualiserInitiator {
 
         String satisfactionPythonPath = pythonPath + "TypicalRun.py";
 
-        satisfactionPythonArgs.add(pythonExe);
-        satisfactionPythonArgs.add(satisfactionPythonPath);
-        satisfactionPythonArgs.add(folderName);
-        satisfactionPythonArgs.add(environmentTag);
-        satisfactionPythonArgs.add(dataFile.getAbsolutePath());
-        satisfactionPythonArgs.add(Double.toString(typicalSocial));
-        satisfactionPythonArgs.add(Double.toString(typicalSelfish));
+        for (String s : Arrays.asList(pythonExe,
+                satisfactionPythonPath,
+                folderName,
+                environmentTag,
+                dataFile.getAbsolutePath(),
+                Double.toString(typicalSocial),
+                Double.toString(typicalSelfish)))
+            satisfactionPythonArgs.add(s);
 
         ProcessBuilder satisfactionBuilder = new ProcessBuilder(satisfactionPythonArgs);
 
