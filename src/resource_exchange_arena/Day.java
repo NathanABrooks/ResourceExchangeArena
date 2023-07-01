@@ -1,10 +1,13 @@
 package resource_exchange_arena;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class Day {
     // List of all the possible allocations that exist in the current simulation.
@@ -24,51 +27,44 @@ public class Day {
     double optimumAllocations;
 
     /**
-     * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
-     * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
-     *
-     * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
-     *                    are split equally between the curves.
-     * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
-     * @param totalAvailability Integer value representing the total energy available throughout the day.
-     * @param day Integer value representing the current day being simulated.
-     * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
-     * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-     * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
-     *                               end of each day.
-     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
-     *                         begins.
-     * @param agents Array List of all the agents that exist in the current simulation.
-     * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
-     * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
-     * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
-     * @param run Integer value identifying the current simulation run.
-     * @exception IOException On input error.
-     * @see IOException
+     * @param demandCurves           {@link Double} arrays of demand used by the {@link Agent}s, when multiple curves are used the {@link Agent}s are split equally between the curves.
+     * @param totalDemandValues      {@link Double} values representing the sum of all values in their associated demand curves.
+     * @param availabilityCurve      {@link Integer} array representing the amount of energy available at each timeslot.
+     * @param totalAvailability      {@link Integer} value representing the total energy available throughout the {@link Day}.
+     * @param day                    {@link Integer} value representing the current {@link Day} being simulated.
+     * @param maxExchanges           Stores the highest number of exchange rounds reached each simulation.
+     * @param populationSize         {@link Integer} value representing the size of the initial {@link Agent} population.
+     * @param uniqueTimeSlots        {@link Integer} value representing the number of unique time slots available in the simulation.
+     * @param slotsPerAgent          {@link Integer} value representing the number of time slots each {@link Agent} requires.
+     * @param numberOfAgentsToEvolve {@link Integer} value representing the number of {@link Agent}s whose strategy will change at the end of each {@link Day}.
+     * @param uniqueAgentTypes       {@link Integer} {@link ArrayList} containing each unique {@link Agent} type that exists when the simulation begins.
+     * @param agents                 {@link ArrayList} of all the {@link Agent}s that exist in the current simulation.
+     * @param dailyDataWriter        Used to store data regarding the state of the system at the end of each {@link Day}.
+     * @param perAgentDataCSVWriter  Used to store data regarding the state of the {@link Agent} at the end of each {@link Day}.
+     * @param eachRoundDataCSVWriter Used to store data regarding the state of the system at the end of each round.
+     * @param run                    {@link Integer} value identifying the current simulation run.
+     * @throws IOException On input error
      */
     Day(
-        double[][] demandCurves,
-        double[] totalDemandValues,
-        int [] availabilityCurve,
-        int totalAvailability,
-        int day,
-        ArrayList<Integer> maxExchanges,
-        int populationSize,
-        int uniqueTimeSlots,
-        int slotsPerAgent,
-        int numberOfAgentsToEvolve,
-        ArrayList<Integer> uniqueAgentTypes,
-        ArrayList<Agent> agents,
-        FileWriter dailyDataWriter,
-        FileWriter perAgentDataCSVWriter,
-        FileWriter eachRoundDataCSVWriter,
-        int run
+            double[][] demandCurves,
+            double[] totalDemandValues,
+            int[] availabilityCurve,
+            int totalAvailability,
+            int day,
+            ArrayList<Integer> maxExchanges,
+            int populationSize,
+            int uniqueTimeSlots,
+            int slotsPerAgent,
+            int numberOfAgentsToEvolve,
+            ArrayList<Integer> uniqueAgentTypes,
+            ArrayList<Agent> agents,
+            FileWriter dailyDataWriter,
+            FileWriter perAgentDataCSVWriter,
+            FileWriter eachRoundDataCSVWriter,
+            int run
     ) throws IOException {
 
-        if(!availableTimeSlots.isEmpty()) {
+        if (!availableTimeSlots.isEmpty()) {
             availableTimeSlots.clear();
         }
 
@@ -123,22 +119,7 @@ public class Day {
         int timeout = 0;
         int maxTimeout = 10;
 
-        while(timeout < maxTimeout) {
-
-            /*
-             * With each exchange all agents form pairwise exchanges and are able to consider a trade with their
-             * partner for one time slot.
-             *
-             * @param run Integer value identifying the current simulation run.
-             * @param day Integer value representing the current day being simulated.
-             * @param exchange Integer value representing the current exchange being simulated.
-             * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the
-             *                         simulation begins.
-             * @param agents Array List of all the agents that exist in the current simulation.
-             * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
-             * @exception IOException On input error.
-             * @see IOException
-             */ 
+        while (timeout < maxTimeout) {
             Exchange current = new Exchange(
                     run,
                     day,
@@ -148,11 +129,8 @@ public class Day {
                     eachRoundDataCSVWriter
             );
 
-            if (current.noExchanges == true) {
-                timeout++;
-            } else {
-                timeout = 0;
-            }
+            if (current.noExchanges) timeout++;
+            else timeout = 0;
 
             currentExchanges++;
         }
@@ -178,106 +156,42 @@ public class Day {
         socialStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SOCIAL);
         selfishStatValues = CalculateSatisfaction.statisticalValues(agents, ResourceExchangeArena.SELFISH);
 
-        dailyDataWriter.append(String.valueOf(run));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(day));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(socPop));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selPop));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(socSat));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selSat));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socSD));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selSD));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[0]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selfishStatValues[0]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[1]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selfishStatValues[1]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[2]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selfishStatValues[2]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[3]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selfishStatValues[3]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[4]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selfishStatValues[4]));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(socialStatValues[5]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(selfishStatValues[5]));
-        dailyDataWriter.append(",");
-        
-        dailyDataWriter.append(String.valueOf(randomAllocations));
-        dailyDataWriter.append(",");
-
-        dailyDataWriter.append(String.valueOf(optimumAllocations));
-        dailyDataWriter.append("\n");
+        Utilities.write(dailyDataWriter, String.valueOf(run), ",",
+                String.valueOf(day), ",",
+                String.valueOf(socPop), ",",
+                String.valueOf(selPop), ",",
+                String.valueOf(socSat), ",",
+                String.valueOf(selSat), ",",
+                String.valueOf(socSD), ",",
+                String.valueOf(selSD), ",",
+                String.valueOf(socialStatValues[0]), ",",
+                String.valueOf(selfishStatValues[0]), ",",
+                String.valueOf(socialStatValues[1]), ",",
+                String.valueOf(selfishStatValues[1]), ",",
+                String.valueOf(socialStatValues[2]), ",",
+                String.valueOf(selfishStatValues[2]), ",",
+                String.valueOf(socialStatValues[3]), ",",
+                String.valueOf(selfishStatValues[3]), ",",
+                String.valueOf(socialStatValues[4]), ",",
+                String.valueOf(selfishStatValues[4]), ",",
+                String.valueOf(socialStatValues[5]), ",",
+                String.valueOf(selfishStatValues[5]), ",",
+                String.valueOf(randomAllocations), ",",
+                String.valueOf(optimumAllocations), "\n");
 
 
-        for (Agent a: agents) {
-            perAgentDataCSVWriter.append(String.valueOf(run));
-            perAgentDataCSVWriter.append(",");
-    
-            perAgentDataCSVWriter.append(String.valueOf(day));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getAgentType()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.calculateSatisfaction(null)));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getRejectedReceivedExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getRejectedRequestedExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getAcceptedRequestedExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getSocialCapitalExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getNoSocialCapitalExchanges()));
-            perAgentDataCSVWriter.append(",");
-
-            perAgentDataCSVWriter.append(String.valueOf(a.getUnspentSocialCapital()));
-            perAgentDataCSVWriter.append("\n");
+        for (Agent a : agents) {
+            Utilities.write(perAgentDataCSVWriter, String.valueOf(run), ",",
+                    String.valueOf(day), ",",
+                    String.valueOf(a.getAgentType()), ",",
+                    String.valueOf(a.calculateSatisfaction(null)), ",",
+                    String.valueOf(a.getRejectedReceivedExchanges()), ",",
+                    String.valueOf(a.getSocialCapitalExchanges() + a.getNoSocialCapitalExchanges()), ",",
+                    String.valueOf(a.getRejectedRequestedExchanges()), ",",
+                    String.valueOf(a.getAcceptedRequestedExchanges()), ",",
+                    String.valueOf(a.getSocialCapitalExchanges()), ",",
+                    String.valueOf(a.getNoSocialCapitalExchanges()), ",",
+                    String.valueOf(a.getUnspentSocialCapital()), "\n");
         }
 
         /*
@@ -286,27 +200,22 @@ public class Day {
          * checks whether their performance was weaker than the agent observed, if so they have a chance to copy the
          * strategy used by the observed agent in the previous day, with the likelihood of copying their strategy
          * proportional to the difference between their individual satisfactions.
-         *
-         * @param agents Array List of all the agents that exist in the current simulation.
-         * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
-         * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at
-         *                               the end of each day.
          */
         new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve);
     }
 
     /**
-     * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and the
+     * Gives a random initial time slot allocation to an {@link Agent} based on the number of time slots it requests and the
      * time slots that are currently available.
      *
-     * @param requestedTimeSlots The time slots that the Agent has requested.
-     * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
+     * @param requestedTimeSlots The time slots that the {@link Agent} has requested.
+     * @return A list of time slots to allocated to the {@link Agent}.
      */
-    private ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {
+    private @NotNull ArrayList<Integer> getRandomInitialAllocation(@NotNull ArrayList<Integer> requestedTimeSlots) {
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
-        for (int requestedTimeSlot = 1; requestedTimeSlot <= requestedTimeSlots.size(); requestedTimeSlot++) {
-            // Only allocate time slots if there are slots available to allocate.
+        // Only allocate time slots if there are slots available to allocate.
+        IntStream.rangeClosed(1, requestedTimeSlots.size()).forEach(requestedTimeSlot -> {
             if (!availableTimeSlots.isEmpty()) {
                 int selector = ResourceExchangeArena.random.nextInt(availableTimeSlots.size());
                 int timeSlot = availableTimeSlots.get(selector);
@@ -316,7 +225,7 @@ public class Day {
             } else {
                 System.out.println("Error: No Timeslots Available");
             }
-        }
+        });
         return timeSlots;
     }
 }
