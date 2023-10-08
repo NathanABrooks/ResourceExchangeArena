@@ -1,9 +1,15 @@
-package resource_exchange_arena.parameters;
+package resource_exchange_arena;
 
-public abstract class UserParameters extends FixedParameters {
+public abstract class UserParameters{
     /**
      * Contains all system parameters that can be changed by the user in order to experiment with various scenarios.
      */
+
+    // Constants representing the available agent types for the simulation.
+    // There is no reason to change these but they need to be declared for other parameters that can be adjusted.
+    public static final int SELFISH = 1;
+    public static final int SOCIAL = 2;
+    public static final int[] ALL_AGENT_TYPES = {SELFISH, SOCIAL};
 
     // The seed can be set to replicate previous simulations.
     public static long seed = System.currentTimeMillis();

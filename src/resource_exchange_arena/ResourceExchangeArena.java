@@ -1,7 +1,5 @@
 package resource_exchange_arena;
 
-import resource_exchange_arena.parameters.UserParameters;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ResourceExchangeArena extends UserParameters {
+    // Constant parameters for all simulations, this version of the system is not designed for these to be modified.
+    public static final int UNIQUE_TIME_SLOTS = 24;
 
     // Create a single Random object for generating random numerical data for the simulation, a single object exists to
     // allow for result replication given a specific user seed.
