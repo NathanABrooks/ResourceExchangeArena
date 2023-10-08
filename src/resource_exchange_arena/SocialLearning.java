@@ -14,8 +14,9 @@ class SocialLearning {
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at the
      *                               end of each day.
+     * @param β Double value that increases the the chance that agents will change their strategy.
      */
-    SocialLearning(ArrayList<Agent> agents, int slotsPerAgent, int numberOfAgentsToEvolve) {
+    SocialLearning(ArrayList<Agent> agents, int slotsPerAgent, int numberOfAgentsToEvolve, double β) {
         // Copy agents to store previous results, this needs to be a deep copy and so a new cloned agent is made.
         int totalAgents = agents.size();
         double[][] previousPerformances = new double[totalAgents][3];
@@ -54,8 +55,7 @@ class SocialLearning {
             if (Math.round(learningAgentSatisfaction * slotsPerAgent) < Math.round(observedAgentSatisfaction * slotsPerAgent)) {
                 double difference = observedAgentSatisfaction - learningAgentSatisfaction;
                 if (difference >= 0) {
-                    double beta = 1;
-                    double learningChance = 1 / (1 + (Math.exp(-beta * difference)));
+                    double learningChance = 1 / (1 + (Math.exp(-β * difference)));
                     double normalisedLearningChance = (learningChance * 2) - 1;
 
                     double threshold = ResourceExchangeArena.random.nextDouble();

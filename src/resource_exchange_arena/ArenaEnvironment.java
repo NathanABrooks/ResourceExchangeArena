@@ -36,6 +36,7 @@ public class ArenaEnvironment {
      *                                singleAgentType is true.
      * @param pythonExe String representing the system path to python environment executable.
      * @param pythonPath String representing the system path to the python data visualiser.
+     * @param β Double value that increases the the chance that agents will change their strategy.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -55,7 +56,8 @@ public class ArenaEnvironment {
             boolean singleAgentType,
             int selectedSingleAgentType,
             String pythonExe,
-            String pythonPath
+            String pythonPath,
+            Double β
     ) throws IOException {
 
         System.out.println("Starting simulation...");
@@ -284,6 +286,7 @@ public class ArenaEnvironment {
              * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
              * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
              * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
+             * @param β Double value that increases the the chance that agents will change their strategy.
              * @exception IOException On input error.
              * @see IOException
              */
@@ -307,7 +310,8 @@ public class ArenaEnvironment {
                     allDailyDataCSVWriter,
                     perAgentDataCSVWriter,
                     eachRoundDataCSVWriter,
-                    simulationRun
+                    simulationRun,
+                    β
             );
             System.out.println("RUNS COMPLETED: " + simulationRun);
         }

@@ -81,6 +81,10 @@ public abstract class UserParameters extends FixedParameters {
     // to 'true' and set the 'SELECTED_SINGLE_AGENT_TYPE' as required.
     public static final int[][] AGENT_TYPES_ARRAY = {{SELFISH, SOCIAL}};
     // Example: "{{SELFISH, SOCIAL}}"
+
+    // Value used in the social learning equation. With larger β values smaller differences in satisfaction are more likely to cause agents to change their strategy
+    public static final double β = 1;
+
     // ################################################################################################################
 
     // Sets the level of comparisons that will be made:

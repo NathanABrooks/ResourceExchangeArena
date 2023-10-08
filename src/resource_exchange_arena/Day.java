@@ -46,6 +46,7 @@ public class Day {
      * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
      * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
      * @param run Integer value identifying the current simulation run.
+     * @param β Double value that increases the the chance that agents will change their strategy.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -65,7 +66,8 @@ public class Day {
         FileWriter dailyDataWriter,
         FileWriter perAgentDataCSVWriter,
         FileWriter eachRoundDataCSVWriter,
-        int run
+        int run,
+        double β
     ) throws IOException {
 
         if(!availableTimeSlots.isEmpty()) {
@@ -291,8 +293,9 @@ public class Day {
          * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
          * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at
          *                               the end of each day.
+         * @param β Double value that increases the the chance that agents will change their strategy.
          */
-        new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve);
+        new SocialLearning(agents, slotsPerAgent, numberOfAgentsToEvolve, β);
     }
 
     /**

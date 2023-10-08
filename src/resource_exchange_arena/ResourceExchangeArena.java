@@ -206,6 +206,7 @@ public class ResourceExchangeArena extends UserParameters {
                  *                                when singleAgentType is true.
                  * @param pythonExe String representing the system path to python environment executable.
                  * @param pythonPath String representing the system path to the python data visualiser.
+                 * @param β Double value that increases the the chance that agents will change their strategy.
                  * @exception IOException On input error.
                  * @see IOException
                  */
@@ -225,7 +226,8 @@ public class ResourceExchangeArena extends UserParameters {
                         SINGLE_AGENT_TYPE,
                         SELECTED_SINGLE_AGENT_TYPE,
                         PYTHON_EXE,
-                        PYTHON_PATH
+                        PYTHON_PATH,
+                        β
                 );
 
                 simVersionsCompleted++;

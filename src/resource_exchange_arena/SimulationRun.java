@@ -35,6 +35,7 @@ class SimulationRun {
      * @param allDailyDataCSVWriter Used to store data ragarding the state of the system at the end of each day.
      * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
      * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
+     * @param β Double value that increases the the chance that agents will change their strategy.
      * @exception IOException On input error.
      * @see IOException
      */
@@ -58,7 +59,8 @@ class SimulationRun {
             FileWriter dailyDataWriter,
             FileWriter perAgentDataCSVWriter,
             FileWriter eachRoundDataCSVWriter,
-            int run
+            int run,
+            double β
     ) throws IOException {
 
         // List of all the Agents that are part of the current simulation.
@@ -131,6 +133,7 @@ class SimulationRun {
             * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
             * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
             * @param run Integer value identifying the current simulation run.
+            * @param β Double value that increases the the chance that agents will change their strategy.
             * @exception IOException On input error.
             * @see IOException
             */
@@ -150,7 +153,8 @@ class SimulationRun {
                 dailyDataWriter,
                 perAgentDataCSVWriter,
                 eachRoundDataCSVWriter,
-                run
+                run,
+                β
             );
 
             if (((current.selPop == 0 || current.socPop == 0) || numberOfAgentsToEvolve == 0) && !takeover) {
