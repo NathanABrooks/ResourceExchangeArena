@@ -4,6 +4,9 @@
 # Compiled Source #
 out/
 
+# Configuration Details ~
+config.properties
+
 # Output data #
 results/
 

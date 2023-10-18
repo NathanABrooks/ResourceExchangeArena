@@ -3,6 +3,15 @@
 
 The Energy Exchange Simulation (ResourceExchangeArena) has been developed in order to better understand how social capital, in the form of trust, can influence direct interactions between agents in pairwise situations, and how this in turn can impact on then success of a population in solving a multi-objective optimisation problem. Feel free to use this code as a starting point for your own research although a citation in any publications using this model would be appreciated. I highly recommend using the most up to date version of the model for any research so that it is the most full featured and any known issues have been addressed. You should also read our most recent paper to gain an understanding of the capabilities of the model. Please feel free to contact me with any questions or to talk about this research.
 
+### Setup
+A full description of the model can be found in our most recent paper, please read this before attempting to use the model for your own research.
+
+
+When starting your use of this model, delete the ".example" suffix to the "config.properties" file and fill in the fields in their entirety.
+
+
+I have included a yml file for the Conda environment used for the python data visualisations, it is in the "additional_files" folder and can be used to create a working environment if you do not have one ready.
+
 ### Authors
 **Name:** Nathan Brooks<br/>**Orcid:** https://orcid.org/0000-0002-4233-8304<br/>**Contact Email:** nathan.a.brooks1997@gmail.com<br/>
 </sub>*Feel free to contact me via this personal email. Alternatively you can use my academic contact information that is available on my Orcid profile.*</sub>
@@ -21,6 +30,4 @@ Brooks, N. A., Powers, S. T., & Borg, J. M. (2020, July). A mechanism to promote
 https://direct.mit.edu/isal/proceedings/isal2020/32/95/98493
 
 ### Pseudocode
-![Pseudocode](/pseudocode/pseudocode.png)
-
-A full description of the model can be found in our most recent paper, please read this before attempting to use the model for your own research.
+![Pseudocode](/additional_files/pseudocode.png)

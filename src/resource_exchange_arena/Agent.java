@@ -2,6 +2,7 @@ package resource_exchange_arena;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 class Agent {
@@ -13,8 +14,11 @@ class Agent {
     private final boolean usesSocialCapital;
     private boolean madeInteraction;
     private final int numberOfTimeSlotsWanted;
+    private final int uniqueTimeslots;
     private ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
+    private double[] satisfactionCurve;
+    private List<SlotSatisfactionPair> timeSlotSatisfactions = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> favoursOwed = new ArrayList<>();
     private ArrayList<ArrayList<Integer>> favoursGiven = new ArrayList<>();
     private ArrayList<Integer> exchangeRequestReceived = new ArrayList<>();
@@ -33,13 +37,17 @@ class Agent {
      *                in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
      * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation begins.
      * @param agents Array List of all the agents that exist in the current simulation.
      * @param socialCapital determines whether the agent uses socialCapital.
+     * @param satisfactionCurve Double array that determines the satisfaction fall off for slots received close to the agents preferences.
      */
-    Agent(int agentID, int agentType, int slotsPerAgent, ArrayList<Agent> agents, boolean socialCapital){
+    Agent(int agentID, int agentType, int slotsPerAgent, int uniqueTimeslots, ArrayList<Agent> agents, boolean socialCapital, double[] satisfactionCurve){
         this.agentID = agentID;
         this.agentType = agentType;
         this.usesSocialCapital = socialCapital;
+        this.uniqueTimeslots = uniqueTimeslots;
+        this.satisfactionCurve = satisfactionCurve;
 
         madeInteraction = false;
         numberOfTimeSlotsWanted = slotsPerAgent;
@@ -299,7 +307,7 @@ class Agent {
             Random random = ResourceExchangeArena.random;
 
             // Selects a time slot based on the demand curve.
-            int wheelSelector = random.nextInt((int)(totalDemand * 10));
+            int wheelSelector = random.nextInt((int)(totalDemand * 10)) + 1;
             int wheelCalculator = 0;
             int timeSlot = 0;
             while (wheelCalculator < wheelSelector) {
@@ -314,7 +322,42 @@ class Agent {
                 requestedTimeSlots.add(timeSlot);
             }
         }
+
+        timeSlotSatisfactions = calculateSatisfationPerSlot(requestedTimeSlots);
+
         return requestedTimeSlots;
+    }
+
+
+    List<SlotSatisfactionPair> calculateSatisfationPerSlot(ArrayList<Integer> requestedSlots) {
+        List<SlotSatisfactionPair> tempTimeSlotSatisfactions = new ArrayList<>();
+        // Calculate the potential satisfaction that each timeslot could give based on their proximity to requested timeslots.
+        Double[] slotSatisfaction = new Double[uniqueTimeslots];
+        for (int i = 0; i < slotSatisfaction.length; i++) {
+            slotSatisfaction[i] = 0.0;
+        }
+        for (int r : requestedTimeSlots) {
+            int s = r - 1;
+            slotSatisfaction[s] = satisfactionCurve[0];
+
+            // Apply the adjustment values to neighboring elements
+            for (int i = 1; i < satisfactionCurve.length; i++) {
+                int leftIndex = s - i;
+                int rightIndex = s + i;
+
+                if (leftIndex < 0) {leftIndex += slotSatisfaction.length;}
+                if (rightIndex >= slotSatisfaction.length) {rightIndex -= slotSatisfaction.length;}
+
+                slotSatisfaction[leftIndex] = Math.max(slotSatisfaction[leftIndex], satisfactionCurve[i]);
+                slotSatisfaction[rightIndex] = Math.max(slotSatisfaction[rightIndex], satisfactionCurve[i]);
+            }
+        }
+
+        for (int i = 0; i < slotSatisfaction.length; i++) {
+            tempTimeSlotSatisfactions.add(new SlotSatisfactionPair(i + 1, slotSatisfaction[i]));
+        }
+
+        return tempTimeSlotSatisfactions;
     }
 
     /**
@@ -353,6 +396,18 @@ class Agent {
     ArrayList<Integer> publishUnlockedTimeSlots() {
         ArrayList<Integer> unlockedTimeSlots;
         unlockedTimeSlots = new ArrayList<>(nonExistingTimeSlots(allocatedTimeSlots, requestedTimeSlots));
+
+        List<SlotSatisfactionPair> unlockedTimeSlotSatisfactions = new ArrayList<>();
+        for (SlotSatisfactionPair s : timeSlotSatisfactions) {
+            if (unlockedTimeSlots.contains(s.timeslot)) {unlockedTimeSlotSatisfactions.add(s);}
+        }
+
+        Collections.sort(unlockedTimeSlotSatisfactions, (pair1, pair2) -> Double.compare(pair1.satisfaction, pair2.satisfaction));
+
+        ArrayList<Integer> orderedUnlockedTimeSlots = new ArrayList<>();
+        for (SlotSatisfactionPair s : unlockedTimeSlotSatisfactions) {
+            orderedUnlockedTimeSlots.add(s.timeslot);
+        }
 
         return unlockedTimeSlots;
     }
@@ -456,8 +511,6 @@ class Agent {
 
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
             
-
-            // if (agentType == ResourceExchangeArena.SOCIAL && exchangeRequestReceived.get(3) == ResourceExchangeArena.SOCIAL) {
             if (agentType == ResourceExchangeArena.SOCIAL) {
                 // Social Agents accept offers that improve their satisfaction or if they have negative social capital
                 // with the Agent who made the request.
@@ -598,7 +651,7 @@ class Agent {
      * Calculates the Agents satisfaction with a given list of time slots by comparing the list with the time slots
      * requested by this Agent.
      *
-     * @param allocatedTimeSlots The set of time slots to consider.
+     * @param timeSlots The set of time slots to consider.
      * @return Double The Agents satisfaction with the time slots given.
      */
     double calculateSatisfaction(ArrayList<Integer> timeSlots) {
@@ -607,16 +660,45 @@ class Agent {
         }
 
         ArrayList<Integer> tempRequestedTimeSlots = new ArrayList<>(requestedTimeSlots);
+        ArrayList<Integer> nonRequestedTimeSlots = new ArrayList<>();
 
         // Count the number of the given time slots that match the Agents requested time slots.
-        double satisfiedSlots = 0;
+        double satisfaction = 0;
         for (int timeSlot : timeSlots) {
             if (tempRequestedTimeSlots.contains(timeSlot)) {
                 tempRequestedTimeSlots.remove(Integer.valueOf(timeSlot));
-                satisfiedSlots++;
+                satisfaction++;
+            } else { 
+                nonRequestedTimeSlots.add(timeSlot);
             }
         }
+
+        List<SlotSatisfactionPair> tempTimeSlotSatisfactions = calculateSatisfationPerSlot(tempRequestedTimeSlots);
+
+        // Not perfect but it will do for now.
+        for (int i = 1; i < satisfactionCurve.length; i++) {
+            for (Integer timeSlot: nonRequestedTimeSlots) {
+                for (SlotSatisfactionPair p: tempTimeSlotSatisfactions) {
+                    if (p.timeslot == timeSlot) {
+                        if (p.satisfaction == satisfactionCurve[i]) {
+                            satisfaction += p.satisfaction;
+                            int tover = timeSlot + i;
+                            int tunder = timeSlot - i;
+                            if (tempRequestedTimeSlots.contains(tover)) {
+                                tempRequestedTimeSlots.remove(Integer.valueOf(tover));
+                                tempTimeSlotSatisfactions = calculateSatisfationPerSlot(tempRequestedTimeSlots);
+                            } else if (tempRequestedTimeSlots.contains(tunder)) {
+                                tempRequestedTimeSlots.remove(Integer.valueOf(tunder));
+                                tempTimeSlotSatisfactions = calculateSatisfationPerSlot(tempRequestedTimeSlots);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         // Return the Agents satisfaction with the given time slots, between 1 and 0.
-        return satisfiedSlots / numberOfTimeSlotsWanted;
+        return satisfaction / numberOfTimeSlotsWanted;
     }
 }

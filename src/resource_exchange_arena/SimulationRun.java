@@ -36,31 +36,33 @@ class SimulationRun {
      * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
      * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
      * @param β Double value that increases the the chance that agents will change their strategy.
+     * @param satisfactionCurve Double array that determines the satisfaction fall off for slots received close to the agents preferences.
      * @exception IOException On input error.
      * @see IOException
      */
     SimulationRun(
-            double[][] demandCurves,
-            double[] totalDemandValues,
-            int [] availabilityCurve,
-            int totalAvailability,
-            int days,
-            ArrayList<Integer> maxExchanges,
-            int populationSize,
-            int uniqueTimeSlots,
-            int slotsPerAgent,
-            int numberOfAgentsToEvolve,
-            int[] agentTypes,
-            ArrayList<Integer> uniqueAgentTypes,
-            boolean singleAgentType,
-            int selectedSingleAgentType,
-            boolean socialCapital,
-            ArrayList<ArrayList<Double>> keyDaysData,
-            FileWriter dailyDataWriter,
-            FileWriter perAgentDataCSVWriter,
-            FileWriter eachRoundDataCSVWriter,
-            int run,
-            double β
+        double[][] demandCurves,
+        double[] totalDemandValues,
+        int [] availabilityCurve,
+        int totalAvailability,
+        int days,
+        ArrayList<Integer> maxExchanges,
+        int populationSize,
+        int uniqueTimeSlots,
+        int slotsPerAgent,
+        int numberOfAgentsToEvolve,
+        int[] agentTypes,
+        ArrayList<Integer> uniqueAgentTypes,
+        boolean singleAgentType,
+        int selectedSingleAgentType,
+        boolean socialCapital,
+        ArrayList<ArrayList<Double>> keyDaysData,
+        FileWriter dailyDataWriter,
+        FileWriter perAgentDataCSVWriter,
+        FileWriter eachRoundDataCSVWriter,
+        int run,
+        double β,
+        double[] satisfactionCurve
     ) throws IOException {
 
         // List of all the Agents that are part of the current simulation.
@@ -75,15 +77,19 @@ class SimulationRun {
                  *                it to others in the ExchangeArena.
                  * @param agentType Integer value denoting the agent type, and thus how it will behave.
                  * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+                 * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation begins.
                  * @param agents Array List of all the agents that exist in the current simulation.
                  * @param socialCapital determines whether the agent uses socialCapital.
+                 * @param satisfactionCurve Double array that determines the satisfaction fall off for slots received close to the agents preferences.
                  */
                 new Agent(
                         agentNumber,
                         agentTypes[agentNumber % agentTypes.length],
                         slotsPerAgent,
+                        uniqueTimeSlots,
                         agents,
-                        socialCapital
+                        socialCapital,
+                        satisfactionCurve
                 );
         }
         Collections.shuffle(agents, ResourceExchangeArena.random);

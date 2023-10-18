@@ -12,7 +12,6 @@ class SimulationVisualiserInitiator {
      * @param pythonExe String representing the system path to python environment executable.
      * @param pythonPath String representing the system path to the python data visualiser.
      * @param folderName String representing the output destination folder, used to organise output data.
-     * @param environmentTag String detailing specifics about the simulation environment.
      * @param dataFile Stores all the data that can be analysed for each day.
      * @param typicalSocial The most average performing social run.
      * @param typicalSelfish The most average performing selfish run.
@@ -23,7 +22,6 @@ class SimulationVisualiserInitiator {
             String pythonExe,
             String pythonPath,
             String folderName,
-            String environmentTag,
             File dataFile,
             double typicalSocial,
             double typicalSelfish
@@ -38,7 +36,6 @@ class SimulationVisualiserInitiator {
         satisfactionPythonArgs.add(pythonExe);
         satisfactionPythonArgs.add(satisfactionPythonPath);
         satisfactionPythonArgs.add(folderName);
-        satisfactionPythonArgs.add(environmentTag);
         satisfactionPythonArgs.add(dataFile.getAbsolutePath());
         satisfactionPythonArgs.add(Double.toString(typicalSocial));
         satisfactionPythonArgs.add(Double.toString(typicalSelfish));

@@ -16,7 +16,6 @@ public class ArenaEnvironment {
      * The arena is the environment in which all simulations take place.
      *
      * @param folderName String representing the output destination folder, used to organise output data.
-     * @param environmentTag String detailing specifics about the simulation environment.
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents are
      *                     split equally between the curves.
      * @param availabilityCurve Integer array of energy availability used by the simulation.
@@ -37,27 +36,28 @@ public class ArenaEnvironment {
      * @param pythonExe String representing the system path to python environment executable.
      * @param pythonPath String representing the system path to the python data visualiser.
      * @param β Double value that increases the the chance that agents will change their strategy.
+     * @param satisfactionCurve Double array that determines the satisfaction fall off for slots received close to the agents preferences.
      * @exception IOException On input error.
      * @see IOException
      */
     ArenaEnvironment(
-            String folderName,
-            String environmentTag,
-            double[][] demandCurves,
-            int[] availabilityCurve,
-            boolean socialCapital,
-            int simulationRuns,
-            int days,
-            int populationSize,
-            int uniqueTimeSlots,
-            int slotsPerAgent,
-            int numberOfAgentsToEvolve,
-            int[] agentTypes,
-            boolean singleAgentType,
-            int selectedSingleAgentType,
-            String pythonExe,
-            String pythonPath,
-            Double β
+        String folderName,
+        double[][] demandCurves,
+        int[] availabilityCurve,
+        boolean socialCapital,
+        int simulationRuns,
+        int days,
+        int populationSize,
+        int uniqueTimeSlots,
+        int slotsPerAgent,
+        int numberOfAgentsToEvolve,
+        int[] agentTypes,
+        boolean singleAgentType,
+        int selectedSingleAgentType,
+        String pythonExe,
+        String pythonPath,
+        double β,
+        double[] satisfactionCurve
     ) throws IOException {
 
         System.out.println("Starting simulation...");
@@ -74,7 +74,7 @@ public class ArenaEnvironment {
         Collections.sort(uniqueAgentTypes);
 
         // Create a directory to store the data output by the simulation.
-        String dataOutputFolder = folderName + "/" + environmentTag + "/data";
+        String dataOutputFolder = folderName + "/data";
         Path dataOutputPath = Path.of(dataOutputFolder);
         Files.createDirectories(dataOutputPath);
 
@@ -173,7 +173,7 @@ public class ArenaEnvironment {
         eachRoundDataCSVWriter.append("\n");
 
         // Stores the key data about the simulation about to begin in the data output location.
-        File simulationData = new File(folderName + "/" + environmentTag,"simulationData.txt");
+        File simulationData = new File(folderName + "/simulationData.txt");
 
         FileWriter simulationDataWriter = new FileWriter(simulationData);
 
@@ -287,6 +287,7 @@ public class ArenaEnvironment {
              * @param perAgentDataCSVWriter Used to store data ragarding the state of the agent at the end of each day.
              * @param eachRoundDataCSVWriter Used to store data ragarding the state of the system at the end of each round.
              * @param β Double value that increases the the chance that agents will change their strategy.
+             * @param satisfactionCurve Double array that determines the satisfaction fall off for slots received close to the agents preferences.
              * @exception IOException On input error.
              * @see IOException
              */
@@ -311,7 +312,8 @@ public class ArenaEnvironment {
                     perAgentDataCSVWriter,
                     eachRoundDataCSVWriter,
                     simulationRun,
-                    β
+                    β,
+                    satisfactionCurve
             );
             System.out.println("RUNS COMPLETED: " + simulationRun);
         }
@@ -484,7 +486,6 @@ public class ArenaEnvironment {
                 pythonExe,
                 pythonPath,
                 folderName,
-                environmentTag,
                 allDailyData,
                 middleSocial,
                 middleSelfish

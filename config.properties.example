@@ -1,0 +1,92 @@
+# This file contains the parameters that can be adjusted to change the simulation without altering the code itself.
+# If these parameters are not enough for your experiments then you will need to make changes to the code.
+# I have tried to make the code as readable as possible but feel free to contact me for assistance, see README for details.
+
+# Set the seed to replicate a previous simulation, requires a long value, if set to -1 the system time will be used.
+# Example: 1234
+seed=
+
+# Name of the folder that will contain the set of simulations currently being ran. The seed is appended to the end of this string.
+# Example: /home/user/code/ResourceExchangeArena/results/Set_
+results.folder=
+
+# Python environment location
+# Example: /home/user/anaconda3/envs/my_env/bin/python3
+python.executable=
+
+# Location of data visualiser python scripts on your machine. Included in this project by default.
+# Example: "/home/user/code/ResourceExchangeArena/src/data_analysis/"
+python.scripts=
+
+# Alter the population size, requires an integer value.
+# Example: 96
+population.size=
+
+# Alter the number of timeslots that each agent requests each day, requires an integer value.
+# Example: 4
+agent.timeslots=
+
+# Alter the number of unique timeslots each day.
+# It is HIGHLY RECOMMENDED to keep this as 24 as it works with the demand and availability curves provided - keep the curves you use in mind when you adjust this value.
+# Example: 24
+simulation.uniqueTimeslots=
+
+# Alter the length of time to be simulated once the simulation has reached a steady population state using a single strategy, requires an integer value.
+# Example: 100
+simulation.additionalDays=
+
+# Increase the number of simulation runs for more consistent results, requires an integer value.
+# Example: 100
+simulation.runs=
+
+# Specify whether only a single agent type should exist in the simulation, used for establishing baseline results, requires a boolean value.
+# Example: false
+agent.singleType=
+
+# Specify the single agent type to be simulated when 'agent.singleType=true', 'selfish' or 'social'.
+# Example: social
+agent.selectedSingleType=
+
+# Specify whether social capital should be used by the social agents, requires a boolean value.
+# Example: true
+agent.useSocialCapital=
+
+# Value used in the social learning equation. With larger β values smaller differences in satisfaction are more likely to cause agents to change their strategy, requires a double value.
+# Example: 1
+agent.beta=
+
+# Sets the level of comparisons that will be made, requires an integer value:
+# Note that this overrides some of the previously set parameters and can result in much longer compute times.
+# 0 = Only the parameter combinations set will be made.
+# 1 = The above combinations will be ran both with and without social capital enabled so that the results can be compared.
+# 2 = The above combinations will be ran both with and without social capital enabled and with only selfish agents and with only social agents so that a baseline comparison can be made between the agents types.
+# Example: 0
+simulation.comparisonLevel=
+
+# Demand curves which influence the likelihood of agents requesting each timeslot.
+# Where multiple curves are given, agents are split equally between using each curve. Curves should be separated by "||" (see example).
+# The curves provided have 1 double value for each 10 minute segment of the day (144 values total), while these are bucketed into hour long timeslots, this allowed for easy compatability with the data used in our published papers.
+# Remember to ensure that your curves fit with the number of unique timeslots in the system.
+# Example: 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0||2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+#   See additional_files/data.txt for example curves
+demand.curves=
+
+# Availablity curves control the proportion of energy available for each hour of the of day.
+# The curves provided have 1 integer value for each 30 minute segment of the day (48 values total), while these are bucketed into hour long timeslots, this allowed for easy compatability with the data used in our published papers.
+# Remember to ensure that your curves fit with the number of unique timeslots in the system.
+# Example: 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+#   See additional_files/data.txt for example curves
+availability.curve=
+
+# Percentage of agents that will evolve their strategy per day, requires an integer value.
+# Example: 100
+agents.evolvePercentage=
+
+# Ratio of starting agent types, selfish is given first, i.e. "2:1" would cause the simulation to start with two selfish agents for each social agent.
+# Note that both types of agents need to exist, for testing with a single agent type set 'agent.singleType' to 'true' and set the 'agent.selectedSingleType' as required.
+# Example: 1:1
+agent.typeRatio=
+
+# Determines the fall off of for satisfaction received from timeslots near to an agents preference such that "1.0,0.5" would mean agents get half satisfaction from timeslots next to their preferences.
+# Example: 1.00,0.50,0.25
+agent.satisfactionCurve=

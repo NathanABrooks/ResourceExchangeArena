@@ -13,8 +13,6 @@ Parameters
 ---------
 folderName : str
     The output destination folder, used to organise output data.
-tag : str
-    A unique tag so that generated graphs can easily be associated with their corresponding data sets.
 data : str
     The absolute path of the data set required for generating the line graph.
 typicalSocial : str
@@ -26,15 +24,12 @@ typicalSelfish : str
 # Get the output folder from command line arguments.
 folderName: str = sys.argv[1]
 
-# Unique identifier to identify which run the produced graphs are associated with.
-tag: str = sys.argv[2]
-
 # Get the location of the raw data that requires visualising from command line arguments.
-dataFile: str = sys.argv[3]
+dataFile: str = sys.argv[2]
 
 # Get the specific runs to be visualised.
-typicalSocial: int = sys.argv[4]
-typicalSelfish: int = sys.argv[5]
+typicalSocial: int = sys.argv[3]
+typicalSelfish: int = sys.argv[4]
 
 # Used to get ordinal word versions of integers for graph titles.
 inflect = inflect.engine()
@@ -43,8 +38,6 @@ inflect = inflect.engine()
 baseOutputDirectory: str = \
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))),
                  folderName
-                 + '/'
-                 + tag
                  + '/images')
 
 # Create the output directory if it does not already exist.
