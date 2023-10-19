@@ -23,8 +23,8 @@ public class ArenaEnvironment {
      * @param simulationRuns Integer value representing the number of simulations to be ran and averaged.
      * @param days Integer value representing the number of days to be simulated.
      * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in the simulation.
+     * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
      *                               end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
@@ -188,7 +188,7 @@ public class ArenaEnvironment {
         simulationDataWriter.append("Simulation runs: ").append(String.valueOf(simulationRuns)).append("\n");
         simulationDataWriter.append("Days after strategy takeover: ").append(String.valueOf(days)).append("\n");
         simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
-        simulationDataWriter.append("Unique time slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
+        simulationDataWriter.append("Unique time-slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
         simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve))
                 .append("\n");
@@ -262,14 +262,14 @@ public class ArenaEnvironment {
              * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
              *                    are split equally between the curves.
              * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-             * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+             * @param availabilityCurve Integer array representing the amount of energy available at each time-slot.
              * @param totalAvailability Integer value representing the total energy available throughout the day.
              * @param days Integer value representing the number of days to be simulated.
              * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
              * @param populationSize Integer value representing the size of the initial agent population.
-             * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
+             * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in the
              *                        simulation.
-             * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+             * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
              * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change
              *                               at the end of each day.
              * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same

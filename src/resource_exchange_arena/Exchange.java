@@ -8,7 +8,7 @@ import java.util.Collections;
 class Exchange {
     /**
      * With each exchange all agents form pairwise exchanges and are able to consider a trade with their partner for
-     * one time slot.
+     * one time-slot.
      *
      * @param run Integer value identifying the current simulation run.
      * @param day Integer value representing the current day being simulated.
@@ -39,7 +39,7 @@ class Exchange {
             a.setMadeInteraction(false);
         }
 
-        // Exchanges start by Agents advertising time slots they may be willing to exchange.
+        // Exchanges start by Agents advertising time-slots they may be willing to exchange.
         Collections.shuffle(agents, ResourceExchangeArena.random);
         for (Agent a : agents) {
             ArrayList<Integer> unlockedTimeSlots = a.publishUnlockedTimeSlots();
@@ -51,23 +51,23 @@ class Exchange {
             }
         }
 
-        // Each Agent has the opportunity to make exchange requests for advertised time slots.
+        // Each Agent has the opportunity to make exchange requests for advertised time-slots.
         Collections.shuffle(agents, ResourceExchangeArena.random);
         for (Agent a : agents) {
             if (!a.madeInteraction()) {
                 ArrayList<Integer> chosenAdvert = a.requestExchange(advertisingBoard);
                 a.setMadeInteraction(true);
                 if (!chosenAdvert.isEmpty()) {
-                    // Select an unwanted time slot to offer in the exchange.
+                    // Select an unwanted time-slot to offer in the exchange.
                     ArrayList<Integer> unwantedTimeSlots = a.publishUnlockedTimeSlots();
-                    int unwantedTimeSlot = unwantedTimeSlots.get(0); // Get the least wanted timeslot.
+                    int unwantedTimeSlot = unwantedTimeSlots.get(0); // Get the least wanted time-slot.
 
                     ArrayList<Integer> request = new ArrayList<>();
                     request.add(a.agentID);
                     request.add(chosenAdvert.get(1));
                     request.add(unwantedTimeSlot);
 
-                    // The agent who offered the requested time slot receives the exchange request.
+                    // The agent who offered the requested time-slot receives the exchange request.
                     for (Agent b : agents) {
                         if (b.agentID == chosenAdvert.get(0)) {
                             if (b.madeInteraction() == false) {

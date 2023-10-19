@@ -50,8 +50,8 @@ public class ResourceExchangeArena {
         final String PYTHON_EXE = properties.getProperty("python.executable");
         final String PYTHON_PATH = properties.getProperty("python.scripts");
         final int POPULATION_SIZE = Integer.parseInt(properties.getProperty("population.size"));
-        final int SLOTS_PER_AGENT = Integer.parseInt(properties.getProperty("agent.timeslots"));
-        final int UNIQUE_TIME_SLOTS = Integer.parseInt(properties.getProperty("simulation.uniqueTimeslots"));;
+        final int SLOTS_PER_AGENT = Integer.parseInt(properties.getProperty("agent.time-slots"));
+        final int UNIQUE_TIME_SLOTS = Integer.parseInt(properties.getProperty("simulation.uniqueTime-slots"));;
         final int ADDITIONAL_DAYS = Integer.parseInt(properties.getProperty("simulation.additionalDays"));
         final int SIMULATION_RUNS = Integer.parseInt(properties.getProperty("simulation.runs"));
         boolean SINGLE_AGENT_TYPE = Boolean.parseBoolean(properties.getProperty("agent.singleType"));
@@ -136,9 +136,9 @@ public class ResourceExchangeArena {
      *                       averaged.
      * @param days Integer value representing the number of days to be simulated.
      * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeslots Integer value representing the number of unique time slots available in
+     * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in
      *                        the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy
      *                               will change at the end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with.
@@ -165,7 +165,7 @@ public class ResourceExchangeArena {
         String pythonPath,
         int populationSize,
         int slotsPerAgent,
-        int uniqueTimeslots,
+        int uniqueTimeSlots,
         int additionalDays,
         int simulationRuns,
         boolean singleAgentType,
@@ -210,11 +210,11 @@ public class ResourceExchangeArena {
          *                       averaged.
          * @param days Integer value representing the number of days to be simulated.
          * @param populationSize Integer value representing the size of the initial agent population.
-         * @param uniqueTimeSlots Integer value representing the number of unique time slots available in
+         * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in
          *                        the simulation.
-         * @param uniqueTimeslots Integer value representing the number of unique time slots available in
+         * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in
                                   the simulation.
-         * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+         * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
          * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy
          *                               will change at the end of each day.
          * @param agentTypes Integer array containing the agent types that the simulation will begin with.
@@ -239,7 +239,7 @@ public class ResourceExchangeArena {
                 simulationRuns,
                 additionalDays,
                 populationSize,
-                uniqueTimeslots,
+                uniqueTimeSlots,
                 slotsPerAgent,
                 learningAgents,
                 agentTypeArray,
@@ -308,6 +308,7 @@ public class ResourceExchangeArena {
 
     // Used for formatting starting type ratio preferences from the config.properties file.
     public static int[] RatioToIntegerArray(String input) {
+        // Split the input string by colon
         String[] ratioParts = input.split(":");
         int a = Integer.parseInt(ratioParts[0]);
         int b = Integer.parseInt(ratioParts[1]);

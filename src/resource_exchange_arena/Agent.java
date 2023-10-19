@@ -14,7 +14,7 @@ class Agent {
     private final boolean usesSocialCapital;
     private boolean madeInteraction;
     private final int numberOfTimeSlotsWanted;
-    private final int uniqueTimeslots;
+    private final int uniqueTimeSlots;
     private ArrayList<Integer> requestedTimeSlots = new ArrayList<>();
     private ArrayList<Integer> allocatedTimeSlots = new ArrayList<>();
     private double[] satisfactionCurve;
@@ -36,17 +36,17 @@ class Agent {
      * @param agentID This is an integer value that is unique to the individual agent and used to identify it to others
      *                in the ExchangeArena.
      * @param agentType Integer value denoting the agent type, and thus how it will behave.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation begins.
      * @param agents Array List of all the agents that exist in the current simulation.
      * @param socialCapital determines whether the agent uses socialCapital.
      * @param satisfactionCurve Double array that determines the satisfaction fall off for slots received close to the agents preferences.
      */
-    Agent(int agentID, int agentType, int slotsPerAgent, int uniqueTimeslots, ArrayList<Agent> agents, boolean socialCapital, double[] satisfactionCurve){
+    Agent(int agentID, int agentType, int slotsPerAgent, int uniqueTimeSlots, ArrayList<Agent> agents, boolean socialCapital, double[] satisfactionCurve){
         this.agentID = agentID;
         this.agentType = agentType;
         this.usesSocialCapital = socialCapital;
-        this.uniqueTimeslots = uniqueTimeslots;
+        this.uniqueTimeSlots = uniqueTimeSlots;
         this.satisfactionCurve = satisfactionCurve;
 
         madeInteraction = false;
@@ -100,9 +100,9 @@ class Agent {
     }
 
     /**
-     * Getter for the number of timeslots requested.
+     * Getter for the number of time-slots requested.
      *
-     * @return boolean Returns the number of timeslots the Agent wants.
+     * @return boolean Returns the number of time-slots the Agent wants.
      */
     int numberOfTimeSlotsWanted() {
         return numberOfTimeSlotsWanted;
@@ -290,11 +290,11 @@ class Agent {
     }
 
     /**
-     * Checks the time slots that exist in the simulation and makes a new request for a number of unique time slots
+     * Checks the time-slots that exist in the simulation and makes a new request for a number of unique time-slots
      * according to how many slots the Agent wants and the given demand curve.
      *
      * @param demandCurve Double array representing the demand curve that the agent should base its requests around.
-     * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
+     * @return ArrayList<Integer> Returns the time-slots that the Agent has requested.
      */
     ArrayList<Integer> requestTimeSlots(double[] demandCurve, double totalDemand) {
 
@@ -306,7 +306,7 @@ class Agent {
             // Get the simulations seeded Random object.
             Random random = ResourceExchangeArena.random;
 
-            // Selects a time slot based on the demand curve.
+            // Selects a time-slot based on the demand curve.
             int wheelSelector = random.nextInt((int)(totalDemand * 10)) + 1;
             int wheelCalculator = 0;
             int timeSlot = 0;
@@ -315,7 +315,7 @@ class Agent {
                 timeSlot++;
             }
 
-            // Ensures all requested time slots are unique.
+            // Ensures all requested time-slots are unique.
             if (requestedTimeSlots.contains(timeSlot)) {
                 i--;
             } else {
@@ -331,8 +331,8 @@ class Agent {
 
     List<SlotSatisfactionPair> calculateSatisfationPerSlot(ArrayList<Integer> requestedSlots) {
         List<SlotSatisfactionPair> tempTimeSlotSatisfactions = new ArrayList<>();
-        // Calculate the potential satisfaction that each timeslot could give based on their proximity to requested timeslots.
-        Double[] slotSatisfaction = new Double[uniqueTimeslots];
+        // Calculate the potential satisfaction that each time-slot could give based on their proximity to requested time-slots.
+        Double[] slotSatisfaction = new Double[uniqueTimeSlots];
         for (int i = 0; i < slotSatisfaction.length; i++) {
             slotSatisfaction[i] = 0.0;
         }
@@ -361,37 +361,37 @@ class Agent {
     }
 
     /**
-     * Getter method for retrieving the time slots that the Agent has currently requested.
+     * Getter method for retrieving the time-slots that the Agent has currently requested.
      *
-     * @return ArrayList<Integer> Returns the time slots that the Agent has requested.
+     * @return ArrayList<Integer> Returns the time-slots that the Agent has requested.
      */
     ArrayList<Integer> publishRequestedTimeSlots() {
         return requestedTimeSlots;
     }
 
     /**
-     * Setter method for storing the time slots the Agent has been allocated.
+     * Setter method for storing the time-slots the Agent has been allocated.
      *
-     * @param allocatedTimeSlots An allocation of time slots given by the ExchangeArena.
+     * @param allocatedTimeSlots An allocation of time-slots given by the ExchangeArena.
      */
     void receiveAllocatedTimeSlots(ArrayList<Integer> allocatedTimeSlots) {
         this.allocatedTimeSlots = allocatedTimeSlots;
     }
 
     /**
-     * Getter method for retrieving the time slots that the Agent is currently allocated.
+     * Getter method for retrieving the time-slots that the Agent is currently allocated.
      *
-     * @return ArrayList<Integer> Returns the time slots that the Agent is allocated.
+     * @return ArrayList<Integer> Returns the time-slots that the Agent is allocated.
      */
     ArrayList<Integer> publishAllocatedTimeSlots() {
         return allocatedTimeSlots;
     }
 
     /**
-     * Shares the time slots that are currently allocated to the Agent that it may potentially be willing to
+     * Shares the time-slots that are currently allocated to the Agent that it may potentially be willing to
      * exchange under certain circumstances.
      *
-     * @return ArrayList<Integer> Returns the time slots that the Agent is allocated but may potentially exchange.
+     * @return ArrayList<Integer> Returns the time-slots that the Agent is allocated but may potentially exchange.
      */
     ArrayList<Integer> publishUnlockedTimeSlots() {
         ArrayList<Integer> unlockedTimeSlots;
@@ -399,32 +399,32 @@ class Agent {
 
         List<SlotSatisfactionPair> unlockedTimeSlotSatisfactions = new ArrayList<>();
         for (SlotSatisfactionPair s : timeSlotSatisfactions) {
-            if (unlockedTimeSlots.contains(s.timeslot)) {unlockedTimeSlotSatisfactions.add(s);}
+            if (unlockedTimeSlots.contains(s.timeSlot)) {unlockedTimeSlotSatisfactions.add(s);}
         }
 
         Collections.sort(unlockedTimeSlotSatisfactions, (pair1, pair2) -> Double.compare(pair1.satisfaction, pair2.satisfaction));
 
         ArrayList<Integer> orderedUnlockedTimeSlots = new ArrayList<>();
         for (SlotSatisfactionPair s : unlockedTimeSlotSatisfactions) {
-            orderedUnlockedTimeSlots.add(s.timeslot);
+            orderedUnlockedTimeSlots.add(s.timeSlot);
         }
 
         return unlockedTimeSlots;
     }
 
     /**
-     * Takes two arrays of time slots, and returns the time slots from the first array that are not present in the
+     * Takes two arrays of time-slots, and returns the time-slots from the first array that are not present in the
      * second array.
      *
-     * @param potentialTimeSlots the time slots that may be returned if not present in the second array.
-     * @param timeSlotsToAvoid the time slots that shouldn't be returned..
-     * @return ArrayList<Integer> Returns the time slots from the potentialTimeSlots array that are not present in the
+     * @param potentialTimeSlots the time-slots that may be returned if not present in the second array.
+     * @param timeSlotsToAvoid the time-slots that shouldn't be returned..
+     * @return ArrayList<Integer> Returns the time-slots from the potentialTimeSlots array that are not present in the
      *                            timeSlotsToAvoid array.
      */
     private ArrayList<Integer> nonExistingTimeSlots(
             ArrayList<Integer> potentialTimeSlots,
             ArrayList<Integer> timeSlotsToAvoid) {
-        // By making a new copy of the time slots to avoid, the array list can be modified without modifying the
+        // By making a new copy of the time-slots to avoid, the array list can be modified without modifying the
         // referenced list.
         ArrayList<Integer> localTimeSlotsToAvoid = new ArrayList<>(timeSlotsToAvoid);
         ArrayList<Integer> timeSlots = new ArrayList<>();
@@ -432,7 +432,7 @@ class Agent {
             if (!localTimeSlotsToAvoid.contains(timeSlot)) {
                 timeSlots.add(timeSlot);
             } else {
-                // Once a time slot in the list of time slots to avoid has been considered once it is removed encase
+                // Once a time-slot in the list of time-slots to avoid has been considered once it is removed encase
                 // of duplicates.
                 localTimeSlotsToAvoid.remove(Integer.valueOf(timeSlot));
             }
@@ -441,11 +441,11 @@ class Agent {
     }
 
     /**
-     * Make an exchange request for a time slot that another Agent has published as a possible exchange, and that this
+     * Make an exchange request for a time-slot that another Agent has published as a possible exchange, and that this
      * Agent wants but has not currently been allocated.
      *
-     * @param advertisingBoard All the time slots that Agents have said they may possibly exchange.
-     * @return ArrayList<Integer>|null A time slot owned by another agent that this Agent is requesting an exchange for.
+     * @param advertisingBoard All the time-slots that Agents have said they may possibly exchange.
+     * @return ArrayList<Integer>|null A time-slot owned by another agent that this Agent is requesting an exchange for.
      */
     ArrayList<Integer> requestExchange(ArrayList<ArrayList<Integer>> advertisingBoard) {
         ArrayList<Integer> targetTimeSlots = nonExistingTimeSlots(requestedTimeSlots, allocatedTimeSlots);
@@ -459,7 +459,7 @@ class Agent {
                 for (int j = 1; j < advert.size(); j++) {
                     if (targetTimeSlots.contains(advert.get(j))) {
                         // Only take the part of the advert that is relevant, and split adverts with multiple
-                        // exchangeable time slots into multiple adverts.
+                        // exchangeable time-slots into multiple adverts.
                         ArrayList<Integer> selectedAdvert = new ArrayList<>();
                         selectedAdvert.add(advert.get(0));
                         selectedAdvert.add(advert.get(j));
@@ -475,7 +475,7 @@ class Agent {
     /**
      * Stores a request for an exchange received from another Agent.
      *
-     * @param request An Agent's agentID, the time slot that it wants and the time slot that it is willing to exchange.
+     * @param request An Agent's agentID, the time-slot that it wants and the time-slot that it is willing to exchange.
      */
     void receiveExchangeRequest(ArrayList<Integer> request, int partnersAgentType) {
         exchangeRequestReceived = request;
@@ -499,14 +499,14 @@ class Agent {
      */
     boolean considerRequest() {
         double currentSatisfaction = calculateSatisfaction(null);
-        // Create a new local list of time slots in order to test how the Agents satisfaction would change after the
+        // Create a new local list of time-slots in order to test how the Agents satisfaction would change after the
         // potential exchange.
         ArrayList<Integer> potentialAllocatedTimeSlots = new ArrayList<>(allocatedTimeSlots);
-        // Check this Agent still has the time slot requested.
+        // Check this Agent still has the time-slot requested.
         if (potentialAllocatedTimeSlots.contains(exchangeRequestReceived.get(1))) {
             potentialAllocatedTimeSlots.remove(exchangeRequestReceived.get(1));
 
-            // Replace the requested slot with the requesting agents unwanted time slot.
+            // Replace the requested slot with the requesting agents unwanted time-slot.
             potentialAllocatedTimeSlots.add(exchangeRequestReceived.get(2));
 
             double potentialSatisfaction = calculateSatisfaction(potentialAllocatedTimeSlots);
@@ -560,10 +560,10 @@ class Agent {
     }
 
     /**
-     * Checks whether the Agent still has a requested time slot before exchanging it.
+     * Checks whether the Agent still has a requested time-slot before exchanging it.
      *
-     * @param timeSlot The time slot to check the agents allocated time slots for.
-     * @return boolean Whether or not the time slot belongs to the Agent and so can be exchanged.
+     * @param timeSlot The time-slot to check the agents allocated time-slots for.
+     * @return boolean Whether or not the time-slot belongs to the Agent and so can be exchanged.
      */
     boolean finalCheck(int timeSlot) {
         return allocatedTimeSlots.contains(timeSlot);
@@ -582,7 +582,7 @@ class Agent {
         boolean SCGain = false;
 
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
-        // Update the Agents allocated time slots.
+        // Update the Agents allocated time-slots.
         allocatedTimeSlots.remove(offer.get(2));
         allocatedTimeSlots.add(offer.get(1));
 
@@ -621,7 +621,7 @@ class Agent {
         boolean SCLoss = false;
 
         double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
-        // Update the Agents allocated time slots.
+        // Update the Agents allocated time-slots.
         allocatedTimeSlots.remove(offer.get(1));
         allocatedTimeSlots.add(offer.get(2));
         double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
@@ -648,11 +648,11 @@ class Agent {
     }
 
     /**
-     * Calculates the Agents satisfaction with a given list of time slots by comparing the list with the time slots
+     * Calculates the Agents satisfaction with a given list of time-slots by comparing the list with the time-slots
      * requested by this Agent.
      *
-     * @param timeSlots The set of time slots to consider.
-     * @return Double The Agents satisfaction with the time slots given.
+     * @param timeSlots The set of time-slots to consider.
+     * @return Double The Agents satisfaction with the time-slots given.
      */
     double calculateSatisfaction(ArrayList<Integer> timeSlots) {
         if (timeSlots == null) {
@@ -662,7 +662,7 @@ class Agent {
         ArrayList<Integer> tempRequestedTimeSlots = new ArrayList<>(requestedTimeSlots);
         ArrayList<Integer> nonRequestedTimeSlots = new ArrayList<>();
 
-        // Count the number of the given time slots that match the Agents requested time slots.
+        // Count the number of the given time-slots that match the Agents requested time-slots.
         double satisfaction = 0;
         for (int timeSlot : timeSlots) {
             if (tempRequestedTimeSlots.contains(timeSlot)) {
@@ -679,7 +679,7 @@ class Agent {
         for (int i = 1; i < satisfactionCurve.length; i++) {
             for (Integer timeSlot: nonRequestedTimeSlots) {
                 for (SlotSatisfactionPair p: tempTimeSlotSatisfactions) {
-                    if (p.timeslot == timeSlot) {
+                    if (p.timeSlot == timeSlot) {
                         if (p.satisfaction == satisfactionCurve[i]) {
                             satisfaction += p.satisfaction;
                             int tover = timeSlot + i;
@@ -698,7 +698,7 @@ class Agent {
             }
         }
 
-        // Return the Agents satisfaction with the given time slots, between 1 and 0.
+        // Return the Agents satisfaction with the given time-slots, between 1 and 0.
         return satisfaction / numberOfTimeSlotsWanted;
     }
 }

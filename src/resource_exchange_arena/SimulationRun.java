@@ -13,13 +13,13 @@ class SimulationRun {
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
      *                    are split equally between the curves.
      * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+     * @param availabilityCurve Integer array representing the amount of energy available at each time-slot.
      * @param totalAvailability Integer value representing the total energy available throughout the day.
      * @param days Integer value representing the number of days to be simulated.
      * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
      * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in the simulation.
+     * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
      *                               end of each day.
      * @param agentTypes Integer array containing the agent types that the simulation will begin with. The same type
@@ -76,7 +76,7 @@ class SimulationRun {
                  * @param agentID This is an integer value that is unique to the individual agent and used to identify
                  *                it to others in the ExchangeArena.
                  * @param agentType Integer value denoting the agent type, and thus how it will behave.
-                 * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+                 * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
                  * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation begins.
                  * @param agents Array List of all the agents that exist in the current simulation.
                  * @param socialCapital determines whether the agent uses socialCapital.
@@ -122,14 +122,14 @@ class SimulationRun {
             * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
             *                    are split equally between the curves.
             * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-            * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+            * @param availabilityCurve Integer array representing the amount of energy available at each time-slot.
             * @param totalAvailability Integer value representing the total energy available throughout the day.
             * @param day Integer value representing the current day being simulated.
             * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
             * @param populationSize Integer value representing the size of the initial agent population.
-            * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the
+            * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in the
             *                        simulation.
-            * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+            * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
             * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change
             *                               at the end of each day.
             * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the

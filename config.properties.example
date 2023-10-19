@@ -22,14 +22,14 @@ python.scripts=
 # Example: 96
 population.size=
 
-# Alter the number of timeslots that each agent requests each day, requires an integer value.
+# Alter the number of time-slots that each agent requests each day, requires an integer value.
 # Example: 4
-agent.timeslots=
+agent.time-slots=
 
-# Alter the number of unique timeslots each day.
+# Alter the number of unique time-slots each day.
 # It is HIGHLY RECOMMENDED to keep this as 24 as it works with the demand and availability curves provided - keep the curves you use in mind when you adjust this value.
 # Example: 24
-simulation.uniqueTimeslots=
+simulation.uniqueTime-slots=
 
 # Alter the length of time to be simulated once the simulation has reached a steady population state using a single strategy, requires an integer value.
 # Example: 100
@@ -63,17 +63,17 @@ agent.beta=
 # Example: 0
 simulation.comparisonLevel=
 
-# Demand curves which influence the likelihood of agents requesting each timeslot.
+# Demand curves which influence the likelihood of agents requesting each time-slot.
 # Where multiple curves are given, agents are split equally between using each curve. Curves should be separated by "||" (see example).
-# The curves provided have 1 double value for each 10 minute segment of the day (144 values total), while these are bucketed into hour long timeslots, this allowed for easy compatability with the data used in our published papers.
-# Remember to ensure that your curves fit with the number of unique timeslots in the system.
+# The curves provided have 1 double value for each 10 minute segment of the day (144 values total), while these are bucketed into hour long time-slots, this allowed for easy compatability with the data used in our published papers.
+# Remember to ensure that your curves fit with the number of unique time-slots in the system.
 # Example: 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0||2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
 #   See additional_files/data.txt for example curves
 demand.curves=
 
 # Availablity curves control the proportion of energy available for each hour of the of day.
-# The curves provided have 1 integer value for each 30 minute segment of the day (48 values total), while these are bucketed into hour long timeslots, this allowed for easy compatability with the data used in our published papers.
-# Remember to ensure that your curves fit with the number of unique timeslots in the system.
+# The curves provided have 1 integer value for each 30 minute segment of the day (48 values total), while these are bucketed into hour long time-slots, this allowed for easy compatability with the data used in our published papers.
+# Remember to ensure that your curves fit with the number of unique time-slots in the system.
 # Example: 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 #   See additional_files/data.txt for example curves
 availability.curve=
@@ -87,6 +87,6 @@ agents.evolvePercentage=
 # Example: 1:1
 agent.typeRatio=
 
-# Determines the fall off of for satisfaction received from timeslots near to an agents preference such that "1.0,0.5" would mean agents get half satisfaction from timeslots next to their preferences.
+# Determines the fall off of for satisfaction received from time-slots near to an agents preference such that "1.0,0.5" would mean agents get half satisfaction from time-slots next to their preferences.
 # Example: 1.00,0.50,0.25
 agent.satisfactionCurve=

@@ -24,19 +24,19 @@ public class Day {
     double optimumAllocations;
 
     /**
-     * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time slots,
+     * Each Simulation run consists of a number of days, each day consists of requesting and being allocated time-slots,
      * exchanging those slots with other agents, and agents using social learning to learn from their experiences.
      *
      * @param demandCurves Double arrays of demand used by the agents, when multiple curves are used the agents
      *                    are split equally between the curves.
      * @param totalDemandValues Double values represeneting the sum of all values in their associated demand curves.
-     * @param availabilityCurve Integer array representing the amount of energy available at each timeslot.
+     * @param availabilityCurve Integer array representing the amount of energy available at each timeSlot.
      * @param totalAvailability Integer value representing the total energy available throughout the day.
      * @param day Integer value representing the current day being simulated.
      * @param maxExchanges Stores the highest number of exchange rounds reached each simulation.
      * @param populationSize Integer value representing the size of the initial agent population.
-     * @param uniqueTimeSlots Integer value representing the number of unique time slots available in the simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param uniqueTimeSlots Integer value representing the number of unique time-slots available in the simulation.
+     * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy will change at the
      *                               end of each day.
      * @param uniqueAgentTypes Integer ArrayList containing each unique agent type that exists when the simulation
@@ -74,14 +74,14 @@ public class Day {
             availableTimeSlots.clear();
         }
 
-        // Fill the available time slots with all the slots that exist each day.
+        // Fill the available time-slots with all the slots that exist each day.
         int requiredTimeSLots = populationSize * slotsPerAgent;
 
         for (int i = 1; i <= requiredTimeSLots; i++) {
             // Get the simulations seeded Random object.
             Random random = ResourceExchangeArena.random;
 
-            // Selects a time slot based on the demand curve.
+            // Selects a time-slot based on the demand curve.
             int wheelSelector = random.nextInt(totalAvailability);
             int wheelCalculator = 0;
             int timeSlot = 0;
@@ -93,7 +93,7 @@ public class Day {
         }
 
 
-        // Agents start the day by requesting and receiving an allocation of time slots.
+        // Agents start the day by requesting and receiving an allocation of time-slots.
         Collections.shuffle(agents, ResourceExchangeArena.random);
         ArrayList<Integer> curves = new ArrayList<>();
 
@@ -129,7 +129,7 @@ public class Day {
 
             /*
              * With each exchange all agents form pairwise exchanges and are able to consider a trade with their
-             * partner for one time slot.
+             * partner for one time-slot.
              *
              * @param run Integer value identifying the current simulation run.
              * @param day Integer value representing the current day being simulated.
@@ -290,7 +290,7 @@ public class Day {
          * proportional to the difference between their individual satisfactions.
          *
          * @param agents Array List of all the agents that exist in the current simulation.
-         * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+         * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
          * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at
          *                               the end of each day.
          * @param β Double value that increases the the chance that agents will change their strategy.
@@ -299,17 +299,17 @@ public class Day {
     }
 
     /**
-     * Gives a random initial time slot allocation to an Agent based on the number of time slots it requests and the
-     * time slots that are currently available.
+     * Gives a random initial time-slot allocation to an Agent based on the number of time-slots it requests and the
+     * time-slots that are currently available.
      *
-     * @param requestedTimeSlots The time slots that the Agent has requested.
-     * @return ArrayList<Integer> Returns a list of time slots to allocated to the Agent.
+     * @param requestedTimeSlots The time-slots that the Agent has requested.
+     * @return ArrayList<Integer> Returns a list of time-slots to allocated to the Agent.
      */
     private ArrayList<Integer> getRandomInitialAllocation(ArrayList<Integer> requestedTimeSlots) {
         ArrayList<Integer> timeSlots = new ArrayList<>();
 
         for (int requestedTimeSlot = 1; requestedTimeSlot <= requestedTimeSlots.size(); requestedTimeSlot++) {
-            // Only allocate time slots if there are slots available to allocate.
+            // Only allocate time-slots if there are slots available to allocate.
             if (!availableTimeSlots.isEmpty()) {
                 int selector = ResourceExchangeArena.random.nextInt(availableTimeSlots.size());
                 int timeSlot = availableTimeSlots.get(selector);
@@ -317,7 +317,7 @@ public class Day {
                 timeSlots.add(timeSlot);
                 availableTimeSlots.remove(selector);
             } else {
-                System.out.println("Error: No Timeslots Available");
+                System.out.println("Error: No Time-Slots Available");
             }
         }
         return timeSlots;

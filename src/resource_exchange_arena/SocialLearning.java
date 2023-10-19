@@ -11,7 +11,7 @@ class SocialLearning {
      * proportional to the difference between their individual satisfactions.
      *
      * @param agents Array List of all the agents that exist in the current simulation.
-     * @param slotsPerAgent Integer value representing the number of time slots each agent requires.
+     * @param slotsPerAgent Integer value representing the number of time-slots each agent requires.
      * @param numberOfAgentsToEvolve Integer value representing the number of Agents who's strategy may change at the
      *                               end of each day.
      * @param β Double value that increases the the chance that agents will change their strategy.
