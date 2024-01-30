@@ -190,8 +190,7 @@ public class ArenaEnvironment {
         simulationDataWriter.append("Population size: ").append(String.valueOf(populationSize)).append("\n");
         simulationDataWriter.append("Unique time-slots: ").append(String.valueOf(uniqueTimeSlots)).append("\n");
         simulationDataWriter.append("Slots per agent: ").append(String.valueOf(slotsPerAgent)).append("\n");
-        simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve))
-                .append("\n");
+        simulationDataWriter.append("Number of agents to evolve: ").append(String.valueOf(numberOfAgentsToEvolve)).append("\n");
         simulationDataWriter.append("Starting ratio of agent types: ");
         int typesListed = 0;
         for (int type : agentTypes) {
@@ -201,6 +200,7 @@ public class ArenaEnvironment {
             typesListed++;
             simulationDataWriter.append(Inflect.getHumanReadableAgentType(type));
         }
+        simulationDataWriter.append("\nLearning rate Beta value: ").append(String.valueOf(β)).append("\n");
         simulationDataWriter.append("\n\n");
 
         // The demand curves are bucketed before the simulations for efficiency, as they will all use the same bucketed values.

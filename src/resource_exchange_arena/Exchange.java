@@ -66,6 +66,7 @@ class Exchange {
                     request.add(a.agentID);
                     request.add(chosenAdvert.get(1));
                     request.add(unwantedTimeSlot);
+                    request.add(a.getUnspentSocialCapital());
 
                     // The agent who offered the requested time-slot receives the exchange request.
                     for (Agent b : agents) {

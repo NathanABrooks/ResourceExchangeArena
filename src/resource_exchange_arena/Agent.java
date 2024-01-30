@@ -207,14 +207,19 @@ class Agent {
      * Increases the total social capital tracker by 1.
      */
     void gainedSocialCapital() {
-        totalSocialCapital++;
+
+            totalSocialCapital++;
+        
+            
     }
 
     /**
      * Reduces the total social capital tracker by 1.
      */
     void lostSocialCapital() {
-        totalSocialCapital--;
+
+            totalSocialCapital--;
+
     }
 
     /**
@@ -519,22 +524,26 @@ class Agent {
                     dailyNoSocialCapitalExchanges++;
                 } else if (Double.compare(potentialSatisfaction, currentSatisfaction) == 0) {
                     if (usesSocialCapital) {
-                        int favoursOwedToRequester = 0;
-                        int favoursGivenToRequester = 0;
-                        for (ArrayList<Integer> favours : favoursOwed) {
-                            if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
-                                favoursOwedToRequester = favours.get(1);
-                                break;
-                            }
-                        }
-                        for (ArrayList<Integer> favours : favoursGiven) {
-                            if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
-                                favoursGivenToRequester = favours.get(1);
-                                break;
-                            }
-                        }
-                        if (favoursOwedToRequester > favoursGivenToRequester) {
-                            exchangeRequestApproved = true;
+                            // int favoursOwedToRequester = 0;
+                            // int favoursGivenToRequester = 0;
+                            // for (ArrayList<Integer> favours : favoursOwed) {
+                            //     if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
+                            //         favoursOwedToRequester = favours.get(1);
+                            //         break;
+                            //     }
+                            // }
+                            // for (ArrayList<Integer> favours : favoursGiven) {
+                            //     if (favours.get(0).equals(exchangeRequestReceived.get(0))) {
+                            //         favoursGivenToRequester = favours.get(1);
+                            //         break;
+                            //     }
+                            // }
+                            // if (favoursOwedToRequester > favoursGivenToRequester) {
+                            //     exchangeRequestApproved = true;
+                            //     dailySocialCapitalExchanges++;
+                            // }
+                        if (exchangeRequestReceived.get(3) > 0) {
+                             exchangeRequestApproved = true;
                             dailySocialCapitalExchanges++;
                         }
                     } else {
@@ -581,30 +590,26 @@ class Agent {
     boolean completeRequestedExchange(ArrayList<Integer> offer, int agentID, int partnersAgentType) {
         boolean SCGain = false;
 
-        double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time-slots.
         allocatedTimeSlots.remove(offer.get(2));
         allocatedTimeSlots.add(offer.get(1));
 
-        double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (usesSocialCapital) {
+
             // if (Double.compare(newSatisfaction, previousSatisfaction) > 0
             //         && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
-                if (Double.compare(newSatisfaction, previousSatisfaction) > 0
-                    && agentType == ResourceExchangeArena.SOCIAL) {
-
                 for (ArrayList<Integer> favours : favoursOwed) {
                     if (favours.get(0).equals(agentID)) {
                         int currentFavour = favours.get(1);
                         favours.set(1, currentFavour + 1);
+
                         break;
                     }
                 }
                 SCGain = true;
-            }
-        }
+            
+        
         dailyAcceptedRequestedExchanges++;
         return SCGain;
     }
@@ -620,20 +625,15 @@ class Agent {
     boolean completeReceivedExchange(ArrayList<Integer> offer, int partnersAgentType) {
         boolean SCLoss = false;
 
-        double previousSatisfaction = calculateSatisfaction(allocatedTimeSlots);
         // Update the Agents allocated time-slots.
         allocatedTimeSlots.remove(offer.get(1));
         allocatedTimeSlots.add(offer.get(2));
-        double newSatisfaction = calculateSatisfaction(allocatedTimeSlots);
 
         // Update the Agents relationship with the other Agent involved in the exchange.
-        if (usesSocialCapital) {
+
             // if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
             //         && agentType == ResourceExchangeArena.SOCIAL && partnersAgentType == ResourceExchangeArena.SOCIAL) {
                 
-            if (Double.compare(newSatisfaction, previousSatisfaction) <= 0
-                    && agentType == ResourceExchangeArena.SOCIAL) {
-
                 for (ArrayList<Integer> favours : favoursGiven) {
                     if (favours.get(0).equals(offer.get(0))) {
                         int currentFavour = favours.get(1);
@@ -642,8 +642,8 @@ class Agent {
                     }
                 }     
                 SCLoss = true;
-            }
-        }
+            
+        
         return SCLoss;
     }
 
