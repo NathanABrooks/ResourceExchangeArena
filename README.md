@@ -1,7 +1,7 @@
 # Resource Exchange Arena
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](/LICENSE.md)
 
-The Energy Exchange Simulation (ResourceExchangeArena) has been developed in order to better understand how social capital, in the form of trust, can influence direct interactions between agents in pairwise situations, and how this in turn can impact on then success of a population in solving a multi-objective optimisation problem. Feel free to use this code as a starting point for your own research although a citation in any publications using this model would be appreciated. I highly recommend using the most up to date version of the model for any research so that it is the most full featured and any known issues have been addressed. You should also read our most recent paper to gain an understanding of the capabilities of the model. Please feel free to contact me with any questions or to talk about this research.
+The Energy Exchange Arena (ResourceExchangeArena) has been developed in order to better understand how social capital, in the form of trust, can influence direct interactions between agents in pairwise situations, and how this in turn can impact on then success of a population in solving a multi-objective optimisation problem. Feel free to use this code as a starting point for your own research although a citation in any publications using this model would be appreciated. I highly recommend using the most up to date version of the model for any research so that it is the most full featured and any known issues have been addressed. You should also read our most recent paper to gain an understanding of the capabilities of the model. Please feel free to contact me with any questions or to talk about this research.
 
 ### Setup
 A full description of the model can be found in our most recent paper, please read this before attempting to use the model for your own research.
@@ -31,3 +31,6 @@ https://direct.mit.edu/isal/proceedings/isal2020/32/95/98493
 
 ### Pseudocode
 ![Pseudocode](/additional_files/pseudocode.png)
+
+### Flow Chart
+![Flow chart](/additional_files/flow_chart.png)
